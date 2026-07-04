@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Find Caterers", href: "/caterers" },
-  { label: "Become a Vendor", href: "/vendor" },
+  { label: "Become a Vendor", href: "/vendor/register" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -20,6 +20,20 @@ export default function Header() {
 
   const displayName = user?.displayName || user?.email || "Profile";
   const avatarInitial = displayName.charAt(0).toUpperCase();
+  const isVendor = user?.role === "vendor";
+  const isAdmin = user?.role === "admin";
+  const quickLinks = [
+    { label: "Dashboard", href: isVendor ? "/vendor/dashboard" : "/customer/dashboard" },
+    { label: "Bookings", href: isVendor ? "/vendor/bookings" : "/customer/bookings" },
+    ...(isVendor
+      ? [
+          { label: "Menus", href: "/vendor/menus" },
+          { label: "Calendar", href: "/vendor/calendar" },
+          { label: "Reviews", href: "/vendor/reviews" },
+        ]
+      : []),
+    ...(isAdmin ? [{ label: "Admin", href: "/admin" }] : []),
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-sm">
@@ -53,12 +67,11 @@ export default function Header() {
                   <span className="text-sm font-semibold text-slate-700">{displayName}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Link href="/customer/dashboard" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
-                    Dashboard
-                  </Link>
-                  <Link href="/customer/bookings" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
-                    Bookings
-                  </Link>
+                  {quickLinks.map((link) => (
+                    <Link key={link.href} href={link.href} className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
+                      {link.label}
+                    </Link>
+                  ))}
                   <Link href="/customer/profile" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
                     Profile
                   </Link>
@@ -121,12 +134,11 @@ export default function Header() {
                   <div className="font-semibold text-slate-900">{displayName}</div>
                   <div className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">{user.role}</div>
                 </div>
-                <Link href="/customer/dashboard" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
-                  Dashboard
-                </Link>
-                <Link href="/customer/bookings" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
-                  Bookings
-                </Link>
+                {quickLinks.map((link) => (
+                  <Link key={link.href} href={link.href} className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
+                    {link.label}
+                  </Link>
+                ))}
                 <Link href="/customer/profile" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
                   Profile
                 </Link>

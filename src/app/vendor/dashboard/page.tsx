@@ -1,29 +1,125 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useAuth } from "@/hooks/useAuth";
+import { db } from "@/lib/firebase";
+import VendorDashboardCard from "@/components/vendor/VendorDashboardCard";
+
+interface BookingSummary {
+  id: string;
+  customerName?: string;
+  eventDate?: string;
+  status?: string;
+  amount?: number;
+}
 
 export default function VendorDashboardPage() {
+  const { user, loading } = useAuth();
+  const [bookings, setBookings] = useState<BookingSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (!db || !user?.uid) {
+        setBookings([]);
+        setIsLoading(false);
+        return;
+      }
+
+      const bookingQuery = query(collection(db, "bookings"), where("vendorId", "==", user.uid));
+      const snapshot = await getDocs(bookingQuery);
+      setBookings(snapshot.docs.map((docSnapshot) => ({
+        id: docSnapshot.id,
+        ...(docSnapshot.data() as Omit<BookingSummary, "id">),
+      })));
+      setIsLoading(false);
+    };
+
+    fetchBookings();
+  }, [user?.uid]);
+
+  const stats = useMemo(() => {
+    const pending = bookings.filter((booking) => booking.status === "Pending" || booking.status === "Accepted").length;
+    const completed = bookings.filter((booking) => booking.status === "Completed").length;
+    const revenue = bookings.reduce((sum, booking) => sum + (booking.amount || 0), 0);
+
+    return {
+      pending,
+      completed,
+      revenue,
+      total: bookings.length,
+    };
+  }, [bookings]);
+
+  if (loading || isLoading) {
+    return (
+      <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-[2.5rem] bg-white p-8 text-center shadow-xl">
+          <p className="text-lg font-semibold text-slate-900">Loading your kitchen operations...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl rounded-[2.5rem] bg-white p-8 shadow-xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">
-          Vendor Dashboard
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold text-slate-900">Your registration is under review</h1>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-          Your business details have been submitted successfully. We will review them shortly.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            href="/"
-            className="rounded-full bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700"
-          >
-            Back to Home
-          </Link>
-          <Link
-            href="/vendor/register"
-            className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
-          >
-            Register Again
-          </Link>
+      <div className="mx-auto max-w-6xl space-y-8">
+        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Vendor Operations Center</p>
+          <h1 className="mt-2 text-3xl font-semibold text-slate-900">Welcome back, {user?.displayName || "vendor"}</h1>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
+            Keep bookings moving, manage menu packages, and track customer feedback from one streamlined workspace.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/vendor/bookings" className="rounded-full bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">
+              Review Bookings
+            </Link>
+            <Link href="/vendor/menus" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+              Update Menus
+            </Link>
+            <Link href="/vendor/reviews" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+              View Reviews
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          <VendorDashboardCard title="Active Requests" value={stats.pending} description="Bookings needing attention" accent="orange" />
+          <VendorDashboardCard title="Completed Orders" value={stats.completed} description="Events delivered successfully" accent="emerald" />
+          <VendorDashboardCard title="Revenue" value={`₹${stats.revenue}`} description="Collected from confirmed jobs" accent="blue" />
+        </div>
+
+        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-semibold text-slate-900">Recent bookings</h2>
+              <p className="mt-2 text-sm text-slate-500">Track the latest customer requests and important updates.</p>
+            </div>
+            <Link href="/vendor/bookings" className="text-sm font-semibold text-orange-600">View all</Link>
+          </div>
+
+          <div className="mt-6 space-y-4">
+            {bookings.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
+                No bookings have been received for your kitchen yet.
+              </div>
+            ) : (
+              bookings.slice(0, 5).map((booking) => (
+                <div key={booking.id} className="flex flex-col gap-3 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-base font-semibold text-slate-900">{booking.customerName || "Customer"}</p>
+                    <p className="mt-1 text-sm text-slate-600">{booking.eventDate || "TBD"}</p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-700">{booking.status || "Pending"}</span>
+                    <span className="text-sm font-semibold text-slate-700">₹{booking.amount || 0}</span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>
