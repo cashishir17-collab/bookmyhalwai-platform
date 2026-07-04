@@ -1,0 +1,38 @@
+interface VerificationTimelineEntry {
+  id: string;
+  label: string;
+  note: string;
+  createdAt?: unknown;
+}
+
+interface VerificationTimelineProps {
+  entries: VerificationTimelineEntry[];
+}
+
+function formatDate(value: unknown) {
+  if (!value) return "—";
+  if (typeof value === "object" && value !== null && "toDate" in value && typeof (value as { toDate?: () => Date }).toDate === "function") {
+    return (value as { toDate: () => Date }).toDate().toLocaleString();
+  }
+  return String(value);
+}
+
+export default function VerificationTimeline({ entries }: VerificationTimelineProps) {
+  if (!entries.length) {
+    return <p className="text-sm text-slate-500">No verification actions yet.</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {entries.map((entry) => (
+        <div key={entry.id} className="rounded-2xl border border-slate-200 bg-white p-4">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-slate-900">{entry.label}</p>
+            <p className="text-xs text-slate-500">{formatDate(entry.createdAt)}</p>
+          </div>
+          <p className="mt-2 text-sm text-slate-600">{entry.note}</p>
+        </div>
+      ))}
+    </div>
+  );
+}

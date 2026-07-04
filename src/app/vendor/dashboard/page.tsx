@@ -104,6 +104,13 @@ export default function VendorDashboardPage() {
   ];
 
   const completionPercent = vendorApplication?.profileCompletion ?? 25;
+  const verificationStatus = vendorApplication?.verificationStatus || "Pending";
+  const pendingDocuments = [
+    !vendorApplication?.documents?.fssai && "FSSAI",
+    !vendorApplication?.documents?.gst && "GST",
+    !vendorApplication?.documents?.menuPdf && "Menu PDF",
+    !(vendorApplication?.documents?.kitchenPhotos?.length || vendorApplication?.documents?.foodPhotos?.length || vendorApplication?.documents?.staffPhotos?.length) && "Photos",
+  ].filter(Boolean) as string[];
 
   if (loading || isLoading) {
     return (
@@ -145,7 +152,7 @@ export default function VendorDashboardPage() {
                   <p className="text-sm font-semibold text-slate-900">Application status</p>
                   <p className="mt-1 text-sm text-slate-600">Documents uploaded • Verification pending</p>
                 </div>
-                <div className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">{vendorApplication?.verificationStatus || "Pending"}</div>
+                <div className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">{verificationStatus}</div>
               </div>
               <div className="mt-4 h-2.5 rounded-full bg-slate-200">
                 <div className="h-2.5 rounded-full bg-orange-600" style={{ width: `${completionPercent}%` }} />
@@ -161,12 +168,48 @@ export default function VendorDashboardPage() {
                 </div>
               ))}
             </div>
+
+            <div className="mt-6 rounded-[1.75rem] border border-orange-200 bg-orange-50 p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">KYC follow-up</p>
+                  <p className="mt-1 text-sm text-slate-600">{pendingDocuments.length ? `Pending: ${pendingDocuments.join(", ")}` : "All requested documents are in place."}</p>
+                </div>
+                <Link href="/vendor/dashboard#verification" className="rounded-full bg-orange-600 px-4 py-2 text-sm font-semibold text-white">Review status</Link>
+              </div>
+            </div>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-1">
             <VendorDashboardCard title="Active Requests" value={stats.pending} description="Bookings needing attention" accent="orange" />
             <VendorDashboardCard title="Completed Orders" value={stats.completed} description="Events delivered successfully" accent="emerald" />
             <VendorDashboardCard title="Revenue" value={`₹${stats.revenue}`} description="Collected from confirmed jobs" accent="blue" />
+          </div>
+        </div>
+
+        <div id="verification" className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-semibold text-slate-900">Verification status</h2>
+              <p className="mt-2 text-sm text-slate-500">Keep your KYC profile current so your listing can move forward smoothly.</p>
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-[1.75rem] border border-slate-200 bg-slate-50 p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Current status</p>
+                <p className="mt-1 text-sm text-slate-600">{verificationStatus}</p>
+              </div>
+              <div className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-700">{completionPercent}% complete</div>
+            </div>
+            <div className="mt-4 h-2.5 rounded-full bg-slate-200">
+              <div className="h-2.5 rounded-full bg-orange-600" style={{ width: `${completionPercent}%` }} />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link href="/vendor/menus" className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">Upload menu</Link>
+              <Link href="/vendor/register" className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">Update documents</Link>
+            </div>
           </div>
         </div>
 
