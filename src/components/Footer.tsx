@@ -6,15 +6,9 @@ export default function Footer() {
           © 2026 BookMyHalwai. India’s trusted catering marketplace.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-slate-400 md:justify-end">
-          <a href="/terms" className="transition hover:text-white">
-            Terms
-          </a>
-          <a href="/privacy" className="transition hover:text-white">
-            Privacy
-          </a>
-          <a href="/support" className="transition hover:text-white">
-            Support
-          </a>
+          <a href="/terms" className="transition hover:text-white">Terms</a>
+          <a href="/privacy" className="transition hover:text-white">Privacy</a>
+          <a href="/support" className="transition hover:text-white">Support</a>
         </div>
       </div>
     </footer>

@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
+import DemoSeedLoader from "@/components/DemoSeedLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +31,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-orange-50 text-slate-900">
+      <body className="min-h-full flex flex-col bg-[radial-gradient(circle_at_top_left,_rgba(251,191,36,0.16),_transparent_35%),linear-gradient(135deg,_#fffaf5_0%,_#fff7ed_100%)] text-slate-900">
         <AuthProvider>
+          <DemoSeedLoader />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
