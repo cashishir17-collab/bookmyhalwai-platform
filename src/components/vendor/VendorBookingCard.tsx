@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { addNotification } from "@/lib/notifications";
 
 interface VendorBookingCardProps {
   booking: {
     id: string;
+    customerId?: string;
     customerName?: string;
     eventDate?: string;
     eventType?: string;
@@ -14,6 +16,7 @@ interface VendorBookingCardProps {
     guestCount?: number;
     status?: string;
     amount?: number;
+    paymentStatus?: string;
   };
   onUpdated?: () => void;
 }
@@ -23,8 +26,19 @@ export default function VendorBookingCard({ booking, onUpdated }: VendorBookingC
     if (!db) return;
     await updateDoc(doc(db, "bookings", booking.id), {
       status: nextStatus,
-      updatedAt: new Date(),
+      updatedAt: serverTimestamp(),
     });
+
+    await addNotification({
+      userId: booking.customerId || booking.id,
+      bookingId: booking.id,
+      type: nextStatus === "Accepted" ? "booking_accepted" : "booking_rejected",
+      title: nextStatus === "Accepted" ? "Booking accepted" : "Booking rejected",
+      message: nextStatus === "Accepted"
+        ? `Your booking for ${booking.eventDate || "the requested event"} has been accepted.`
+        : `Your booking for ${booking.eventDate || "the requested event"} has been rejected.`,
+    });
+
     onUpdated?.();
   };
 
@@ -40,9 +54,14 @@ export default function VendorBookingCard({ booking, onUpdated }: VendorBookingC
             <span className="rounded-full bg-slate-100 px-3 py-1">{booking.guestCount || 0} guests</span>
           </div>
         </div>
-        <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700">
-          {booking.status || "Pending"}
-        </span>
+        <div className="flex flex-col gap-2">
+          <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700">
+            {booking.status || "Pending"}
+          </span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-center text-sm font-semibold text-slate-700">
+            {booking.paymentStatus || "Advance Pending"}
+          </span>
+        </div>
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4 text-sm text-slate-600">

@@ -1,9 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import BookingSummary from "@/components/BookingSummary";
+import { useAuth } from "@/hooks/useAuth";
+import { db } from "@/lib/firebase";
+import { addNotification } from "@/lib/notifications";
 
 interface BookingCheckoutProps {
+  catererId: string;
   catererName: string;
   packageName: string;
   eventDate: string;
@@ -17,6 +23,7 @@ function formatCurrency(value: number) {
 }
 
 export default function BookingCheckout({
+  catererId,
   catererName,
   packageName,
   eventDate,
@@ -24,19 +31,80 @@ export default function BookingCheckout({
   pricePerPlate,
   estimatedTotal,
 }: BookingCheckoutProps) {
+  const router = useRouter();
+  const { user } = useAuth();
   const [fullName, setFullName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [email, setEmail] = useState("");
   const [eventAddress, setEventAddress] = useState("");
   const [instructions, setInstructions] = useState("");
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const advanceAmount = useMemo(() => Math.round(estimatedTotal * 0.2), [estimatedTotal]);
   const remainingAmount = useMemo(() => estimatedTotal - advanceAmount, [estimatedTotal, advanceAmount]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setBookingConfirmed(true);
+
+    if (!db) {
+      setSubmitError("Firebase is not configured right now.");
+      return;
+    }
+
+    if (!fullName || !mobileNumber || !email || !eventAddress) {
+      setSubmitError("Please fill in your name, contact details, and event address.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const bookingId = `BK-${Date.now().toString(36).toUpperCase()}`;
+      const bookingPayload = {
+        bookingId,
+        customerId: user?.uid || "guest",
+        vendorId: catererId,
+        catererId,
+        catererName: catererName || catererId || "Selected Caterer",
+        packageName,
+        eventDate,
+        guests,
+        pricePerPlate,
+        estimatedTotal,
+        advanceAmount,
+        remainingAmount,
+        customerName: fullName || user?.displayName || "Guest",
+        customerPhone: mobileNumber || user?.phoneNumber || "",
+        customerEmail: email || user?.email || "",
+        eventAddress,
+        specialInstructions: instructions,
+        status: "Pending",
+        paymentStatus: "Advance Pending",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      };
+
+      const bookingRef = await addDoc(collection(db, "bookings"), bookingPayload);
+      await addNotification({
+        userId: user?.uid || "guest",
+        bookingId: bookingRef.id,
+        type: "booking_created",
+        title: "Booking requested",
+        message: `Your booking request for ${catererName || catererId || "the selected caterer"} is pending review.`,
+      });
+
+      setBookingConfirmed(true);
+      window.setTimeout(() => {
+        router.push("/customer/bookings");
+      }, 1200);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Unable to create the booking right now.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -123,11 +191,14 @@ export default function BookingCheckout({
             </div>
           </div>
 
+          {submitError ? <p className="text-sm font-medium text-rose-600">{submitError}</p> : null}
+
           <button
             type="submit"
-            className="w-full rounded-3xl bg-orange-600 px-6 py-4 text-sm font-semibold text-white transition hover:bg-orange-700"
+            disabled={isSubmitting}
+            className="w-full rounded-3xl bg-orange-600 px-6 py-4 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-75"
           >
-            Pay Advance & Confirm Booking
+            {isSubmitting ? "Creating booking..." : "Pay Advance & Confirm Booking"}
           </button>
         </form>
       </section>
@@ -136,7 +207,7 @@ export default function BookingCheckout({
         <section className="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
           <p className="text-lg font-semibold text-emerald-800">Booking request created successfully.</p>
           <p className="mt-3 text-sm leading-6 text-emerald-700">
-            Your booking request has been received. We will contact you shortly to finalize the details.
+            Your booking request has been received and you will be redirected to your bookings shortly.
           </p>
         </section>
       ) : null}

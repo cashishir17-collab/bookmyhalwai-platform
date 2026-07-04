@@ -2,30 +2,41 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useParams } from "next/navigation";
 import { db } from "@/lib/firebase";
+import { addNotification } from "@/lib/notifications";
 import BookingTimeline from "@/components/customer/BookingTimeline";
 import StatusBadge from "@/components/customer/StatusBadge";
 
 interface BookingDetailsRecord {
   id?: string;
+  bookingId?: string;
   catererName?: string;
   eventDate?: string;
   eventType?: string;
+  guests?: number;
   guestCount?: number;
   packageName?: string;
   status?: string;
+  paymentStatus?: string;
+  specialInstructions?: string;
+  eventAddress?: string;
+  estimatedTotal?: number;
+  advanceAmount?: number;
+  remainingAmount?: number;
   notes?: string;
   vendorNotes?: string;
-  totalAmount?: number;
-  advancePaid?: number;
-  paymentMethod?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string;
 }
 
 export default function CustomerBookingDetailsPage() {
   const params = useParams();
   const [booking, setBooking] = useState<BookingDetailsRecord | null>(null);
+  const [isPaying, setIsPaying] = useState(false);
+  const [paymentMessage, setPaymentMessage] = useState("");
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -39,6 +50,32 @@ export default function CustomerBookingDetailsPage() {
     fetchBooking();
   }, [params?.id]);
 
+  const handlePayAdvance = async () => {
+    if (!db || !booking?.id) return;
+    setIsPaying(true);
+    setPaymentMessage("");
+
+    try {
+      await updateDoc(doc(db, "bookings", booking.id), {
+        paymentStatus: "Advance Paid",
+        updatedAt: serverTimestamp(),
+      });
+
+      await addNotification({
+        userId: booking.id,
+        bookingId: booking.id,
+        type: "advance_paid",
+        title: "Advance paid",
+        message: "Your advance payment has been recorded for this booking.",
+      });
+
+      setBooking((current) => (current ? { ...current, paymentStatus: "Advance Paid" } : current));
+      setPaymentMessage("Advance payment recorded. The booking remains pending vendor approval.");
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
   if (!booking) {
     return (
       <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
@@ -49,6 +86,8 @@ export default function CustomerBookingDetailsPage() {
     );
   }
 
+  const invoiceNumber = booking.bookingId ? `INV-${booking.bookingId.slice(0, 8).toUpperCase()}` : "INV-000000";
+
   return (
     <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -57,8 +96,14 @@ export default function CustomerBookingDetailsPage() {
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Booking Details</p>
               <h1 className="mt-2 text-3xl font-semibold text-slate-900">{booking.catererName || "Caterer"}</h1>
+              <p className="mt-2 text-sm text-slate-500">{booking.bookingId || booking.id}</p>
             </div>
-            <StatusBadge status={booking.status || "Pending"} />
+            <div className="flex flex-col gap-2">
+              <StatusBadge status={booking.status || "Pending"} />
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-center text-sm font-semibold text-slate-700">
+                {booking.paymentStatus || "Advance Pending"}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -72,12 +117,12 @@ export default function CustomerBookingDetailsPage() {
                   <p className="mt-1 text-sm text-slate-600">{booking.eventDate || "TBD"}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-slate-700">Event Type</p>
-                  <p className="mt-1 text-sm text-slate-600">{booking.eventType || "Event"}</p>
+                  <p className="text-sm font-semibold text-slate-700">Event Address</p>
+                  <p className="mt-1 text-sm text-slate-600">{booking.eventAddress || "TBD"}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-sm font-semibold text-slate-700">Guests</p>
-                  <p className="mt-1 text-sm text-slate-600">{booking.guestCount || 0}</p>
+                  <p className="mt-1 text-sm text-slate-600">{booking.guests || booking.guestCount || 0}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-sm font-semibold text-slate-700">Package</p>
@@ -94,38 +139,50 @@ export default function CustomerBookingDetailsPage() {
               <h2 className="text-2xl font-semibold text-slate-900">Payment Summary</h2>
               <div className="mt-6 space-y-3 text-sm text-slate-600">
                 <div className="flex justify-between">
-                  <span>Total Amount</span>
-                  <span>₹{booking.totalAmount || 0}</span>
+                  <span>Estimated Total</span>
+                  <span>₹{booking.estimatedTotal || 0}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Advance Paid</span>
-                  <span>₹{booking.advancePaid || 0}</span>
+                  <span>Advance Amount</span>
+                  <span>₹{booking.advanceAmount || 0}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Payment Method</span>
-                  <span>{booking.paymentMethod || "Pending"}</span>
+                  <span>Remaining Amount</span>
+                  <span>₹{booking.remainingAmount || 0}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Payment Status</span>
+                  <span>{booking.paymentStatus || "Advance Pending"}</span>
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={handlePayAdvance}
+                disabled={isPaying || booking.paymentStatus === "Advance Paid"}
+                className="mt-6 w-full rounded-full bg-orange-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isPaying ? "Updating payment..." : booking.paymentStatus === "Advance Paid" ? "Advance Paid" : "Pay Advance"}
+              </button>
+              {paymentMessage ? <p className="mt-3 text-sm text-emerald-700">{paymentMessage}</p> : null}
             </div>
 
             <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
-              <h2 className="text-2xl font-semibold text-slate-900">Notes</h2>
+              <h2 className="text-2xl font-semibold text-slate-900">Invoice</h2>
+              <p className="mt-4 text-sm text-slate-600">Invoice Number: {invoiceNumber}</p>
+              <button type="button" className="mt-4 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+                Download Invoice (Coming Soon)
+              </button>
+            </div>
+
+            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+              <h2 className="text-2xl font-semibold text-slate-900">Contact & Notes</h2>
               <div className="mt-4 space-y-3 text-sm text-slate-600">
-                <p><span className="font-semibold text-slate-800">Customer notes:</span> {booking.notes || "No notes provided."}</p>
+                <p><span className="font-semibold text-slate-800">Customer:</span> {booking.customerName || "Guest"}</p>
+                <p><span className="font-semibold text-slate-800">Phone:</span> {booking.customerPhone || "—"}</p>
+                <p><span className="font-semibold text-slate-800">Email:</span> {booking.customerEmail || "—"}</p>
+                <p><span className="font-semibold text-slate-800">Special instructions:</span> {booking.specialInstructions || "No special instructions provided."}</p>
                 <p><span className="font-semibold text-slate-800">Vendor notes:</span> {booking.vendorNotes || "No vendor notes yet."}</p>
               </div>
-            </div>
-
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
-              <div className="flex flex-wrap gap-3">
-                <button type="button" className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
-                  Download Invoice
-                </button>
-                <button type="button" className="rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700">
-                  Cancel Booking
-                </button>
-              </div>
-              <p className="mt-4 text-sm text-slate-500">Cancellation policy applies based on the booking package and timeline.</p>
             </div>
           </div>
         </div>

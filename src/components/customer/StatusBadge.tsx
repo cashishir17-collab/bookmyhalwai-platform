@@ -4,6 +4,7 @@ interface StatusBadgeProps {
 
 const statusStyles: Record<string, string> = {
   Pending: "bg-amber-100 text-amber-700",
+  Accepted: "bg-emerald-100 text-emerald-700",
   Approved: "bg-emerald-100 text-emerald-700",
   Rejected: "bg-rose-100 text-rose-700",
   Cancelled: "bg-slate-200 text-slate-700",

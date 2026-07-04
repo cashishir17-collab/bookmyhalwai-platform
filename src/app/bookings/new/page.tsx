@@ -38,6 +38,7 @@ export default function NewBookingPage({ searchParams }: { searchParams: Record<
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
             <BookingCheckout
+              catererId={catererId}
               catererName={catererId || "Selected Caterer"}
               packageName={packageName}
               eventDate={eventDate}

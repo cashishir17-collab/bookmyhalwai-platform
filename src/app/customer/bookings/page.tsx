@@ -8,12 +8,15 @@ import BookingCard from "@/components/customer/BookingCard";
 
 interface BookingRecord {
   id: string;
+  bookingId?: string;
   catererName?: string;
   eventDate?: string;
   eventType?: string;
+  guests?: number;
   guestCount?: number;
   packageName?: string;
   status?: string;
+  paymentStatus?: string;
 }
 
 export default function CustomerBookingsPage() {
