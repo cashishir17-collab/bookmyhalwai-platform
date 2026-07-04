@@ -31,15 +31,6 @@ const caterers = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-orange-50 text-gray-900">
-      <header className="flex items-center justify-between px-8 py-5 bg-white shadow-sm">
-        <h1 className="text-2xl font-bold text-orange-600">BookMyHalwai</h1>
-        <nav className="hidden md:flex gap-6 text-sm font-medium">
-          <a>Find Caterers</a>
-          <a>Become a Vendor</a>
-          <a>Login</a>
-        </nav>
-      </header>
-
       <section className="px-8 py-20 text-center">
         <h2 className="text-4xl md:text-6xl font-bold max-w-4xl mx-auto">
           Book Verified Halwai & Caterers for Every Event
