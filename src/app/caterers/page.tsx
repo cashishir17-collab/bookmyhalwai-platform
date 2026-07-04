@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
 import { caterers } from "@/data/caterers";
 import CatererCard from "@/components/CatererCard";
+import { db } from "@/lib/firebase";
 
 const cuisineOptions = [
   "North Indian",
@@ -33,6 +35,25 @@ export default function CaterersPage() {
   const [foodType, setFoodType] = useState("");
   const [showLiveCounter, setShowLiveCounter] = useState(false);
   const [showOutdoor, setShowOutdoor] = useState(false);
+  const [approvedVendors, setApprovedVendors] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchApprovedVendors = async () => {
+      if (!db) {
+        setApprovedVendors([]);
+        return;
+      }
+
+      const snapshot = await getDocs(collection(db, "vendors"));
+      const rows = snapshot.docs
+        .map((docSnapshot) => ({ id: docSnapshot.id, ...docSnapshot.data() }))
+        .filter((vendor: any) => vendor.verificationStatus === "Approved");
+
+      setApprovedVendors(rows);
+    };
+
+    fetchApprovedVendors();
+  }, []);
 
   const parsedBudget = useMemo(() => {
     const numbers = budget.replace(/,/g, "").match(/\d+/g)?.map(Number) ?? [];
@@ -43,15 +64,33 @@ export default function CaterersPage() {
     return { min: Math.min(...numbers), max: Math.max(...numbers) };
   }, [budget]);
 
+  const marketplaceVendors = useMemo(() => {
+    return approvedVendors.map((vendor: any) => ({
+      id: vendor.id,
+      name: vendor.businessName,
+      location: vendor.cities?.join(", ") || "Multiple Cities",
+      city: vendor.cities?.[0] || "Delhi",
+      price: vendor.pricing?.startingPrice || 250,
+      rating: 4.8,
+      events: vendor.pricing?.premiumPackage ? 120 : 80,
+      cuisines: vendor.cuisines || ["North Indian"],
+      foodType: vendor.services?.veg ? "Veg" : "Non-Veg",
+      liveCounter: vendor.services?.liveCounters || false,
+      outdoorCatering: vendor.services?.outdoorCatering || false,
+    }));
+  }, [approvedVendors]);
+
   const filteredCaterers = useMemo(() => {
-    return caterers.filter((item) => {
+    const combinedList = [...caterers, ...marketplaceVendors];
+
+    return combinedList.filter((item) => {
       if (city && !`${item.city} ${item.location}`.toLowerCase().includes(city.toLowerCase())) {
         return false;
       }
 
       if (
         eventType &&
-        !item.cuisines.some((cuisine) => cuisine.toLowerCase().includes(eventType.toLowerCase()))
+        !item.cuisines.some((cuisine: string) => cuisine.toLowerCase().includes(eventType.toLowerCase()))
       ) {
         return false;
       }
@@ -98,7 +137,7 @@ export default function CaterersPage() {
 
       return true;
     });
-  }, [city, eventType, parsedBudget, selectedCuisines, selectedPriceRange, selectedRating, foodType, showLiveCounter, showOutdoor]);
+  }, [city, eventType, parsedBudget, selectedCuisines, selectedPriceRange, selectedRating, foodType, showLiveCounter, showOutdoor, marketplaceVendors]);
 
   const toggleCuisine = (cuisine: string) => {
     setSelectedCuisines((current) =>
