@@ -52,6 +52,17 @@ export default function Header() {
                   </div>
                   <span className="text-sm font-semibold text-slate-700">{displayName}</span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Link href="/customer/dashboard" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
+                    Dashboard
+                  </Link>
+                  <Link href="/customer/bookings" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
+                    Bookings
+                  </Link>
+                  <Link href="/customer/profile" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
+                    Profile
+                  </Link>
+                </div>
                 <button
                   type="button"
                   onClick={() => logout()}
@@ -110,6 +121,15 @@ export default function Header() {
                   <div className="font-semibold text-slate-900">{displayName}</div>
                   <div className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">{user.role}</div>
                 </div>
+                <Link href="/customer/dashboard" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
+                  Dashboard
+                </Link>
+                <Link href="/customer/bookings" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
+                  Bookings
+                </Link>
+                <Link href="/customer/profile" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
+                  Profile
+                </Link>
                 <button
                   type="button"
                   onClick={() => {
