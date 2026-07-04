@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import LoginModal from "@/components/auth/LoginModal";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -13,6 +15,11 @@ const navItems = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const { user, loading, logout } = useAuth();
+
+  const displayName = user?.displayName || user?.email || "Profile";
+  const avatarInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-sm">
@@ -35,12 +42,33 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600"
-            >
-              Login
-            </Link>
+            {loading ? (
+              <span className="text-sm font-medium text-slate-500">Loading...</span>
+            ) : user ? (
+              <>
+                <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
+                    {avatarInitial}
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">{displayName}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  className="rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsLoginOpen(true)}
+                className="rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600"
+              >
+                Login
+              </button>
+            )}
             <Link
               href="/book"
               className="rounded-full bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-200 transition hover:bg-orange-700"
@@ -76,13 +104,35 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/login"
-              className="block rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600"
-              onClick={() => setIsOpen(false)}
-            >
-              Login
-            </Link>
+            {user ? (
+              <>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
+                  <div className="font-semibold text-slate-900">{displayName}</div>
+                  <div className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">{user.role}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }}
+                  className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginOpen(true);
+                  setIsOpen(false);
+                }}
+                className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600"
+              >
+                Login
+              </button>
+            )}
             <Link
               href="/book"
               className="mt-2 block rounded-2xl bg-orange-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-orange-700"
@@ -93,6 +143,8 @@ export default function Header() {
           </nav>
         </div>
       ) : null}
+
+      <LoginModal open={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </header>
   );
 }
