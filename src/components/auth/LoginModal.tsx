@@ -14,8 +14,14 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
   useEffect(() => {
     if (!open) {
-      setMessage(null);
+      const timeoutId = window.setTimeout(() => {
+        setMessage(null);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
     }
+
+    return undefined;
   }, [open]);
 
   if (!open) {

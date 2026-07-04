@@ -24,6 +24,23 @@ const priceRanges = [
 
 const ratingOptions = ["4.5+", "4.0+", "3.5+"];
 
+interface ApprovedVendorRecord {
+  id: string;
+  businessName?: string;
+  cities?: string[];
+  pricing?: {
+    startingPrice?: number;
+    premiumPackage?: number;
+  };
+  cuisines?: string[];
+  services?: {
+    veg?: boolean;
+    liveCounters?: boolean;
+    outdoorCatering?: boolean;
+  };
+  verificationStatus?: string;
+}
+
 export default function CaterersPage() {
   const [city, setCity] = useState("");
   const [eventType, setEventType] = useState("");
@@ -35,24 +52,32 @@ export default function CaterersPage() {
   const [foodType, setFoodType] = useState("");
   const [showLiveCounter, setShowLiveCounter] = useState(false);
   const [showOutdoor, setShowOutdoor] = useState(false);
-  const [approvedVendors, setApprovedVendors] = useState<any[]>([]);
+  const [approvedVendors, setApprovedVendors] = useState<ApprovedVendorRecord[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchApprovedVendors = async () => {
       if (!db) {
-        setApprovedVendors([]);
+        if (isMounted) {
+          setApprovedVendors([]);
+        }
         return;
       }
 
       const snapshot = await getDocs(collection(db, "vendors"));
       const rows = snapshot.docs
-        .map((docSnapshot) => ({ id: docSnapshot.id, ...docSnapshot.data() }))
-        .filter((vendor: any) => vendor.verificationStatus === "Approved");
+        .map((docSnapshot) => ({ id: docSnapshot.id, ...(docSnapshot.data() as Omit<ApprovedVendorRecord, "id">) }))
+        .filter((vendor) => vendor.verificationStatus === "Approved");
 
-      setApprovedVendors(rows);
+      if (isMounted) {
+        setApprovedVendors(rows);
+      }
     };
 
-    fetchApprovedVendors();
+    void fetchApprovedVendors();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const parsedBudget = useMemo(() => {
@@ -65,9 +90,9 @@ export default function CaterersPage() {
   }, [budget]);
 
   const marketplaceVendors = useMemo(() => {
-    return approvedVendors.map((vendor: any) => ({
+    return approvedVendors.map((vendor) => ({
       id: vendor.id,
-      name: vendor.businessName,
+      name: vendor.businessName || "Verified Caterer",
       location: vendor.cities?.join(", ") || "Multiple Cities",
       city: vendor.cities?.[0] || "Delhi",
       price: vendor.pricing?.startingPrice || 250,

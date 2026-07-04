@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -19,7 +19,7 @@ export default function VendorAcquisitionPage() {
   const [vendors, setVendors] = useState<VendorAcquisitionRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchVendors = async () => {
+  const fetchVendors = useCallback(async () => {
     if (!db) {
       setVendors([]);
       setIsLoading(false);
@@ -34,7 +34,7 @@ export default function VendorAcquisitionPage() {
     })) as VendorAcquisitionRecord[];
     setVendors(vendorRows);
     setIsLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (!loading && user?.role !== "admin") {
@@ -42,8 +42,19 @@ export default function VendorAcquisitionPage() {
       return;
     }
 
-    fetchVendors();
-  }, [loading, router, user?.role]);
+    let isMounted = true;
+    const loadVendors = async () => {
+      if (!isMounted) {
+        return;
+      }
+      await fetchVendors();
+    };
+
+    void loadVendors();
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchVendors, loading, router, user?.role]);
 
   const stats = useMemo(() => {
     const leadCount = vendors.length;

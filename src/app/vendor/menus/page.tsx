@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import MenuEditor from "@/components/vendor/MenuEditor";
@@ -20,15 +20,26 @@ interface MenuRecord {
 export default function VendorMenusPage() {
   const [menus, setMenus] = useState<MenuRecord[]>([]);
 
-  const fetchMenus = async () => {
+  const fetchMenus = useCallback(async () => {
     if (!db) return;
     const snapshot = await getDocs(collection(db, "menus"));
     setMenus(snapshot.docs.map((docSnapshot) => ({ id: docSnapshot.id, ...(docSnapshot.data() as MenuRecord) })));
-  };
+  }, []);
 
   useEffect(() => {
-    fetchMenus();
-  }, []);
+    let isMounted = true;
+    const loadMenus = async () => {
+      if (!isMounted) {
+        return;
+      }
+      await fetchMenus();
+    };
+
+    void loadMenus();
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchMenus]);
 
   return (
     <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">

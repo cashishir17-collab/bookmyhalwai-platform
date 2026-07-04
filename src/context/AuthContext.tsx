@@ -99,16 +99,24 @@ async function ensureUserDocument(firebaseUser: FirebaseUser): Promise<AppUser> 
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => (auth ? true : false));
 
   useEffect(() => {
     if (!auth) {
-      setUser(null);
-      setLoading(false);
-      return;
+      const timeoutId = window.setTimeout(() => {
+        setUser(null);
+        setLoading(false);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
     }
 
+    let isMounted = true;
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!isMounted) {
+        return;
+      }
+
       if (!firebaseUser) {
         setUser(null);
         setLoading(false);
@@ -117,16 +125,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         const profile = await ensureUserDocument(firebaseUser);
-        setUser(profile);
+        if (isMounted) {
+          setUser(profile);
+        }
       } catch (error) {
         console.error("Failed to sync user profile", error);
-        setUser(mapFirebaseUser(firebaseUser));
+        if (isMounted) {
+          setUser(mapFirebaseUser(firebaseUser));
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   const loginWithGoogle = async () => {

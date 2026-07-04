@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
 import { db } from "@/lib/firebase";
@@ -22,7 +22,7 @@ export default function VendorBookingsPage() {
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     if (!db || !user?.uid) {
       setBookings([]);
       setIsLoading(false);
@@ -36,11 +36,22 @@ export default function VendorBookingsPage() {
       return { id: docSnapshot.id, ...data };
     }));
     setIsLoading(false);
-  };
+  }, [user]);
 
   useEffect(() => {
-    fetchBookings();
-  }, [user?.uid]);
+    let isMounted = true;
+    const loadBookings = async () => {
+      if (!isMounted) {
+        return;
+      }
+      await fetchBookings();
+    };
+
+    void loadBookings();
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchBookings]);
 
   if (loading || isLoading) {
     return (

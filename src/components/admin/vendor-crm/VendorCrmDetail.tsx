@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { doc, serverTimestamp, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
+import { doc, serverTimestamp, updateDoc, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { VendorRecord, VendorTimelineEntry } from "./types";
 import VendorQualityScore, { calculateVendorQualityScore } from "./VendorQualityScore";
@@ -32,7 +32,10 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setLocalVendor(vendor);
+    const timeoutId = window.setTimeout(() => {
+      setLocalVendor(vendor);
+    }, 0);
+
     const loadTimeline = async () => {
       if (!db) return;
       const timelineRef = collection(db, "vendorTimeline");
@@ -51,7 +54,8 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
       setTimelineEntries(entries);
     };
 
-    loadTimeline();
+    void loadTimeline();
+    return () => window.clearTimeout(timeoutId);
   }, [vendor]);
 
   const saveField = async (updates: Partial<VendorRecord>) => {

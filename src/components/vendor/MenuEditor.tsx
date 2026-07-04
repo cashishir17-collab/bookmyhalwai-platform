@@ -55,6 +55,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
       }
 
       setDraft(emptyMenu);
+      setMenus((current) => [...current, { ...draft, id: draft.id }]);
       setMessage("Menu saved successfully.");
       onUpdated?.();
     } catch (error) {
@@ -65,6 +66,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
   const handleDelete = async (menuId?: string) => {
     if (!db || !menuId) return;
     await deleteDoc(doc(db, "menus", menuId));
+    setMenus((current) => current.filter((menu) => menu.id !== menuId));
     setMessage("Menu removed.");
     onUpdated?.();
   };

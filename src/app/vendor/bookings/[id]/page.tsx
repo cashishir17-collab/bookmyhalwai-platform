@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -26,7 +26,7 @@ export default function VendorBookingDetailsPage() {
   const [notes, setNotes] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const fetchBooking = async () => {
+  const fetchBooking = useCallback(async () => {
     if (!db || !params?.id) return;
     const snapshot = await getDoc(doc(db, "bookings", String(params.id)));
     if (snapshot.exists()) {
@@ -34,11 +34,22 @@ export default function VendorBookingDetailsPage() {
       setBooking({ id: snapshot.id, ...data });
       setNotes(data.notes || "");
     }
-  };
+  }, [params]);
 
   useEffect(() => {
-    fetchBooking();
-  }, [params?.id]);
+    let isMounted = true;
+    const loadBooking = async () => {
+      if (!isMounted) {
+        return;
+      }
+      await fetchBooking();
+    };
+
+    void loadBooking();
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchBooking]);
 
   const updateStatus = async (nextStatus: string) => {
     if (!db || !booking?.id) return;

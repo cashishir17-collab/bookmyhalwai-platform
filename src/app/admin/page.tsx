@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -28,31 +28,42 @@ export default function AdminPage() {
   const [vendors, setVendors] = useState<VendorRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchVendors = useCallback(async () => {
+    if (!db) {
+      setVendors([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    const snapshot = await getDocs(collection(db, "vendors"));
+    const vendorRows = snapshot.docs.map((docSnapshot) => ({
+      id: docSnapshot.id,
+      ...(docSnapshot.data() as Omit<VendorRecord, "id">),
+    }));
+    setVendors(vendorRows);
+    setIsLoading(false);
+  }, []);
+
   useEffect(() => {
     if (!loading && user?.role !== "admin") {
       router.replace("/");
       return;
     }
 
-    const firestoreDb = db;
-    if (!firestoreDb) {
-      setIsLoading(false);
-      return;
-    }
-
-    const fetchVendors = async () => {
-      setIsLoading(true);
-      const snapshot = await getDocs(collection(firestoreDb, "vendors"));
-      const vendorRows = snapshot.docs.map((docSnapshot) => ({
-        id: docSnapshot.id,
-        ...(docSnapshot.data() as Omit<VendorRecord, "id">),
-      }));
-      setVendors(vendorRows);
-      setIsLoading(false);
+    let isMounted = true;
+    const loadVendors = async () => {
+      if (!isMounted) {
+        return;
+      }
+      await fetchVendors();
     };
 
-    fetchVendors();
-  }, [loading, router, user?.role]);
+    void loadVendors();
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchVendors, loading, router, user?.role]);
 
   const stats = useMemo(() => {
     const registered = vendors.filter((vendor) => vendor.leadStage === "Registered" || vendor.verificationStatus === "Pending").length;
