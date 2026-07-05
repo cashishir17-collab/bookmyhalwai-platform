@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Find Caterers", href: "/caterers" },
-  { label: "Become a Verified Partner", href: "/partner" },
+  { label: "Become a Verified Partner", href: "/vendor/register" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];

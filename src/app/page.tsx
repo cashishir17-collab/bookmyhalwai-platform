@@ -75,7 +75,7 @@ export default function Home() {
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/partner" className="rounded-full bg-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:-translate-y-0.5 hover:bg-orange-700">
+            <Link href="/vendor/register" className="rounded-full bg-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:-translate-y-0.5 hover:bg-orange-700">
               Register Now
             </Link>
             <Link href="/caterers" className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-orange-300 hover:text-orange-600">
