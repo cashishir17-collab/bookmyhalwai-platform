@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "@/lib/firebase";
+import { auth, db, storage } from "@/lib/firebase";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
 
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads", "Bank Details"];
@@ -293,8 +293,20 @@ export default function RegistrationWizard() {
       return;
     }
 
-    if (!db || !storage || !user?.uid) {
-      setSubmitMessage("Authentication or Firestore is not configured yet.");
+    console.log("Registration wizard state:", {
+      auth,
+      db,
+      storage,
+      userUid: user?.uid,
+    });
+
+    if (!db || !storage) {
+      setSubmitMessage("Firestore or Storage is not configured yet.");
+      return;
+    }
+
+    if (!user?.uid) {
+      setSubmitMessage("Please sign in to continue before submitting registration.");
       return;
     }
 
