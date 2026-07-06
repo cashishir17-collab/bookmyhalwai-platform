@@ -278,13 +278,25 @@ export default function RegistrationWizard() {
     setStep((current) => Math.max(current - 1, 1));
   };
 
-  const uploadFile = async (file: File, path: string) => {
-    if (!storage) {
-      throw new Error("Storage is not configured.");
+  const uploadFile = async (file: File | null, path: string) => {
+    if (!file) {
+      return null;
     }
-    const storageRef = ref(storage, path);
-    await uploadBytes(storageRef, file);
-    return getDownloadURL(storageRef);
+
+    if (!storage) {
+      console.error("Upload failed: Storage unavailable", { path, fileName: file.name });
+      return null;
+    }
+
+    try {
+      console.error("Upload started", { path, fileName: file.name });
+      const storageRef = ref(storage, path);
+      await uploadBytes(storageRef, file);
+      return getDownloadURL(storageRef);
+    } catch (error) {
+      console.error("Upload failed", { path, fileName: file.name, error });
+      return null;
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -293,15 +305,14 @@ export default function RegistrationWizard() {
       return;
     }
 
-    console.log("Registration wizard state:", {
-      auth,
-      db,
-      storage,
-      userUid: user?.uid,
-    });
+    console.error("Vendor registration submit started");
+    console.error("Current user", user);
+    console.error("Firebase auth available", Boolean(auth));
+    console.error("Firestore db available", Boolean(db));
+    console.error("Storage available", Boolean(storage));
 
-    if (!db || !storage) {
-      setSubmitMessage("Firestore or Storage is not configured yet.");
+    if (!db) {
+      setSubmitMessage("Firestore is not configured yet. Please contact support.");
       return;
     }
 
@@ -313,22 +324,36 @@ export default function RegistrationWizard() {
     setIsSubmitting(true);
     setSubmitMessage("");
 
+    let uploadWarning = false;
+
     try {
       const uploadedDocuments = {
-        logo: await uploadFile(form.uploads.logo!, `vendors/${user.uid}/logo-${form.uploads.logo!.name}`),
+        logo: await uploadFile(form.uploads.logo, `vendors/${user.uid}/logo-${form.uploads.logo?.name ?? "logo"}`),
         kitchenPhotos: await Promise.all(
           form.uploads.kitchenPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/kitchen-${index + 1}-${file.name}`)),
-        ),
+        ).then((urls) => urls.filter((url): url is string => Boolean(url))),
         foodPhotos: await Promise.all(
           form.uploads.foodPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/food-${index + 1}-${file.name}`)),
-        ),
+        ).then((urls) => urls.filter((url): url is string => Boolean(url))),
         staffPhotos: await Promise.all(
           form.uploads.staffPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/staff-${index + 1}-${file.name}`)),
-        ),
-        menuPdf: await uploadFile(form.uploads.menuPdf!, `vendors/${user.uid}/menu-${form.uploads.menuPdf!.name}`),
-        fssai: await uploadFile(form.uploads.fssai!, `vendors/${user.uid}/fssai-${form.uploads.fssai!.name}`),
-        gst: await uploadFile(form.uploads.gst!, `vendors/${user.uid}/gst-${form.uploads.gst!.name}`),
+        ).then((urls) => urls.filter((url): url is string => Boolean(url))),
+        menuPdf: await uploadFile(form.uploads.menuPdf, `vendors/${user.uid}/menu-${form.uploads.menuPdf?.name ?? "menu"}`),
+        fssai: await uploadFile(form.uploads.fssai, `vendors/${user.uid}/fssai-${form.uploads.fssai?.name ?? "fssai"}`),
+        gst: await uploadFile(form.uploads.gst, `vendors/${user.uid}/gst-${form.uploads.gst?.name ?? "gst"}`),
       };
+
+      if (
+        (form.uploads.logo && !uploadedDocuments.logo) ||
+        (form.uploads.kitchenPhotos.length > 0 && uploadedDocuments.kitchenPhotos.length === 0) ||
+        (form.uploads.foodPhotos.length > 0 && uploadedDocuments.foodPhotos.length === 0) ||
+        (form.uploads.staffPhotos.length > 0 && uploadedDocuments.staffPhotos.length === 0) ||
+        (form.uploads.menuPdf && !uploadedDocuments.menuPdf) ||
+        (form.uploads.fssai && !uploadedDocuments.fssai) ||
+        (form.uploads.gst && !uploadedDocuments.gst)
+      ) {
+        uploadWarning = true;
+      }
 
       const profileCompletion = calculateProfileCompletion(form);
       const vendorDoc = {
@@ -372,7 +397,15 @@ export default function RegistrationWizard() {
           googleBusinessProfile: form.social.googleBusinessProfile.trim(),
           googleReviewLink: form.social.googleReviewLink.trim(),
         },
-        documents: uploadedDocuments,
+        documents: {
+          logo: uploadedDocuments.logo,
+          kitchenPhotos: uploadedDocuments.kitchenPhotos,
+          foodPhotos: uploadedDocuments.foodPhotos,
+          staffPhotos: uploadedDocuments.staffPhotos,
+          menuPdf: uploadedDocuments.menuPdf,
+          fssai: uploadedDocuments.fssai,
+          gst: uploadedDocuments.gst,
+        },
         bank: {
           accountHolder: form.bank.accountHolder.trim(),
           bank: form.bank.bank.trim(),
@@ -389,12 +422,24 @@ export default function RegistrationWizard() {
         updatedAt: serverTimestamp(),
       };
 
+      console.error("Firestore write started", { vendorId: vendorDoc.vendorId, userId: user.uid });
       const docRef = await addDoc(collection(db, "vendors"), vendorDoc);
-      setSubmitMessage("Registration Submitted Successfully");
-      router.push(`/vendor/success?applicationId=${docRef.id}`);
+      console.error("Vendor document created", { docId: docRef.id, vendorId: vendorDoc.vendorId });
+
+      if (uploadWarning) {
+        setSubmitMessage("Registration submitted, but some document uploads failed. You can update uploads later from your dashboard.");
+      } else {
+        setSubmitMessage("Registration Submitted Successfully");
+      }
+
+      router.push("/vendor/dashboard");
     } catch (error) {
-      console.error(error);
-      setSubmitMessage(error instanceof Error ? error.message : "Unable to submit registration");
+      console.error("Firestore write failed", error);
+      setSubmitMessage(
+        error instanceof Error
+          ? `Unable to submit registration. ${error.message}`
+          : "Unable to submit registration. Please try again later.",
+      );
     } finally {
       setIsSubmitting(false);
     }
