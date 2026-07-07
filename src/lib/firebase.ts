@@ -25,7 +25,10 @@ console.log("Firebase App:", app);
 export const auth: Auth | null = app ? getAuth(app) : null;
 console.log("Firebase Auth:", auth);
 
-export const db: Firestore | null = app ? getFirestore(app) : null;
+// This project's Firestore database was created with the explicit name "default"
+// rather than Firestore's special reserved "(default)" database id. Passing the
+// name here connects to the database that actually exists in the Firebase console.
+export const db: Firestore | null = app ? getFirestore(app, "default") : null;
 console.log("Firebase DB:", db);
 
 export const storage: FirebaseStorage | null = app ? getStorage(app) : null;
