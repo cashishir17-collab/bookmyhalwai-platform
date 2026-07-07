@@ -163,24 +163,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("Phone authentication is only available in the browser.");
     }
 
-    const recaptchaContainerId = "phone-recaptcha";
-    const existing = document.getElementById(recaptchaContainerId);
+    console.log("LOGIN STEP 1 - Recaptcha created");
 
+    const recaptchaContainerId = "phone-recaptcha";
+
+    // Clear existing verifier if it exists
+    if ((window as unknown as { recaptchaVerifier?: unknown }).recaptchaVerifier) {
+      try {
+        const existingVerifier = (window as unknown as { recaptchaVerifier?: { clear: () => void } }).recaptchaVerifier;
+        if (existingVerifier && typeof existingVerifier === "object" && "clear" in existingVerifier) {
+          existingVerifier.clear();
+        }
+      } catch (error) {
+        console.log("Failed to clear existing recaptcha verifier:", error);
+      }
+      (window as unknown as { recaptchaVerifier?: unknown }).recaptchaVerifier = null;
+    }
+
+    // Clear recaptcha container
+    const existing = document.getElementById(recaptchaContainerId);
     if (existing) {
       existing.innerHTML = "";
     }
 
+    // Create new verifier
     const verifier = new RecaptchaVerifier(auth, recaptchaContainerId, {
       size: "invisible",
       callback: () => undefined,
     });
 
+    // Store it globally for reuse
+    (window as unknown as { recaptchaVerifier?: unknown }).recaptchaVerifier = verifier;
+
     await verifier.render();
-    return signInWithPhoneNumber(auth, phoneNumber, verifier);
+
+    console.log("LOGIN STEP 2 - OTP requested");
+    const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+    console.log("LOGIN STEP 3 - OTP sent");
+
+    return result;
   };
 
   const verifyOtp = async (confirmationResult: ConfirmationResult, otp: string) => {
-    await confirmationResult.confirm(otp);
+    console.log("LOGIN STEP 5 - Verify clicked");
+    try {
+      await confirmationResult.confirm(otp);
+      console.log("LOGIN STEP 6 - Login success");
+    } catch (error) {
+      // Provide better error message for OTP verification
+      if (error instanceof Error && error.message.includes("invalid-code")) {
+        throw new Error("Invalid OTP. Please try again.");
+      }
+      throw error;
+    }
   };
 
   const logout = async () => {
