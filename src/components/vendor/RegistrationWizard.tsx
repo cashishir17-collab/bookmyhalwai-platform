@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { auth, db, storage } from "@/lib/firebase";
+import { app, db, storage } from "@/lib/firebase";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
 
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads", "Bank Details"];
@@ -280,43 +280,55 @@ export default function RegistrationWizard() {
 
   const uploadFile = async (file: File | null, path: string) => {
     if (!file) {
+      console.log("UPLOAD_SKIP - No file provided", { path });
       return null;
     }
 
     if (!storage) {
-      console.error("Upload failed: Storage unavailable", { path, fileName: file.name });
+      console.log("UPLOAD_ERROR - Storage is null or undefined", { path, fileName: file.name });
       return null;
     }
 
     try {
-      console.error("Upload started", { path, fileName: file.name });
+      console.log("UPLOAD_START", { path, fileName: file.name, fileSize: file.size });
       const storageRef = ref(storage, path);
       await uploadBytes(storageRef, file);
-      return getDownloadURL(storageRef);
+      console.log("UPLOAD_BYTES_DONE", { path, fileName: file.name });
+      
+      const downloadUrl = await getDownloadURL(storageRef);
+      console.log("UPLOAD_SUCCESS", { path, fileName: file.name, url: downloadUrl });
+      return downloadUrl;
     } catch (error) {
-      console.error("Upload failed", { path, fileName: file.name, error });
+      console.error("UPLOAD_FAILURE", { path, fileName: file.name, error });
+      if (error instanceof Error) {
+        console.error("UPLOAD_ERROR_DETAILS", { message: error.message, stack: error.stack });
+      }
       return null;
     }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log("STEP 1 - Submit clicked");
+
     if (!validateStep()) {
+      console.log("VALIDATION_FAILED - Form validation failed");
       return;
     }
 
-    console.error("Vendor registration submit started");
-    console.error("Current user", user);
-    console.error("Firebase auth available", Boolean(auth));
-    console.error("Firestore db available", Boolean(db));
-    console.error("Storage available", Boolean(storage));
+    console.log("STEP 2 - Current user", user);
+    console.log("STEP 3 - Firebase App", app);
+    console.log("STEP 4 - Firestore", db);
+    console.log("STEP 5 - Storage", storage);
 
     if (!db) {
+      console.log("ERROR - Firestore db is null or undefined");
       setSubmitMessage("Firestore is not configured yet. Please contact support.");
       return;
     }
 
     if (!user?.uid) {
+      console.log("ERROR - User or user.uid is null or undefined");
       setSubmitMessage("Please sign in to continue before submitting registration.");
       return;
     }
@@ -327,6 +339,8 @@ export default function RegistrationWizard() {
     let uploadWarning = false;
 
     try {
+      console.log("STEP 6 - Starting uploads");
+
       const uploadedDocuments = {
         logo: await uploadFile(form.uploads.logo, `vendors/${user.uid}/logo-${form.uploads.logo?.name ?? "logo"}`),
         kitchenPhotos: await Promise.all(
@@ -343,6 +357,8 @@ export default function RegistrationWizard() {
         gst: await uploadFile(form.uploads.gst, `vendors/${user.uid}/gst-${form.uploads.gst?.name ?? "gst"}`),
       };
 
+      console.log("STEP 7 - Upload complete", uploadedDocuments);
+
       if (
         (form.uploads.logo && !uploadedDocuments.logo) ||
         (form.uploads.kitchenPhotos.length > 0 && uploadedDocuments.kitchenPhotos.length === 0) ||
@@ -353,6 +369,7 @@ export default function RegistrationWizard() {
         (form.uploads.gst && !uploadedDocuments.gst)
       ) {
         uploadWarning = true;
+        console.log("UPLOAD_WARNING - Some files failed to upload but proceeding with Firestore save");
       }
 
       const profileCompletion = calculateProfileCompletion(form);
@@ -390,14 +407,14 @@ export default function RegistrationWizard() {
           travelCharges: Number(form.pricing.travelCharges),
           advancePercentage: Number(form.pricing.advancePercentage),
         },
-        social: {
+        socialLinks: {
           instagram: form.social.instagram.trim(),
           facebook: form.social.facebook.trim(),
           website: form.social.website.trim(),
           googleBusinessProfile: form.social.googleBusinessProfile.trim(),
           googleReviewLink: form.social.googleReviewLink.trim(),
         },
-        documents: {
+        uploadedFiles: {
           logo: uploadedDocuments.logo,
           kitchenPhotos: uploadedDocuments.kitchenPhotos,
           foodPhotos: uploadedDocuments.foodPhotos,
@@ -406,7 +423,7 @@ export default function RegistrationWizard() {
           fssai: uploadedDocuments.fssai,
           gst: uploadedDocuments.gst,
         },
-        bank: {
+        bankDetails: {
           accountHolder: form.bank.accountHolder.trim(),
           bank: form.bank.bank.trim(),
           accountNumber: form.bank.accountNumber.trim(),
@@ -416,15 +433,17 @@ export default function RegistrationWizard() {
         leadStage: "Registered",
         profileCompletion,
         verificationStatus: "Pending",
-        partnerSince: serverTimestamp(),
         source: "Vendor Acquisition Campaign",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
 
-      console.error("Firestore write started", { vendorId: vendorDoc.vendorId, userId: user.uid });
+      console.log("STEP 8 - Vendor object", vendorDoc);
+      console.log("STEP 9 - Writing Firestore", { collection: "vendors", db: Boolean(db) });
+
       const docRef = await addDoc(collection(db, "vendors"), vendorDoc);
-      console.error("Vendor document created", { docId: docRef.id, vendorId: vendorDoc.vendorId });
+
+      console.log("STEP 10 - Firestore write success", { docId: docRef.id, vendorId: vendorDoc.vendorId });
 
       if (uploadWarning) {
         setSubmitMessage("Registration submitted, but some document uploads failed. You can update uploads later from your dashboard.");
@@ -432,15 +451,32 @@ export default function RegistrationWizard() {
         setSubmitMessage("Registration Submitted Successfully");
       }
 
+      console.log("STEP 11 - Redirecting to /vendor/dashboard");
       router.push("/vendor/dashboard");
     } catch (error) {
-      console.error("Firestore write failed", error);
+      console.error("FIRESTORE_WRITE_FAILED - Error details:");
+      if (error instanceof Error) {
+        console.error("error.name:", error.name);
+        console.error("error.message:", error.message);
+        console.error("error.stack:", error.stack);
+        if ("code" in error) {
+          console.error("error.code:", (error as { code?: string }).code);
+        }
+      } else if (typeof error === "object" && error !== null) {
+        console.error("error object:", error);
+        console.error("error.code:", (error as { code?: string }).code);
+        console.error("error.message:", (error as { message?: string }).message);
+      } else {
+        console.error("error (non-Error):", error);
+      }
+      
       setSubmitMessage(
         error instanceof Error
           ? `Unable to submit registration. ${error.message}`
           : "Unable to submit registration. Please try again later.",
       );
     } finally {
+      console.log("FINALLY_BLOCK - Setting isSubmitting to false");
       setIsSubmitting(false);
     }
   };
