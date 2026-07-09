@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
+  <title id="title">BookMyHalwai BMH logo</title>
+  <desc id="desc">Circular monogram with BMH initials and a subtle serving cloche.</desc>
+  <defs>
+    <linearGradient id="goldRing" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#B89422"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="112" fill="#FAFAF8" stroke="#0F172A" stroke-width="10"/>
+  <circle cx="120" cy="120" r="93" fill="#0F172A"/>
+  <circle cx="120" cy="120" r="77" fill="none" stroke="#10B981" stroke-width="3" opacity="0.45"/>
+  <g transform="translate(120 78)">
+    <path d="M-28 6h56c0-15-12-27-28-27S-28-9-28 6Z" fill="none" stroke="url(#goldRing)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-30 10h60c0 4-3 7-7 7h-46c-4 0-7-3-7-7Z" fill="#D4AF37" opacity="0.95"/>
+    <path d="M0 -24c4 0 7 3 7 7 0 3-2 5-4 7h-6c-2-2-4-4-4-7 0-4 3-7 7-7Z" fill="#10B981"/>
+  </g>
+  <text x="120" y="144" fill="#FAFAF8" font-family="Inter, Arial, sans-serif" font-size="46" font-weight="800" text-anchor="middle" letter-spacing="2">BMH</text>
+  <text x="120" y="173" fill="#10B981" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="3">BOOKMYHALWAI</text>
+</svg>

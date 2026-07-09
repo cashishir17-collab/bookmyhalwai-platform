@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">BookMyHalwai favicon</title>
+  <desc id="desc">BMH monogram favicon with a premium circular emblem.</desc>
+  <circle cx="32" cy="32" r="31" fill="#0F172A"/>
+  <circle cx="32" cy="32" r="27" fill="none" stroke="#10B981" stroke-width="1.5" opacity="0.7"/>
+  <path d="M21 26h22c0-6-5-11-11-11s-11 5-11 11Z" fill="#D4AF37"/>
+  <path d="M22 28h20c0 1.6-1.3 3-3 3H25c-1.7 0-3-1.4-3-3Z" fill="#FAFAF8" opacity="0.95"/>
+  <text x="32" y="42" fill="#FAFAF8" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">BMH</text>
+</svg>
