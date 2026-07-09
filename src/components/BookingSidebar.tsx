@@ -40,7 +40,7 @@ export default function BookingSidebar({ catererId }: BookingSidebarProps) {
   };
 
   return (
-    <aside className="sticky top-6 space-y-6 rounded-[2rem] bg-white p-6 shadow-lg">
+    <aside className="section-shell sticky top-6 space-y-6 rounded-[2rem] p-6">
       <div className="space-y-4">
         <p className="text-sm uppercase tracking-[0.24em] text-orange-600">Booking</p>
         <h2 className="text-2xl font-semibold text-slate-900">Reserve your date</h2>
@@ -53,7 +53,7 @@ export default function BookingSidebar({ catererId }: BookingSidebarProps) {
             type="date"
             value={eventDate}
             onChange={(event) => setEventDate(event.target.value)}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+            className="form-control"
           />
         </label>
 
@@ -64,7 +64,7 @@ export default function BookingSidebar({ catererId }: BookingSidebarProps) {
             min="1"
             value={guestCount}
             onChange={(event) => setGuestCount(Number(event.target.value))}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+            className="form-control"
           />
         </label>
       </div>
@@ -90,7 +90,7 @@ export default function BookingSidebar({ catererId }: BookingSidebarProps) {
         </div>
       </div>
 
-      <div className="rounded-[2rem] bg-white p-5 shadow-sm">
+      <div className="premium-card rounded-[2rem] p-5">
         <div className="flex items-center justify-between text-sm text-slate-500">
           <span>Price per plate</span>
           <span>₹{selectedPackageData.price}</span>
@@ -108,7 +108,7 @@ export default function BookingSidebar({ catererId }: BookingSidebarProps) {
       <button
         type="button"
         onClick={handleBookNow}
-        className="w-full rounded-3xl bg-orange-600 px-5 py-4 text-sm font-semibold text-white transition hover:bg-orange-700"
+        className="btn btn-primary btn-lg type-button w-full"
       >
         Book Now
       </button>

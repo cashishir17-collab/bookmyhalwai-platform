@@ -76,8 +76,8 @@ export default function VendorVerificationPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-[2.5rem] bg-white p-8 text-center shadow-xl">
+      <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+        <div className="section-shell mx-auto max-w-7xl rounded-[2rem] p-8 text-center">
           <p className="text-lg font-semibold text-slate-900">Loading vendor verification queue...</p>
         </div>
       </div>
@@ -85,9 +85,9 @@ export default function VendorVerificationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Admin Verification Center</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Vendor Verification & KYC</h1>
           <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">Review each vendor’s KYC package and gate marketplace visibility until all mandatory checks are complete.</p>
@@ -99,7 +99,7 @@ export default function VendorVerificationPage() {
           ))}
         </div>
 
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <h2 className="text-2xl font-semibold text-slate-900">Verification Queue</h2>
           <div className="mt-6 grid gap-6 xl:grid-cols-2">
             {vendors.length === 0 ? (

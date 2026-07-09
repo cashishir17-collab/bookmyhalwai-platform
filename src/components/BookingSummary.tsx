@@ -19,7 +19,7 @@ export default function BookingSummary({
   const remaining = estimatedTotal - advance;
 
   return (
-    <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-lg">
+    <div className="card-info p-6">
       <h2 className="text-xl font-semibold text-slate-900">Booking Summary</h2>
       <div className="mt-5 space-y-4 text-sm text-slate-600">
         <div className="grid gap-2 sm:grid-cols-2">

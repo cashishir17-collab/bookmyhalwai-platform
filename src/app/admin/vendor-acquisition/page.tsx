@@ -110,8 +110,8 @@ export default function VendorAcquisitionPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-[2.5rem] bg-white p-8 text-center shadow-xl">
+      <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+        <div className="section-shell mx-auto max-w-7xl rounded-[2rem] p-8 text-center">
           <p className="text-lg font-semibold text-slate-900">Loading vendor acquisition dashboard...</p>
         </div>
       </div>
@@ -119,9 +119,9 @@ export default function VendorAcquisitionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Vendor Acquisition Dashboard</p>
@@ -134,7 +134,7 @@ export default function VendorAcquisitionPage() {
 
         <VendorAcquisitionStats stats={stats} />
 
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <h2 className="text-2xl font-semibold text-slate-900">City Pipeline</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {cityStats.map((city) => (
@@ -143,7 +143,7 @@ export default function VendorAcquisitionPage() {
           </div>
         </div>
 
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold text-slate-900">Operations Table</h2>

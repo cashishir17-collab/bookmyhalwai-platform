@@ -147,8 +147,8 @@ export default function VendorCrmPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-[2.5rem] bg-white p-8 text-center shadow-xl">
+      <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+        <div className="section-shell mx-auto max-w-7xl rounded-[2rem] p-8 text-center">
           <p className="text-lg font-semibold text-slate-900">Loading vendor CRM...</p>
         </div>
       </div>
@@ -156,9 +156,9 @@ export default function VendorCrmPage() {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Admin CRM</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Vendor CRM Pipeline</h1>
           <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">Track vendor leads from registration through approval and publishing with a shared internal workflow.</p>
@@ -170,7 +170,7 @@ export default function VendorCrmPage() {
         <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-4">
             {filteredVendors.length === 0 ? (
-              <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">No vendors match the current filters.</div>
+              <div className="section-shell rounded-[2rem] border border-dashed p-8 text-center text-sm text-slate-500">No vendors match the current filters.</div>
             ) : (
               filteredVendors.map((vendor) => (
                 <VendorPipelineCard key={vendor.id} vendor={vendor} isSelected={selectedVendor?.id === vendor.id} onSelect={setSelectedVendorId} />
@@ -178,7 +178,7 @@ export default function VendorCrmPage() {
             )}
           </div>
 
-          <div>{selectedVendor ? <VendorCrmDetail vendor={selectedVendor} onUpdated={refreshVendors} currentUser={user?.displayName || user?.email || "Admin"} /> : <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">Select a vendor to view the full CRM.</div>}</div>
+          <div>{selectedVendor ? <VendorCrmDetail vendor={selectedVendor} onUpdated={refreshVendors} currentUser={user?.displayName || user?.email || "Admin"} /> : <div className="section-shell rounded-[2rem] border border-dashed p-8 text-center text-sm text-slate-500">Select a vendor to view the full CRM.</div>}</div>
         </div>
       </div>
     </div>

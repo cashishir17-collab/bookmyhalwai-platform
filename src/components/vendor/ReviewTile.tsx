@@ -11,7 +11,7 @@ interface ReviewTileProps {
 
 export default function ReviewTile({ review }: ReviewTileProps) {
   return (
-    <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="premium-card rounded-[1.75rem] p-6">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold text-slate-900">{review.customerName || "Customer"}</h3>

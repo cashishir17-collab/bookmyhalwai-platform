@@ -69,7 +69,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
           <input
             value={form.name}
             onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-orange-400"
+            className="form-control"
           />
         </label>
         <label className="block text-sm font-medium text-slate-700">
@@ -78,7 +78,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
             type="email"
             value={form.email}
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-orange-400"
+            className="form-control"
           />
         </label>
         <label className="block text-sm font-medium text-slate-700">
@@ -86,7 +86,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
           <input
             value={form.phone}
             onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-orange-400"
+            className="form-control"
           />
         </label>
         <label className="block text-sm font-medium text-slate-700">
@@ -94,7 +94,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
           <input
             value={form.city}
             onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-orange-400"
+            className="form-control"
           />
         </label>
         <label className="block text-sm font-medium text-slate-700 md:col-span-2">
@@ -103,7 +103,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
             rows={3}
             value={form.address}
             onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-orange-400"
+            className="form-control"
           />
         </label>
         <label className="block text-sm font-medium text-slate-700 md:col-span-2">
@@ -111,7 +111,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
           <input
             value={form.cuisine}
             onChange={(event) => setForm((current) => ({ ...current, cuisine: event.target.value }))}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-orange-400"
+            className="form-control"
           />
         </label>
       </div>
@@ -121,7 +121,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
       <button
         type="submit"
         disabled={isSaving}
-        className="rounded-full bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70"
+        className="btn btn-primary btn-md type-button disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isSaving ? "Saving..." : "Save Profile"}
       </button>

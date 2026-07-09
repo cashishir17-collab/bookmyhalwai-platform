@@ -6,17 +6,17 @@ interface AdminStatsCardProps {
 }
 
 const accentStyles = {
-  orange: "border-orange-200 bg-orange-50 text-orange-700",
-  emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  blue: "border-sky-200 bg-sky-50 text-sky-700",
-  violet: "border-violet-200 bg-violet-50 text-violet-700",
+  orange: "badge-featured text-orange-700",
+  emerald: "badge-success text-emerald-700",
+  blue: "badge-info text-teal-700",
+  violet: "bg-violet-50 text-violet-700",
 };
 
 export default function AdminStatsCard({ title, value, description, accent }: AdminStatsCardProps) {
   return (
-    <div className={`rounded-[1.75rem] border p-6 shadow-sm ${accentStyles[accent]}`}>
-      <p className="text-sm font-semibold uppercase tracking-[0.2em]">{title}</p>
-      <p className="mt-4 text-3xl font-semibold">{value}</p>
+    <div className="card-stat p-6 transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-hover)]">
+      <span className={`badge ${accentStyles[accent]}`}>{title}</span>
+      <p className="mt-4 text-3xl font-semibold text-slate-900">{value}</p>
       <p className="mt-2 text-sm text-slate-600">{description}</p>
     </div>
   );

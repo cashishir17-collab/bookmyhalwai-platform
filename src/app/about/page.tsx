@@ -24,8 +24,8 @@ const trustPillars = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(249,115,22,0.14),_transparent_42%),linear-gradient(180deg,_#fffaf5_0%,_#ffffff_100%)] px-4 py-14 text-slate-900 sm:px-6 lg:px-8">
-      <section className="mx-auto max-w-6xl space-y-10 rounded-[2.5rem] border border-orange-100 bg-white/90 p-8 shadow-xl backdrop-blur sm:p-10 lg:p-12">
+    <main className="page-shell min-h-screen px-4 py-14 text-slate-900 sm:px-6 lg:px-8">
+      <section className="section-shell mx-auto max-w-6xl space-y-10 rounded-[2rem] p-8 sm:p-10 lg:p-12">
         <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-orange-700">
           <Sparkles className="h-3.5 w-3.5" /> About BookMyHalwai
         </div>
@@ -50,10 +50,7 @@ export default function AboutPage() {
               >
                 Explore Marketplace
               </Link>
-              <Link
-                href="/vendor/register"
-                className="inline-flex items-center rounded-full bg-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-orange-200 transition hover:bg-orange-700"
-              >
+              <Link href="/vendor/register" className="btn btn-primary btn-lg type-button">
                 Become a Partner
               </Link>
             </div>
@@ -85,7 +82,7 @@ export default function AboutPage() {
           return (
             <article
               key={pillar.title}
-              className="rounded-[1.8rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+              className="premium-card rounded-[1.8rem] p-6 transition hover:-translate-y-0.5"
             >
               <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
                 <Icon className="h-5 w-5" />

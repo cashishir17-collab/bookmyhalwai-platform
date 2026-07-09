@@ -20,9 +20,9 @@ interface CatererCardProps {
 
 export default function CatererCard({ caterer }: CatererCardProps) {
   return (
-    <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="h-52 bg-gradient-to-br from-orange-100 via-orange-50 to-amber-100 px-6 py-5">
-        <div className="flex h-full flex-col justify-between rounded-[2rem] bg-[radial-gradient(circle_at_top_right,_rgba(251,146,60,0.16),_transparent_55%),linear-gradient(180deg,#ffffff_0%,#fff7ed_100%)] p-5 text-slate-900 shadow-inner">
+    <article className="premium-card group overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1">
+      <div className="h-52 border-b border-slate-200 bg-[#f8f4ea] px-6 py-5">
+        <div className="flex h-full flex-col justify-between rounded-[2rem] bg-white p-5 text-slate-900 shadow-inner">
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">
             Caterer Spotlight
           </span>
@@ -31,7 +31,7 @@ export default function CatererCard({ caterer }: CatererCardProps) {
               <p className="text-4xl font-semibold leading-tight">{caterer.rating.toFixed(1)}</p>
               <p className="text-sm text-slate-500">Rated high by customers</p>
             </div>
-            <div className="rounded-3xl bg-white/90 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700 shadow-sm">
+            <div className="rounded-3xl bg-slate-100 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700 shadow-sm">
               {caterer.city}
             </div>
           </div>
@@ -68,7 +68,7 @@ export default function CatererCard({ caterer }: CatererCardProps) {
         <div className="pt-4">
           <Link
             href={`/caterers/${caterer.id}`}
-            className="inline-flex w-full items-center justify-center rounded-2xl bg-orange-600 px-4 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-orange-700"
+            className="inline-flex w-full items-center justify-center rounded-2xl bg-orange-700 px-4 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-orange-800"
           >
             View Details
           </Link>

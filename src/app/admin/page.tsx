@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
@@ -119,8 +120,8 @@ export default function AdminPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-[2.5rem] bg-white p-8 text-center shadow-xl">
+      <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+        <div className="section-shell mx-auto max-w-7xl rounded-[2rem] p-8 text-center">
           <p className="text-lg font-semibold text-slate-900">Loading admin dashboard...</p>
         </div>
       </div>
@@ -128,15 +129,15 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Admin Console</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Vendor acquisition pipeline</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">Review new vendor leads, track document readiness, and move promising partners into verification and approval.</p>
-          <a href="/admin/vendors/crm" className="mt-5 inline-flex rounded-full bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">
+          <Link href="/admin/vendors/crm" className="btn btn-primary btn-md type-button mt-5 inline-flex">
             Open Vendor CRM
-          </a>
+          </Link>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -145,7 +146,7 @@ export default function AdminPage() {
           ))}
         </div>
 
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-slate-900">New Vendor Leads</h2>
@@ -160,7 +161,7 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <h2 className="text-2xl font-semibold text-slate-900">Vendor Acquisition Pipeline</h2>
           <div className="mt-6 grid gap-4 lg:grid-cols-5">
             {stageBuckets.map((bucket) => (

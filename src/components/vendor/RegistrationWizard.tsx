@@ -774,18 +774,18 @@ export default function RegistrationWizard() {
   };
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl rounded-[2.5rem] bg-white p-6 shadow-xl sm:p-8 lg:p-10">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+      <div className="section-shell mx-auto max-w-5xl rounded-[2rem] p-6 sm:p-8 lg:p-10">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Vendor Onboarding</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900 sm:text-4xl">Register as a Vendor</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">Vendor Onboarding</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Register as a Vendor</h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">Complete the steps below to start receiving catering bookings on BookMyHalwai.</p>
           </div>
           <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-medium text-orange-700">Step {progressLabel}</div>
         </div>
 
-        <div className="mt-6 grid gap-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="mt-6 grid gap-4 rounded-3xl border border-emerald-200 bg-emerald-50/60 p-5 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
               <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-500" /> LIVE Onboarding
@@ -807,18 +807,18 @@ export default function RegistrationWizard() {
           <ProgressStepper steps={steps} currentStep={step} />
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="vendor-form mt-8 space-y-6" onSubmit={handleSubmit}>
           {renderStep()}
 
-          {submitMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{submitMessage}</div> : null}
+          {submitMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{submitMessage}</div> : null}
 
           <div className="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-between">
-            <button type="button" onClick={prevStep} disabled={step === 1} className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition disabled:cursor-not-allowed disabled:opacity-50">Back</button>
+            <button type="button" onClick={prevStep} disabled={step === 1} className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-700 disabled:cursor-not-allowed disabled:opacity-50">Back</button>
 
             {step < steps.length ? (
-              <button type="button" onClick={nextStep} className="rounded-full bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">Continue</button>
+              <button type="button" onClick={nextStep} className="rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800">Continue</button>
             ) : (
-              <button type="submit" disabled={isSubmitting} className="rounded-full bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
+              <button type="submit" disabled={isSubmitting} className="rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-70">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
             )}
           </div>
         </form>

@@ -7,7 +7,7 @@ export interface ReviewCardProps {
 
 export default function ReviewCard({ name, rating, comment, eventType }: ReviewCardProps) {
   return (
-    <article className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+    <article className="premium-card rounded-[2rem] p-6 transition hover:-translate-y-1">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-lg font-semibold text-slate-900">{name}</p>

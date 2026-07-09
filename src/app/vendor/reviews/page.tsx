@@ -28,9 +28,9 @@ export default function VendorReviewsPage() {
   const averageRating = reviews.length > 0 ? (reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / reviews.length).toFixed(1) : "0.0";
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Reviews</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Customer feedback</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
@@ -45,7 +45,7 @@ export default function VendorReviewsPage() {
 
         <div className="grid gap-6">
           {reviews.length === 0 ? (
-            <div className="rounded-[2.5rem] bg-white p-10 text-center shadow-xl">
+            <div className="section-shell rounded-[2rem] p-10 text-center">
               <p className="text-lg font-semibold text-slate-900">No reviews yet</p>
             </div>
           ) : (

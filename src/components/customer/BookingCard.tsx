@@ -22,7 +22,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
   return (
     <Link
       href={`/customer/bookings/${booking.id}`}
-      className="block rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+      className="premium-card block rounded-[1.75rem] p-6 transition hover:-translate-y-1"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>

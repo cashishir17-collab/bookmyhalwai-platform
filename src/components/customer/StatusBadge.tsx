@@ -3,17 +3,17 @@ interface StatusBadgeProps {
 }
 
 const statusStyles: Record<string, string> = {
-  Pending: "bg-amber-100 text-amber-700",
-  Accepted: "bg-emerald-100 text-emerald-700",
-  Approved: "bg-emerald-100 text-emerald-700",
+  Pending: "badge-warning",
+  Accepted: "badge-success",
+  Approved: "badge-success",
   Rejected: "bg-rose-100 text-rose-700",
-  Cancelled: "bg-slate-200 text-slate-700",
-  Completed: "bg-sky-100 text-sky-700",
+  Cancelled: "badge-inactive",
+  Completed: "badge-info",
 };
 
 export default function StatusBadge({ status }: StatusBadgeProps) {
   return (
-    <span className={`rounded-full px-3 py-1 text-sm font-semibold ${statusStyles[status] || "bg-slate-100 text-slate-700"}`}>
+    <span className={`badge ${statusStyles[status] || "badge-inactive"}`}>
       {status}
     </span>
   );

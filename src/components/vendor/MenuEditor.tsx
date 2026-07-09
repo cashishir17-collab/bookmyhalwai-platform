@@ -73,7 +73,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="section-shell rounded-[1.75rem] p-6">
         <h3 className="text-xl font-semibold text-slate-900">Create / Edit Menu</h3>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <label className="block text-sm font-medium text-slate-700">
@@ -81,7 +81,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
             <select
               value={draft.packageName}
               onChange={(event) => setDraft((current) => ({ ...current, packageName: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              className="form-control"
             >
               <option>Silver</option>
               <option>Gold</option>
@@ -93,7 +93,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
             <input
               value={draft.pricePerPlate}
               onChange={(event) => setDraft((current) => ({ ...current, pricePerPlate: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              className="form-control"
             />
           </label>
           <label className="block text-sm font-medium text-slate-700">
@@ -101,7 +101,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
             <input
               value={draft.welcomeDrink}
               onChange={(event) => setDraft((current) => ({ ...current, welcomeDrink: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              className="form-control"
             />
           </label>
           <label className="block text-sm font-medium text-slate-700">
@@ -109,7 +109,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
             <input
               value={draft.starters}
               onChange={(event) => setDraft((current) => ({ ...current, starters: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              className="form-control"
             />
           </label>
           <label className="block text-sm font-medium text-slate-700">
@@ -117,7 +117,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
             <input
               value={draft.mainCourse}
               onChange={(event) => setDraft((current) => ({ ...current, mainCourse: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              className="form-control"
             />
           </label>
           <label className="block text-sm font-medium text-slate-700">
@@ -125,7 +125,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
             <input
               value={draft.dessert}
               onChange={(event) => setDraft((current) => ({ ...current, dessert: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              className="form-control"
             />
           </label>
           <label className="block text-sm font-medium text-slate-700">
@@ -133,7 +133,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
             <input
               value={draft.liveCounter}
               onChange={(event) => setDraft((current) => ({ ...current, liveCounter: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              className="form-control"
             />
           </label>
           <label className="block text-sm font-medium text-slate-700">
@@ -141,7 +141,7 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
             <select
               value={draft.foodType}
               onChange={(event) => setDraft((current) => ({ ...current, foodType: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              className="form-control"
             >
               <option>Veg</option>
               <option>Non-Veg</option>
@@ -152,24 +152,24 @@ export default function MenuEditor({ initialMenus = [], onUpdated }: MenuEditorP
 
         {message ? <p className="mt-4 text-sm text-emerald-700">{message}</p> : null}
 
-        <button type="button" onClick={handleSave} className="mt-6 rounded-full bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700">
+        <button type="button" onClick={handleSave} className="btn btn-primary btn-md type-button mt-6">
           Save Menu
         </button>
       </div>
 
       <div className="grid gap-4">
         {menus.map((menu) => (
-          <div key={menu.id} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <div key={menu.id} className="premium-card rounded-[1.75rem] p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h4 className="text-lg font-semibold text-slate-900">{menu.packageName}</h4>
                 <p className="mt-1 text-sm text-slate-500">{menu.foodType} • ₹{menu.pricePerPlate}/plate</p>
               </div>
               <div className="flex gap-2">
-                <button type="button" onClick={() => setDraft(menu)} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+                <button type="button" onClick={() => setDraft(menu)} className="btn btn-outline btn-sm type-button">
                   Edit
                 </button>
-                <button type="button" onClick={() => handleDelete(menu.id)} className="rounded-full border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50">
+                <button type="button" onClick={() => handleDelete(menu.id)} className="btn btn-danger btn-sm type-button">
                   Delete
                 </button>
               </div>

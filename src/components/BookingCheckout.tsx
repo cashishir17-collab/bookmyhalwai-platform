@@ -109,7 +109,7 @@ export default function BookingCheckout({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[2rem] bg-white p-8 shadow-lg">
+      <section className="section-shell rounded-[2rem] p-8">
         <BookingSummary
           catererName={catererName}
           packageName={packageName}
@@ -120,7 +120,7 @@ export default function BookingCheckout({
         />
       </section>
 
-      <section className="rounded-[2rem] bg-white p-8 shadow-lg">
+      <section className="section-shell rounded-[2rem] p-8">
         <h2 className="text-xl font-semibold text-slate-900">Customer details</h2>
         <form onSubmit={handleSubmit} className="mt-6 space-y-6">
           <div className="grid gap-6 sm:grid-cols-2">
@@ -131,7 +131,7 @@ export default function BookingCheckout({
                 onChange={(event) => setFullName(event.target.value)}
                 type="text"
                 placeholder="Enter your full name"
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                className="form-control"
               />
             </label>
 
@@ -142,7 +142,7 @@ export default function BookingCheckout({
                 onChange={(event) => setMobileNumber(event.target.value)}
                 type="tel"
                 placeholder="Enter mobile number"
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                className="form-control"
               />
             </label>
           </div>
@@ -154,7 +154,7 @@ export default function BookingCheckout({
               onChange={(event) => setEmail(event.target.value)}
               type="email"
               placeholder="Enter your email"
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+              className="form-control"
             />
           </label>
 
@@ -164,7 +164,7 @@ export default function BookingCheckout({
               value={eventAddress}
               onChange={(event) => setEventAddress(event.target.value)}
               placeholder="Enter event address"
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+              className="form-control"
               rows={4}
             />
           </label>
@@ -175,7 +175,7 @@ export default function BookingCheckout({
               value={instructions}
               onChange={(event) => setInstructions(event.target.value)}
               placeholder="Any special requests or dietary notes"
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+              className="form-control"
               rows={4}
             />
           </label>
@@ -196,7 +196,7 @@ export default function BookingCheckout({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-3xl bg-orange-600 px-6 py-4 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-75"
+            className="btn btn-primary btn-lg type-button w-full disabled:cursor-not-allowed disabled:opacity-75"
           >
             {isSubmitting ? "Creating booking..." : "Pay Advance & Confirm Booking"}
           </button>
@@ -204,7 +204,7 @@ export default function BookingCheckout({
       </section>
 
       {bookingConfirmed ? (
-        <section className="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
+        <section className="alert alert-success p-6 shadow-sm">
           <p className="text-lg font-semibold text-emerald-800">Booking request created successfully.</p>
           <p className="mt-3 text-sm leading-6 text-emerald-700">
             Your booking request has been received and you will be redirected to your bookings shortly.

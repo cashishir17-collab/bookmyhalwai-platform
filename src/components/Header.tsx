@@ -36,50 +36,50 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-[#e8e0d4] bg-[#fffdf8]/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-xl font-bold tracking-tight text-orange-600 md:text-2xl">
-          BookMyHalwai
+        <Link href="/" className="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">
+          BookMy<span className="text-orange-700">Halwai</span>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
-          <nav className="flex items-center gap-6 text-sm font-medium text-slate-700">
+        <div className="hidden items-center gap-6 lg:flex">
+          <nav className="flex items-center gap-2 text-sm font-medium text-slate-700">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="transition hover:text-orange-600"
+                className="rounded-full px-3 py-2 transition hover:bg-orange-50 hover:text-orange-700"
               >
                 {item.label}
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {loading ? (
               <span className="text-sm font-medium text-slate-500">Loading...</span>
             ) : user ? (
               <>
-                <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-sm font-semibold text-white">
+                <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 shadow-sm">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-700 text-sm font-semibold text-white">
                     {avatarInitial}
                   </div>
                   <span className="text-sm font-semibold text-slate-700">{displayName}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   {quickLinks.map((link) => (
-                    <Link key={link.href} href={link.href} className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
+                    <Link key={link.href} href={link.href} className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-orange-50 hover:text-orange-700">
                       {link.label}
                     </Link>
                   ))}
-                  <Link href="/customer/profile" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600">
+                  <Link href="/customer/profile" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-orange-50 hover:text-orange-700">
                     Profile
                   </Link>
                 </div>
                 <button
                   type="button"
                   onClick={() => logout()}
-                  className="rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600"
+                  className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
                 >
                   Logout
                 </button>
@@ -88,7 +88,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setIsLoginOpen(true)}
-                className="rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:text-orange-600"
+                className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
               >
                 Login
               </button>
@@ -103,7 +103,7 @@ export default function Header() {
             </Link>
             <Link
               href="/book"
-              className="rounded-full bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-200 transition hover:bg-orange-700"
+              className="rounded-full bg-orange-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-orange-800"
             >
               Book Now
             </Link>
@@ -113,7 +113,7 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setIsOpen((current) => !current)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-orange-300 hover:text-orange-600 md:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 transition hover:border-orange-300 hover:text-orange-700 lg:hidden"
           aria-label="Toggle navigation"
         >
           <span className="sr-only">Toggle navigation</span>
@@ -124,13 +124,13 @@ export default function Header() {
       </div>
 
       {isOpen ? (
-        <div className="border-t border-slate-200 bg-white/95 px-4 py-4 shadow-sm backdrop-blur-sm md:hidden">
+        <div className="border-t border-slate-200 bg-[#fffdf8] px-4 py-4 shadow-sm backdrop-blur-sm lg:hidden">
           <nav className="space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="block rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600"
+                className="block rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}
@@ -143,11 +143,11 @@ export default function Header() {
                   <div className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">{user.role}</div>
                 </div>
                 {quickLinks.map((link) => (
-                  <Link key={link.href} href={link.href} className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
+                  <Link key={link.href} href={link.href} className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-700" onClick={() => setIsOpen(false)}>
                     {link.label}
                   </Link>
                 ))}
-                <Link href="/customer/profile" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600" onClick={() => setIsOpen(false)}>
+                <Link href="/customer/profile" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-700" onClick={() => setIsOpen(false)}>
                   Profile
                 </Link>
                 <button
@@ -156,7 +156,7 @@ export default function Header() {
                     logout();
                     setIsOpen(false);
                   }}
-                  className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600"
+                  className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
                 >
                   Logout
                 </button>
@@ -168,7 +168,7 @@ export default function Header() {
                   setIsLoginOpen(true);
                   setIsOpen(false);
                 }}
-                className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-600"
+                className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
               >
                 Login
               </button>
@@ -184,7 +184,7 @@ export default function Header() {
             </Link>
             <Link
               href="/book"
-              className="mt-2 block rounded-2xl bg-orange-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-orange-700"
+              className="mt-2 block rounded-2xl bg-orange-700 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-orange-800"
               onClick={() => setIsOpen(false)}
             >
               Book Now

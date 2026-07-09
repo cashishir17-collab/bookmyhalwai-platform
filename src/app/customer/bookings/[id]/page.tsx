@@ -78,8 +78,8 @@ export default function CustomerBookingDetailsPage() {
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-[2.5rem] bg-white p-8 text-center shadow-xl">
+      <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+        <div className="section-shell mx-auto max-w-7xl rounded-[2rem] p-8 text-center">
           <p className="text-lg font-semibold text-slate-900">Loading booking details...</p>
         </div>
       </div>
@@ -89,9 +89,9 @@ export default function CustomerBookingDetailsPage() {
   const invoiceNumber = booking.bookingId ? `INV-${booking.bookingId.slice(0, 8).toUpperCase()}` : "INV-000000";
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Booking Details</p>
@@ -109,7 +109,7 @@ export default function CustomerBookingDetailsPage() {
 
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+            <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Booking Summary</h2>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -135,7 +135,7 @@ export default function CustomerBookingDetailsPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+            <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Payment Summary</h2>
               <div className="mt-6 space-y-3 text-sm text-slate-600">
                 <div className="flex justify-between">
@@ -159,14 +159,14 @@ export default function CustomerBookingDetailsPage() {
                 type="button"
                 onClick={handlePayAdvance}
                 disabled={isPaying || booking.paymentStatus === "Advance Paid"}
-                className="mt-6 w-full rounded-full bg-orange-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70"
+                className="btn btn-primary btn-md type-button mt-6 w-full disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isPaying ? "Updating payment..." : booking.paymentStatus === "Advance Paid" ? "Advance Paid" : "Pay Advance"}
               </button>
               {paymentMessage ? <p className="mt-3 text-sm text-emerald-700">{paymentMessage}</p> : null}
             </div>
 
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+            <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Invoice</h2>
               <p className="mt-4 text-sm text-slate-600">Invoice Number: {invoiceNumber}</p>
               <button type="button" className="mt-4 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
@@ -174,7 +174,7 @@ export default function CustomerBookingDetailsPage() {
               </button>
             </div>
 
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+            <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Contact & Notes</h2>
               <div className="mt-4 space-y-3 text-sm text-slate-600">
                 <p><span className="font-semibold text-slate-800">Customer:</span> {booking.customerName || "Guest"}</p>
@@ -187,7 +187,7 @@ export default function CustomerBookingDetailsPage() {
           </div>
         </div>
 
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <Link href="/customer/bookings" className="text-sm font-semibold text-orange-600">
             ← Back to bookings
           </Link>

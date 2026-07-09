@@ -169,8 +169,8 @@ export default function VendorVerificationDetailPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-[2.5rem] bg-white p-8 text-center shadow-xl">
+      <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+        <div className="section-shell mx-auto max-w-7xl rounded-[2rem] p-8 text-center">
           <p className="text-lg font-semibold text-slate-900">Loading verification review...</p>
         </div>
       </div>
@@ -179,8 +179,8 @@ export default function VendorVerificationDetailPage() {
 
   if (!vendor) {
     return (
-      <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl rounded-[2.5rem] bg-white p-8 text-center shadow-xl">
+      <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+        <div className="section-shell mx-auto max-w-5xl rounded-[2rem] p-8 text-center">
           <p className="text-lg font-semibold text-slate-900">Vendor not found.</p>
           <Link href="/admin/vendors/verification" className="mt-4 inline-flex text-sm font-semibold text-orange-600">Back to verification queue</Link>
         </div>
@@ -189,22 +189,22 @@ export default function VendorVerificationDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Vendor Verification Review</p>
               <h1 className="mt-2 text-3xl font-semibold text-slate-900">{vendor.businessName || "Vendor KYC"}</h1>
               <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">Inspect uploaded documents, confirm mandatory checks, and decide whether the vendor is approved, rejected, or asked to re-upload.</p>
             </div>
-            <Link href="/admin/vendors/verification" className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">Back to queue</Link>
+            <Link href="/admin/vendors/verification" className="btn btn-outline btn-sm type-button">Back to queue</Link>
           </div>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+            <div className="section-shell rounded-[2rem] p-8">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-semibold text-slate-900">Verification Checklist</h2>
@@ -217,7 +217,7 @@ export default function VendorVerificationDetailPage() {
               </div>
             </div>
 
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+            <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Document Review</h2>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <DocumentPreview label="FSSAI" value={vendor.documents?.fssai} type="certificate" />
@@ -229,12 +229,12 @@ export default function VendorVerificationDetailPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+            <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Admin Action</h2>
               <div className="mt-4 space-y-4">
                 <label className="block text-sm font-medium text-slate-700">
                   Review decision
-                  <select value={action} onChange={(event) => setAction(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+                  <select value={action} onChange={(event) => setAction(event.target.value)} className="form-control mt-2">
                     <option value="Approve">Approve</option>
                     <option value="Request Documents">Request Documents</option>
                     <option value="Reject">Reject</option>
@@ -243,19 +243,19 @@ export default function VendorVerificationDetailPage() {
                 </label>
                 <label className="block text-sm font-medium text-slate-700">
                   Reason / follow-up note
-                  <textarea value={reason} onChange={(event) => setReason(event.target.value)} rows={3} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm" placeholder="Explain the decision or requested documents." />
+                  <textarea value={reason} onChange={(event) => setReason(event.target.value)} rows={3} className="form-control mt-2" placeholder="Explain the decision or requested documents." />
                 </label>
                 <label className="block text-sm font-medium text-slate-700">
                   Internal note
-                  <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm" placeholder="Add an internal note for the team." />
+                  <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} className="form-control mt-2" placeholder="Add an internal note for the team." />
                 </label>
-                <button type="button" onClick={handleAction} disabled={isSaving} className="rounded-full bg-orange-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60">
+                <button type="button" onClick={handleAction} disabled={isSaving} className="btn btn-primary btn-sm type-button disabled:cursor-not-allowed disabled:opacity-60">
                   {isSaving ? "Saving..." : "Save Action"}
                 </button>
               </div>
             </div>
 
-            <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+            <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Verification Timeline</h2>
               <div className="mt-6">
                 <VerificationTimeline entries={timelineEntries} />

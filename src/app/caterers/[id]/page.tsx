@@ -56,9 +56,9 @@ export default function CatererDetailsPage({ params }: CatererDetailsPageProps) 
   }
 
   return (
-    <main className="min-h-screen bg-orange-50 px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
+    <main className="page-shell min-h-screen px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-10">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-lg">
+        <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-3">
               <p className="text-sm uppercase tracking-[0.24em] text-orange-600">Verified caterer</p>
@@ -86,7 +86,7 @@ export default function CatererDetailsPage({ params }: CatererDetailsPageProps) 
 
         <div className="grid gap-6 lg:grid-cols-[1.6fr_0.9fr]">
           <div className="space-y-8">
-            <section className="rounded-[2rem] bg-white p-6 shadow-lg">
+            <section className="section-shell rounded-[2rem] p-6">
               <div className="grid gap-4 lg:grid-cols-[1.4fr_0.8fr]">
                 <div className="space-y-4 rounded-[2rem] border border-slate-200 bg-slate-50 p-4 shadow-sm">
                   <div className="h-[380px] rounded-[1.75rem] bg-slate-100" />
@@ -140,7 +140,7 @@ export default function CatererDetailsPage({ params }: CatererDetailsPageProps) 
               </div>
             </section>
 
-            <section className="rounded-[2rem] bg-white p-6 shadow-lg">
+            <section className="section-shell rounded-[2rem] p-6">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-xl font-semibold text-slate-900">Sample Menu Packages</h2>
@@ -173,7 +173,7 @@ export default function CatererDetailsPage({ params }: CatererDetailsPageProps) 
               </div>
             </section>
 
-            <section className="rounded-[2rem] bg-white p-6 shadow-lg">
+            <section className="section-shell rounded-[2rem] p-6">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-xl font-semibold text-slate-900">Reviews</h2>

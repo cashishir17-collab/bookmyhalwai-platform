@@ -60,9 +60,9 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_right,_rgba(251,146,60,0.18),_transparent_45%),linear-gradient(180deg,_#fffaf5_0%,_#ffffff_100%)] px-4 py-12 text-slate-900 sm:px-6 lg:px-8">
+    <main className="page-shell min-h-screen px-4 py-12 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-6xl gap-7 lg:grid-cols-[0.9fr_1.1fr]">
-        <section className="rounded-[2rem] border border-orange-100 bg-white p-7 shadow-lg sm:p-8">
+        <section className="section-shell rounded-[2rem] p-7 sm:p-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-700">
             <Headset className="h-3.5 w-3.5" /> Contact
           </div>
@@ -87,17 +87,14 @@ export default function ContactPage() {
           <div className="mt-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
             Prefer self-serve signup? Use the registration wizard and complete onboarding in minutes.
             <div className="mt-3">
-              <Link
-                href="/vendor/register"
-                className="inline-flex rounded-full border border-emerald-300 bg-white px-4 py-2 font-semibold text-emerald-800 transition hover:bg-emerald-100"
-              >
+              <Link href="/vendor/register" className="btn btn-outline btn-sm type-button">
                 Go to Vendor Registration
               </Link>
             </div>
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-slate-200 bg-white p-7 shadow-xl sm:p-8">
+        <section className="section-shell rounded-[2rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-900">Vendor Contact Form</h2>
           <p className="mt-2 text-sm text-slate-600">All fields are required so we can route your request quickly.</p>
 
@@ -177,7 +174,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="btn btn-primary btn-lg type-button inline-flex w-full disabled:cursor-not-allowed disabled:opacity-70"
             >
               <SendHorizontal className="h-4 w-4" /> {isSubmitting ? "Sending..." : "Send to Partnerships Team"}
             </button>

@@ -26,9 +26,9 @@ export default function NewBookingPage({ searchParams }: { searchParams: Record<
   );
 
   return (
-    <main className="min-h-screen bg-orange-50 px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
+    <main className="page-shell min-h-screen px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-8">
-        <section className="rounded-[2.5rem] bg-white p-8 shadow-lg">
+        <section className="section-shell rounded-[2rem] p-8">
           <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">Confirm your booking</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
             Review your booking details and provide customer information to create a booking request.
@@ -48,7 +48,7 @@ export default function NewBookingPage({ searchParams }: { searchParams: Record<
             />
           </div>
 
-          <aside className="rounded-[2rem] bg-white p-8 shadow-lg">
+          <aside className="section-shell rounded-[2rem] p-8">
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-slate-900">Quick summary</h2>
               <div className="grid gap-3 text-sm text-slate-600">

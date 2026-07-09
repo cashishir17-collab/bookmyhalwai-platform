@@ -9,7 +9,7 @@ interface CityPipelineCardProps {
 
 export default function CityPipelineCard({ city, totalLeads, pendingVerification, approved, published, averageQualityScore }: CityPipelineCardProps) {
   return (
-    <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="premium-card rounded-[1.5rem] p-5">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-lg font-semibold text-slate-900">{city}</h3>
         <span className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">{totalLeads} leads</span>

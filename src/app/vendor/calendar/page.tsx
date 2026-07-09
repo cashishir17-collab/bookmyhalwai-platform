@@ -31,9 +31,9 @@ export default function VendorCalendarPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-orange-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
+        <div className="section-shell rounded-[2rem] p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Calendar</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Upcoming events</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">

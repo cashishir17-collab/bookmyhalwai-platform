@@ -43,7 +43,7 @@ export default function VendorBookingCard({ booking, onUpdated }: VendorBookingC
   };
 
   return (
-    <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="premium-card rounded-[1.75rem] p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Booking #{booking.id}</p>
@@ -70,13 +70,13 @@ export default function VendorBookingCard({ booking, onUpdated }: VendorBookingC
       </div>
 
       <div className="mt-5 flex flex-wrap gap-3">
-        <button type="button" onClick={() => updateStatus("Accepted")} className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700">
+        <button type="button" onClick={() => updateStatus("Accepted")} className="btn btn-success btn-sm type-button">
           Accept
         </button>
-        <button type="button" onClick={() => updateStatus("Rejected")} className="rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700">
+        <button type="button" onClick={() => updateStatus("Rejected")} className="btn btn-danger btn-sm type-button">
           Reject
         </button>
-        <Link href={`/vendor/bookings/${booking.id}`} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+        <Link href={`/vendor/bookings/${booking.id}`} className="btn btn-outline btn-sm type-button">
           View Details
         </Link>
       </div>
