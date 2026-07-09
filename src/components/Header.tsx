@@ -94,6 +94,14 @@ export default function Header() {
               </button>
             )}
             <Link
+              href="/vendor/register"
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+            >
+              <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-500" />
+              Become a Partner
+              <span className="rounded-full border border-emerald-300 bg-white px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-emerald-700">LIVE</span>
+            </Link>
+            <Link
               href="/book"
               className="rounded-full bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-200 transition hover:bg-orange-700"
             >
@@ -165,6 +173,15 @@ export default function Header() {
                 Login
               </button>
             )}
+            <Link
+              href="/vendor/register"
+              className="mt-2 flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+              onClick={() => setIsOpen(false)}
+            >
+              <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-500" />
+              Become a Partner
+              <span className="rounded-full border border-emerald-300 bg-white px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-emerald-700">LIVE</span>
+            </Link>
             <Link
               href="/book"
               className="mt-2 block rounded-2xl bg-orange-600 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-orange-700"

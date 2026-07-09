@@ -10,6 +10,12 @@ import ProgressStepper from "@/components/vendor/ProgressStepper";
 
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads", "Bank Details"];
 
+const trustPoints = [
+  "Profile and document verification before listing goes live",
+  "Dedicated onboarding support for setup and quality checks",
+  "Priority lead routing for complete and responsive vendor profiles",
+];
+
 const initialState = {
   businessName: "",
   ownerName: "",
@@ -777,6 +783,24 @@ export default function RegistrationWizard() {
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">Complete the steps below to start receiving catering bookings on BookMyHalwai.</p>
           </div>
           <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-medium text-orange-700">Step {progressLabel}</div>
+        </div>
+
+        <div className="mt-6 grid gap-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
+              <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-500" /> LIVE Onboarding
+            </p>
+            <p className="mt-3 text-sm leading-7 text-emerald-900">
+              Vendor verification is active this week. Complete your details now to move into review and early lead matching.
+            </p>
+          </div>
+          <ul className="space-y-2 text-sm text-emerald-900">
+            {trustPoints.map((item) => (
+              <li key={item} className="rounded-2xl border border-emerald-200 bg-white px-4 py-2.5">
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="mt-8">
