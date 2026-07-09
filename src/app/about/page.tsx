@@ -1,25 +1,18 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { BadgeCheck, Building2, Clock3, Handshake, ShieldCheck, Sparkles } from "lucide-react";
+import { BadgeCheck, Building2, Rocket, ShieldCheck, Sparkles, Store } from "lucide-react";
 
-const trustPillars = [
-  {
-    title: "Verified vendor quality",
-    description:
-      "Every listed partner goes through profile, service, and document checks before becoming discoverable.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Faster event planning",
-    description:
-      "Shortlist caterers by budget, cuisine, and city so families can move from browsing to booking confidently.",
-    icon: Clock3,
-  },
-  {
-    title: "Growth for caterers",
-    description:
-      "We help serious catering businesses build predictable lead flow with a clean operations workflow.",
-    icon: Building2,
-  },
+export const metadata: Metadata = {
+  title: "About BookMyHalwai | Trusted Halwai & Caterer Marketplace",
+  description: "Learn how BookMyHalwai is building India’s trusted digital marketplace for verified halwais and caterers.",
+};
+
+const vendorReasons = [
+  "Early visibility",
+  "Verified profile",
+  "Compliance support",
+  "Digital showcase",
+  "Launch-phase advantage",
 ];
 
 export default function AboutPage() {
@@ -30,68 +23,60 @@ export default function AboutPage() {
           <Sparkles className="h-3.5 w-3.5" /> About BookMyHalwai
         </div>
 
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
           <div className="space-y-6">
-            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Built for celebrations that matter.</h1>
+            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Building India’s trusted marketplace for halwais and caterers</h1>
             <p className="text-base leading-8 text-slate-600 sm:text-lg">
-              BookMyHalwai is a vendor-first catering platform focused on trust, speed, and operational clarity.
-              We connect families and event planners with verified caterers, while giving partners a structured
-              path to onboard, get discovered, and scale their business.
-            </p>
-            <p className="text-base leading-8 text-slate-600 sm:text-lg">
-              From weddings and birthdays to corporate events, our goal is simple: better food experiences,
-              fewer planning headaches, and transparent vendor collaboration.
+              BookMyHalwai helps customers discover verified catering partners, while helping vendors build a digital presence and receive future booking opportunities.
             </p>
 
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/caterers"
-                className="inline-flex items-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
-              >
-                Explore Marketplace
+            <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <h2 className="text-xl font-semibold text-slate-900">Current phase</h2>
+              <p className="mt-2 text-sm leading-7 text-slate-700">
+                We are currently onboarding vendors before opening customer bookings.
+              </p>
+            </article>
+
+            <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <h2 className="text-xl font-semibold text-slate-900">Our vision</h2>
+              <p className="mt-2 text-sm leading-7 text-slate-700">
+                To organize India&apos;s traditional catering ecosystem into a trusted, verified, digital marketplace.
+              </p>
+            </article>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link href="/vendor/register" className="btn btn-primary btn-lg type-button w-full sm:w-auto">
+                Become a BookMyHalwai Partner
               </Link>
-              <Link href="/vendor/register" className="btn btn-primary btn-lg type-button">
-                Become a Partner
+              <Link href="/contact" className="btn btn-outline btn-lg type-button w-full sm:w-auto">
+                Talk to Onboarding Team
               </Link>
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-orange-100 bg-orange-50/70 p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900">What we optimize for</h2>
-            <ul className="mt-5 space-y-4 text-sm text-slate-700">
-              <li className="flex items-start gap-3">
-                <BadgeCheck className="mt-0.5 h-4 w-4 text-orange-600" />
-                Verified vendors and cleaner customer trust signals.
-              </li>
-              <li className="flex items-start gap-3">
-                <Handshake className="mt-0.5 h-4 w-4 text-orange-600" />
-                Transparent communication from inquiry to booking.
-              </li>
-              <li className="flex items-start gap-3">
-                <Building2 className="mt-0.5 h-4 w-4 text-orange-600" />
-                Vendor dashboards built for real business operations.
-              </li>
-            </ul>
+          <div className="space-y-5">
+            <article className="rounded-[2rem] border border-orange-100 bg-orange-50/70 p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-slate-900">Why vendors should join</h2>
+              <ul className="mt-5 space-y-3 text-sm text-slate-700">
+                {vendorReasons.map((item) => (
+                  <li key={item} className="flex items-center gap-3 rounded-2xl border border-orange-100 bg-white px-4 py-3">
+                    <BadgeCheck className="h-4 w-4 text-orange-600" /> {item}
+                  </li>
+                ))}
+              </ul>
+            </article>
+
+            <article className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-slate-900">What we do</h2>
+              <ul className="mt-5 space-y-3 text-sm text-slate-700">
+                <li className="flex items-center gap-3"><Store className="h-4 w-4 text-orange-600" /> Build trusted vendor presence online</li>
+                <li className="flex items-center gap-3"><ShieldCheck className="h-4 w-4 text-orange-600" /> Verify partners before listing</li>
+                <li className="flex items-center gap-3"><Building2 className="h-4 w-4 text-orange-600" /> Prepare vendors for city-wide scale</li>
+                <li className="flex items-center gap-3"><Rocket className="h-4 w-4 text-orange-600" /> Enable growth-ready launch advantage</li>
+              </ul>
+            </article>
           </div>
         </div>
-      </section>
-
-      <section className="mx-auto mt-10 grid max-w-6xl gap-5 md:grid-cols-3">
-        {trustPillars.map((pillar) => {
-          const Icon = pillar.icon;
-          return (
-            <article
-              key={pillar.title}
-              className="premium-card rounded-[1.8rem] p-6 transition hover:-translate-y-0.5"
-            >
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
-                <Icon className="h-5 w-5" />
-              </div>
-              <h3 className="mt-4 text-lg font-semibold text-slate-900">{pillar.title}</h3>
-              <p className="mt-2 text-sm leading-7 text-slate-600">{pillar.description}</p>
-            </article>
-          );
-        })}
       </section>
     </main>
   );

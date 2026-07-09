@@ -10,6 +10,7 @@ type ContactState = {
   email: string;
   phone: string;
   city: string;
+  helpNeeded: string;
   message: string;
 };
 
@@ -19,6 +20,7 @@ const initialState: ContactState = {
   email: "",
   phone: "",
   city: "",
+  helpNeeded: "Vendor Registration",
   message: "",
 };
 
@@ -40,7 +42,10 @@ export default function ContactPage() {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          message: `Help Needed: ${form.helpNeeded}\n${form.message}`,
+        }),
       });
 
       const payload = (await response.json()) as { message?: string };
@@ -50,7 +55,7 @@ export default function ContactPage() {
         return;
       }
 
-      setStatus("Thanks! Our vendor partnerships team will contact you shortly.");
+      setStatus("Your enquiry has been received. Our team will contact you shortly.");
       setForm(initialState);
     } catch {
       setStatus("Network issue detected. Please try again in a moment.");
@@ -66,10 +71,9 @@ export default function ContactPage() {
           <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-700">
             <Headset className="h-3.5 w-3.5" /> Contact
           </div>
-          <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Let&apos;s onboard your catering business</h1>
+          <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Vendor onboarding support across India</h1>
           <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">
-            Share your details and our vendor onboarding team will guide you through profile setup,
-            verification, and first lead activation.
+            Share your business details and our team will guide you through registration, compliance, and launch readiness.
           </p>
 
           <div className="mt-7 space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-700">
@@ -95,8 +99,8 @@ export default function ContactPage() {
         </section>
 
         <section className="section-shell rounded-[2rem] p-7 sm:p-8">
-          <h2 className="text-xl font-semibold text-slate-900">Vendor Contact Form</h2>
-          <p className="mt-2 text-sm text-slate-600">All fields are required so we can route your request quickly.</p>
+          <h2 className="text-xl font-semibold text-slate-900">Contact Onboarding Team</h2>
+          <p className="mt-2 text-sm text-slate-600">Share your requirement and our team will connect with the right support flow.</p>
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             <label className="block text-sm font-medium text-slate-700">
@@ -143,7 +147,7 @@ export default function ContactPage() {
                   onChange={(event) => updateField("email", event.target.value)}
                   required
                   className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
-                  placeholder="vendor@example.com"
+                  placeholder="yourbusiness@domain.com"
                 />
               </label>
 
@@ -160,6 +164,21 @@ export default function ContactPage() {
             </div>
 
             <label className="block text-sm font-medium text-slate-700">
+              Help Needed
+              <select
+                value={form.helpNeeded}
+                onChange={(event) => updateField("helpNeeded", event.target.value)}
+                required
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+              >
+                <option>Vendor Registration</option>
+                <option>GST Registration</option>
+                <option>FSSAI License</option>
+                <option>General Support</option>
+              </select>
+            </label>
+
+            <label className="block text-sm font-medium text-slate-700">
               Message
               <textarea
                 value={form.message}
@@ -167,7 +186,7 @@ export default function ContactPage() {
                 required
                 rows={5}
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
-                placeholder="Tell us about your catering services and onboarding goals."
+                placeholder="Tell us about your business and the support you need."
               />
             </label>
 
@@ -176,7 +195,7 @@ export default function ContactPage() {
               disabled={isSubmitting}
               className="btn btn-primary btn-lg type-button inline-flex w-full disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <SendHorizontal className="h-4 w-4" /> {isSubmitting ? "Sending..." : "Send to Partnerships Team"}
+              <SendHorizontal className="h-4 w-4" /> {isSubmitting ? "Sending..." : "Submit Enquiry"}
             </button>
 
             {status ? (

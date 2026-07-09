@@ -18,8 +18,8 @@ export default function Footer() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Marketplace</p>
             <div className="mt-3 space-y-2 text-sm">
               <Link href="/caterers" className="block transition hover:text-orange-700">Find Caterers</Link>
-              <Link href="/bookings/new" className="block transition hover:text-orange-700">Book an Event</Link>
               <Link href="/vendor/register" className="block transition hover:text-orange-700">Become a Partner</Link>
+              <Link href="/contact" className="block transition hover:text-orange-700">Onboarding Support</Link>
             </div>
           </div>
 

@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarClock, Rocket, Sparkles } from "lucide-react";
+import { CalendarClock, ShieldCheck, Sparkles } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Find Caterers | Coming Soon | BookMyHalwai",
+  description: "Customer booking is coming soon as BookMyHalwai onboards and verifies catering partners across India.",
+};
 
 export default function CaterersPage() {
   return (
@@ -9,27 +15,22 @@ export default function CaterersPage() {
           <CalendarClock className="h-3.5 w-3.5" /> Marketplace Update
         </div>
 
-        <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">Caterer Marketplace Is Coming Soon</h1>
+        <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">Customer Booking is Coming Soon</h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
-          We are currently onboarding verified catering partners city by city. The full customer marketplace
-          experience will go live soon with trusted listings, transparent packages, and faster booking flow.
+          We are currently onboarding and verifying halwais and caterers across India. Customer booking will open after a strong verified vendor base is ready.
         </p>
 
         <div className="mt-8 grid gap-4 rounded-[1.8rem] border border-slate-200 bg-slate-50 p-5 sm:grid-cols-2">
           <div className="rounded-2xl border border-slate-200 bg-white p-5">
-            <p className="inline-flex items-center gap-2 text-sm font-semibold text-orange-700">
-              <Rocket className="h-4 w-4" /> Live Vendor Onboarding
-            </p>
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-orange-700"><Sparkles className="h-4 w-4" /> Onboarding in progress</p>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              Vendors are being reviewed and approved in batches. Join now to secure early placement.
+              Vendor verification is active and city-wise onboarding batches are underway.
             </p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-5">
-            <p className="inline-flex items-center gap-2 text-sm font-semibold text-orange-700">
-              <Sparkles className="h-4 w-4" /> Priority Visibility
-            </p>
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700"><ShieldCheck className="h-4 w-4" /> Trust note</p>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              Early partners get stronger profile visibility when the next city launch goes live.
+              Only verified partners will be listed when customer booking opens.
             </p>
           </div>
         </div>
@@ -45,7 +46,7 @@ export default function CaterersPage() {
             href="/contact"
             className="inline-flex items-center rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
           >
-            Talk to Partnerships Team
+            Contact Onboarding Team
           </Link>
         </div>
       </section>

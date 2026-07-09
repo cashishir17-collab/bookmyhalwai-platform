@@ -55,8 +55,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // TODO:
-    // Replace this temporary handler with the production email implementation after Resend is introduced.
+    // Temporary contact capture until the final outbound support workflow is connected.
     console.log("CONTACT_ENQUIRY_RECEIVED", {
       businessName: payload.businessName,
       ownerName: payload.ownerName,

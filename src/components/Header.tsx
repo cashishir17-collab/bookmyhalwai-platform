@@ -7,9 +7,9 @@ import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Find Caterers", href: "/caterers" },
-  { label: "Become a Verified Partner", href: "/vendor/register" },
   { label: "About", href: "/about" },
+  { label: "Find Caterers", href: "/caterers" },
+  { label: "Become a Partner", href: "/vendor/register" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -50,7 +50,12 @@ export default function Header() {
                 href={item.href}
                 className="rounded-full px-3 py-2 transition hover:bg-orange-50 hover:text-orange-700"
               >
-                {item.label}
+                <span className="inline-flex items-center gap-2">
+                  {item.label}
+                  {item.href === "/caterers" ? (
+                    <span className="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-600">Coming Soon</span>
+                  ) : null}
+                </span>
               </Link>
             ))}
           </nav>
@@ -95,17 +100,11 @@ export default function Header() {
             )}
             <Link
               href="/vendor/register"
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+              className="inline-flex items-center gap-2 rounded-full bg-orange-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-800"
             >
-              <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-500" />
+              <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-300" />
               Become a Partner
-              <span className="rounded-full border border-emerald-300 bg-white px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-emerald-700">LIVE</span>
-            </Link>
-            <Link
-              href="/book"
-              className="rounded-full bg-orange-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-orange-800"
-            >
-              Book Now
+              <span className="rounded-full border border-white/40 bg-white/10 px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-white">LIVE</span>
             </Link>
           </div>
         </div>
@@ -133,7 +132,12 @@ export default function Header() {
                 className="block rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-orange-50 hover:text-orange-700"
                 onClick={() => setIsOpen(false)}
               >
-                {item.label}
+                <span className="inline-flex items-center gap-2">
+                  {item.label}
+                  {item.href === "/caterers" ? (
+                    <span className="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-600">Soon</span>
+                  ) : null}
+                </span>
               </Link>
             ))}
             {user ? (
@@ -175,19 +179,12 @@ export default function Header() {
             )}
             <Link
               href="/vendor/register"
-              className="mt-2 flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+              className="mt-2 flex items-center justify-center gap-2 rounded-2xl bg-orange-700 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-orange-800"
               onClick={() => setIsOpen(false)}
             >
-              <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-500" />
+              <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-300" />
               Become a Partner
-              <span className="rounded-full border border-emerald-300 bg-white px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-emerald-700">LIVE</span>
-            </Link>
-            <Link
-              href="/book"
-              className="mt-2 block rounded-2xl bg-orange-700 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-orange-800"
-              onClick={() => setIsOpen(false)}
-            >
-              Book Now
+              <span className="rounded-full border border-white/40 bg-white/10 px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-white">LIVE</span>
             </Link>
           </nav>
         </div>

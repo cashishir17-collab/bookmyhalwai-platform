@@ -11,9 +11,10 @@ import ProgressStepper from "@/components/vendor/ProgressStepper";
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads", "Bank Details"];
 
 const trustPoints = [
-  "Profile and document verification before listing goes live",
-  "Dedicated onboarding support for setup and quality checks",
-  "Priority lead routing for complete and responsive vendor profiles",
+  "Free onboarding during launch phase",
+  "Verification before marketplace listing",
+  "GST/FSSAI assistance available",
+  "Direct support from BookMyHalwai team",
 ];
 
 const initialState = {
@@ -358,6 +359,10 @@ export default function RegistrationWizard() {
     event.preventDefault();
     console.log("STEP 1 - Submit clicked");
 
+    if (isSubmitting) {
+      return;
+    }
+
     if (!validateStep()) {
       console.log("VALIDATION_FAILED - Form validation failed");
       return;
@@ -507,7 +512,7 @@ export default function RegistrationWizard() {
       if (uploadWarning) {
         setSubmitMessage("Registration submitted, but some document uploads failed. You can update uploads later from your dashboard.");
       } else {
-        setSubmitMessage("Registration Submitted Successfully");
+        setSubmitMessage("Registration submitted successfully. Our team will verify your profile shortly.");
       }
 
       console.log("STEP 11 - Redirecting to /vendor/dashboard");
@@ -779,8 +784,8 @@ export default function RegistrationWizard() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">Vendor Onboarding</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Register as a Vendor</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">Complete the steps below to start receiving catering bookings on BookMyHalwai.</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Become a BookMyHalwai Partner</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">Vendor onboarding is now live. Customer booking will launch after verified partners are onboarded.</p>
           </div>
           <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-medium text-orange-700">Step {progressLabel}</div>
         </div>
@@ -791,7 +796,7 @@ export default function RegistrationWizard() {
               <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-500" /> LIVE Onboarding
             </p>
             <p className="mt-3 text-sm leading-7 text-emerald-900">
-              Vendor verification is active this week. Complete your details now to move into review and early lead matching.
+              Vendor onboarding is now live. Customer booking will launch after verified partners are onboarded.
             </p>
           </div>
           <ul className="space-y-2 text-sm text-emerald-900">
@@ -813,12 +818,12 @@ export default function RegistrationWizard() {
           {submitMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{submitMessage}</div> : null}
 
           <div className="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-between">
-            <button type="button" onClick={prevStep} disabled={step === 1} className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-700 disabled:cursor-not-allowed disabled:opacity-50">Back</button>
+            <button type="button" onClick={prevStep} disabled={step === 1} className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">Back</button>
 
             {step < steps.length ? (
-              <button type="button" onClick={nextStep} className="rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800">Continue</button>
+              <button type="button" onClick={nextStep} className="w-full rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800 sm:w-auto">Continue</button>
             ) : (
-              <button type="submit" disabled={isSubmitting} className="rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-70">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
+              <button type="submit" disabled={isSubmitting} className="w-full rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
             )}
           </div>
         </form>
