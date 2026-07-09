@@ -80,7 +80,7 @@ export default function ContactPage() {
               <Phone className="h-4 w-4 text-orange-600" /> +91 99999 88888
             </p>
             <p className="flex items-center gap-3">
-              <MapPin className="h-4 w-4 text-orange-600" /> Delhi NCR, India
+              <MapPin className="h-4 w-4 text-orange-600" /> Serving Vendors Across India
             </p>
           </div>
 
