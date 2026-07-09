@@ -77,7 +77,7 @@ export default function ContactPage() {
               <Mail className="h-4 w-4 text-orange-600" /> admin@bookmyhalwai.com
             </p>
             <p className="flex items-center gap-3">
-              <Phone className="h-4 w-4 text-orange-600" /> +91 99999 88888
+              <Phone className="h-4 w-4 text-orange-600" /> +91 9557421217
             </p>
             <p className="flex items-center gap-3">
               <MapPin className="h-4 w-4 text-orange-600" /> Serving Vendors Across India
