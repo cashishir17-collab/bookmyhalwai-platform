@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { mapVendorRegistrationToVerificationRecord, toDateValue } from "@/lib/vendorVerification";
 import { useAuth } from "@/hooks/useAuth";
 import VendorVerificationCard from "@/components/admin/vendor-verification/VendorVerificationCard";
 import KycProgressCard from "@/components/admin/vendor-verification/KycProgressCard";
@@ -29,12 +30,24 @@ export default function VendorVerificationPage() {
       }
 
       setIsLoading(true);
-      const snapshot = await getDocs(collection(firestoreDb, "vendors"));
-      const vendorRows = snapshot.docs.map((docSnapshot) => ({
-        id: docSnapshot.id,
-        ...(docSnapshot.data() as Omit<VendorVerificationRecord, "id">),
-      })) as VendorVerificationRecord[];
-      setVendors(vendorRows);
+      const vendorsCollection = collection(firestoreDb, "vendors");
+
+      try {
+        const snapshot = await getDocs(query(vendorsCollection, orderBy("createdAt", "desc")));
+        const vendorRows = snapshot.docs.map((docSnapshot) => mapVendorRegistrationToVerificationRecord(docSnapshot.id, docSnapshot.data()));
+        setVendors(vendorRows);
+      } catch {
+        const snapshot = await getDocs(vendorsCollection);
+        const vendorRows = snapshot.docs
+          .map((docSnapshot) => mapVendorRegistrationToVerificationRecord(docSnapshot.id, docSnapshot.data()))
+          .sort((left, right) => {
+            const leftDate = toDateValue(left.createdAt)?.getTime() || 0;
+            const rightDate = toDateValue(right.createdAt)?.getTime() || 0;
+            return rightDate - leftDate;
+          });
+        setVendors(vendorRows);
+      }
+
       setIsLoading(false);
     };
 
@@ -89,9 +102,15 @@ export default function VendorVerificationPage() {
         <div className="rounded-[2.5rem] bg-white p-8 shadow-xl">
           <h2 className="text-2xl font-semibold text-slate-900">Verification Queue</h2>
           <div className="mt-6 grid gap-6 xl:grid-cols-2">
-            {vendors.map((vendor) => (
-              <VendorVerificationCard key={vendor.id} vendor={vendor} />
-            ))}
+            {vendors.length === 0 ? (
+              <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500 xl:col-span-2">
+                No vendor registrations found for verification.
+              </div>
+            ) : (
+              vendors.map((vendor) => (
+                <VendorVerificationCard key={vendor.id} vendor={vendor} />
+              ))
+            )}
           </div>
         </div>
       </div>

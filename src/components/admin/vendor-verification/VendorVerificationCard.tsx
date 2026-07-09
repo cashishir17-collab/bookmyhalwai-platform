@@ -1,11 +1,17 @@
 import Link from "next/link";
 import type { VendorVerificationRecord } from "./types";
+import { toDateValue } from "@/lib/vendorVerification";
 
 interface VendorVerificationCardProps {
   vendor: VendorVerificationRecord;
 }
 
 export default function VendorVerificationCard({ vendor }: VendorVerificationCardProps) {
+  const createdAtDate = toDateValue(vendor.createdAt);
+  const registrationDate = createdAtDate
+    ? new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "short", year: "numeric" }).format(createdAtDate)
+    : "—";
+
   return (
     <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -19,6 +25,7 @@ export default function VendorVerificationCard({ vendor }: VendorVerificationCar
       <div className="mt-4 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
         <p>City: {vendor.city || "—"}</p>
         <p>Mobile: {vendor.mobile || "—"}</p>
+        <p>Registered: {registrationDate}</p>
         <p>WhatsApp: {vendor.whatsapp || "—"}</p>
         <p>Email: {vendor.email || "—"}</p>
       </div>

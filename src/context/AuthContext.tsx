@@ -152,7 +152,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    setLoading(true);
+
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
   };
 
   const loginWithPhone = async (phoneNumber: string) => {
@@ -206,10 +213,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyOtp = async (confirmationResult: ConfirmationResult, otp: string) => {
     console.log("LOGIN STEP 5 - Verify clicked");
+    setLoading(true);
+
     try {
       await confirmationResult.confirm(otp);
       console.log("LOGIN STEP 6 - Login success");
     } catch (error) {
+      setLoading(false);
+
       // Provide better error message for OTP verification
       if (error instanceof Error && error.message.includes("invalid-code")) {
         throw new Error("Invalid OTP. Please try again.");

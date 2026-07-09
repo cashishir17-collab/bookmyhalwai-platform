@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { mapVendorRegistrationToVerificationRecord } from "@/lib/vendorVerification";
 import { useAuth } from "@/hooks/useAuth";
 import VerificationChecklist from "@/components/admin/vendor-verification/VerificationChecklist";
 import DocumentPreview from "@/components/admin/vendor-verification/DocumentPreview";
@@ -52,10 +53,7 @@ export default function VendorVerificationDetailPage() {
         return;
       }
 
-      const vendorData = {
-        id: vendorSnapshot.id,
-        ...(vendorSnapshot.data() as Omit<VendorVerificationRecord, "id">),
-      } as VendorVerificationRecord;
+      const vendorData = mapVendorRegistrationToVerificationRecord(vendorSnapshot.id, vendorSnapshot.data()) as VendorVerificationRecord;
 
       setVendor(vendorData);
 

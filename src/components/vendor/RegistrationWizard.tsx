@@ -140,7 +140,7 @@ function calculateProfileCompletion(form: RegistrationForm) {
 
 export default function RegistrationWizard() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<RegistrationForm>(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -299,35 +299,50 @@ export default function RegistrationWizard() {
     setStep((current) => Math.max(current - 1, 1));
   };
 
-  const uploadFile = async (file: File | null, path: string, label: string) => {
+  const uploadFile = async (
+    file: File | null,
+    path: string,
+    label: string,
+    field: keyof RegistrationForm["uploads"],
+  ) => {
     if (!file) {
-      console.log("UPLOAD_SKIP - No file provided", { path });
+      console.log("UPLOAD_SKIP - No file provided", { field, path });
       return null;
     }
 
     if (!storage) {
-      console.log("UPLOAD_ERROR - Storage is null or undefined", { path, fileName: file.name });
+      console.log("UPLOAD_ERROR - Storage is null or undefined", { field, path, fileName: file.name });
       return null;
     }
 
     try {
-      console.log("UPLOAD_START", { path, fileName: file.name, fileSize: file.size });
+      console.log("UPLOAD_START", { field, path, fileName: file.name, fileSize: file.size });
       const storageRef = ref(storage, path);
 
-      console.log("NETWORK STEP 1 - Before uploadBytes", { operation: `Upload ${label}` });
+      console.log("NETWORK STEP 1 - Before uploadBytes", { field, fileName: file.name, operation: `Upload ${label}` });
       await withTimeout(uploadBytes(storageRef, file), 25000, `Upload ${label}`);
-      console.log("NETWORK STEP 1 - After uploadBytes", { operation: `Upload ${label}` });
-      console.log("UPLOAD_BYTES_DONE", { path, fileName: file.name });
+      console.log("NETWORK STEP 1 - After uploadBytes", { field, fileName: file.name, operation: `Upload ${label}` });
+      console.log("UPLOAD_BYTES_DONE", { field, path, fileName: file.name });
 
-      console.log("NETWORK STEP 2 - Before getDownloadURL", { operation: `Get Download URL - ${label}` });
+      console.log("NETWORK STEP 2 - Before getDownloadURL", {
+        field,
+        fileName: file.name,
+        path,
+        operation: `Get Download URL - ${label}`,
+      });
       const downloadUrl = await withTimeout(getDownloadURL(storageRef), 25000, `Get Download URL - ${label}`);
-      console.log("NETWORK STEP 2 - After getDownloadURL", { operation: `Get Download URL - ${label}` });
-      console.log("UPLOAD_SUCCESS", { path, fileName: file.name, url: downloadUrl });
+      console.log("NETWORK STEP 2 - After getDownloadURL", {
+        field,
+        fileName: file.name,
+        path,
+        operation: `Get Download URL - ${label}`,
+      });
+      console.log("UPLOAD_SUCCESS", { field, path, fileName: file.name, url: downloadUrl });
       return downloadUrl;
     } catch (error) {
-      console.error("UPLOAD_FAILURE", { path, fileName: file.name, error });
+      console.error("UPLOAD_FAILURE", { field, path, fileName: file.name, error });
       if (error instanceof Error) {
-        console.error("UPLOAD_ERROR_DETAILS", { message: error.message, stack: error.stack });
+        console.error("UPLOAD_ERROR_DETAILS", { field, fileName: file.name, message: error.message, stack: error.stack });
       }
       return null;
     }
@@ -346,6 +361,12 @@ export default function RegistrationWizard() {
     console.log("STEP 3 - Firebase App", app);
     console.log("STEP 4 - Firestore", db);
     console.log("STEP 5 - Storage", storage);
+
+    if (loading) {
+      console.log("ERROR - Auth state is still loading");
+      setSubmitMessage("Finishing sign in. Please wait a moment and submit again.");
+      return;
+    }
 
     if (!db) {
       console.log("ERROR - Firestore db is null or undefined");
@@ -368,19 +389,19 @@ export default function RegistrationWizard() {
       console.log("STEP 6 - Starting uploads");
 
       const uploadedDocuments = {
-        logo: await uploadFile(form.uploads.logo, `vendors/${user.uid}/logo-${form.uploads.logo?.name ?? "logo"}`, "Logo"),
+        logo: await uploadFile(form.uploads.logo, `vendors/${user.uid}/logo-${form.uploads.logo?.name ?? "logo"}`, "Logo", "logo"),
         kitchenPhotos: await Promise.all(
-          form.uploads.kitchenPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/kitchen-${index + 1}-${file.name}`, `Kitchen Photo ${index + 1}`)),
+          form.uploads.kitchenPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/kitchen-${index + 1}-${file.name}`, `Kitchen Photo ${index + 1}`, "kitchenPhotos")),
         ).then((urls) => urls.filter((url): url is string => Boolean(url))),
         foodPhotos: await Promise.all(
-          form.uploads.foodPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/food-${index + 1}-${file.name}`, `Food Photo ${index + 1}`)),
+          form.uploads.foodPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/food-${index + 1}-${file.name}`, `Food Photo ${index + 1}`, "foodPhotos")),
         ).then((urls) => urls.filter((url): url is string => Boolean(url))),
         staffPhotos: await Promise.all(
-          form.uploads.staffPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/staff-${index + 1}-${file.name}`, `Staff Photo ${index + 1}`)),
+          form.uploads.staffPhotos.map((file, index) => uploadFile(file, `vendors/${user.uid}/staff-${index + 1}-${file.name}`, `Staff Photo ${index + 1}`, "staffPhotos")),
         ).then((urls) => urls.filter((url): url is string => Boolean(url))),
-        menuPdf: await uploadFile(form.uploads.menuPdf, `vendors/${user.uid}/menu-${form.uploads.menuPdf?.name ?? "menu"}`, "Menu PDF"),
-        fssai: await uploadFile(form.uploads.fssai, `vendors/${user.uid}/fssai-${form.uploads.fssai?.name ?? "fssai"}`, "FSSAI Document"),
-        gst: await uploadFile(form.uploads.gst, `vendors/${user.uid}/gst-${form.uploads.gst?.name ?? "gst"}`, "GST Document"),
+        menuPdf: await uploadFile(form.uploads.menuPdf, `vendors/${user.uid}/menu-${form.uploads.menuPdf?.name ?? "menu"}`, "Menu PDF", "menuPdf"),
+        fssai: await uploadFile(form.uploads.fssai, `vendors/${user.uid}/fssai-${form.uploads.fssai?.name ?? "fssai"}`, "FSSAI Document", "fssai"),
+        gst: await uploadFile(form.uploads.gst, `vendors/${user.uid}/gst-${form.uploads.gst?.name ?? "gst"}`, "GST Document", "gst"),
       };
 
       console.log("STEP 7 - Upload complete", uploadedDocuments);
