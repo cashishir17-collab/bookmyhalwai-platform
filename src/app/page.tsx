@@ -143,7 +143,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#030912]/76 via-[#071224]/70 to-[#08162A]/65" />
 
             <div className="relative flex h-full flex-col justify-end p-8 sm:p-10">
-              <p className="type-label text-[#F1DFC0]">Luxury Hospitality Banner</p>
+              <p className="type-label text-[rgba(255,255,255,0.96)]">Luxury Hospitality Banner</p>
               <h2
                 className="mt-4 max-w-lg font-serif text-3xl font-bold leading-tight tracking-tight text-[#FFFFFF] sm:text-4xl"
                 style={{ textShadow: "0 2px 10px rgba(0,0,0,0.35)" }}
@@ -157,11 +157,11 @@ export default function Home() {
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-[rgba(255,255,255,0.15)] bg-[rgba(10,20,35,0.88)] p-4 backdrop-blur-sm">
                   <p className="text-xs uppercase tracking-[0.14em] text-[#FFFFFF]">Wedding Catering</p>
-                  <p className="mt-2 text-sm font-semibold text-[rgba(255,255,255,0.90)]">Signature menus and live counters for destination-style celebrations.</p>
+                  <p className="mt-2 text-sm font-semibold text-[rgba(255,255,255,0.92)]">Signature menus and live counters for destination-style celebrations.</p>
                 </div>
                 <div className="rounded-2xl border border-[rgba(255,255,255,0.15)] bg-[rgba(10,20,35,0.88)] p-4 backdrop-blur-sm">
                   <p className="text-xs uppercase tracking-[0.14em] text-[#FFFFFF]">Professional Chefs</p>
-                  <p className="mt-2 text-sm font-semibold text-[rgba(255,255,255,0.90)]">Trusted halwais and hospitality teams for flawless execution.</p>
+                  <p className="mt-2 text-sm font-semibold text-[rgba(255,255,255,0.92)]">Trusted halwais and hospitality teams for flawless execution.</p>
                 </div>
               </div>
             </div>
