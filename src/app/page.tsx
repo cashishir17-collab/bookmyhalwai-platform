@@ -140,25 +140,28 @@ export default function Home() {
               priority
               sizes="(max-width: 1024px) 100vw, 48vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#060E1D]/90 via-[#0B1830]/58 to-[#0F6456]/32" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#030912]/76 via-[#071224]/70 to-[#08162A]/65" />
 
             <div className="relative flex h-full flex-col justify-end p-8 sm:p-10">
               <p className="type-label text-[#F1DFC0]">Luxury Hospitality Banner</p>
-              <h2 className="mt-4 max-w-lg font-serif text-3xl font-semibold leading-tight tracking-tight text-[#FFF7E8] sm:text-4xl">
+              <h2
+                className="mt-4 max-w-lg font-serif text-3xl font-bold leading-tight tracking-tight text-[#FFFFFF] sm:text-4xl"
+                style={{ textShadow: "0 2px 10px rgba(0,0,0,0.35)" }}
+              >
                 Crafted for Wedding Catering Excellence
               </h2>
-              <p className="mt-4 max-w-md text-sm leading-7 text-[#F3EBDD] sm:text-base">
+              <p className="mt-4 max-w-md text-sm leading-7 text-[rgba(255,255,255,0.92)] sm:text-base">
                 Showcase your culinary signature with a refined digital presence inspired by premium buffets, professional chefs, and celebration-first service.
               </p>
 
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-[#E3CFA5]/65 bg-[#060E1D]/55 p-4 backdrop-blur-sm">
-                  <p className="text-xs uppercase tracking-[0.14em] text-[#F1DFC0]">Wedding Catering</p>
-                  <p className="mt-2 text-sm font-semibold text-[#FFF7E8]">Signature menus and live counters for destination-style celebrations.</p>
+                <div className="rounded-2xl border border-[rgba(255,255,255,0.15)] bg-[rgba(10,20,35,0.88)] p-4 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-[0.14em] text-[#FFFFFF]">Wedding Catering</p>
+                  <p className="mt-2 text-sm font-semibold text-[rgba(255,255,255,0.90)]">Signature menus and live counters for destination-style celebrations.</p>
                 </div>
-                <div className="rounded-2xl border border-[#E3CFA5]/65 bg-[#060E1D]/55 p-4 backdrop-blur-sm">
-                  <p className="text-xs uppercase tracking-[0.14em] text-[#F1DFC0]">Professional Chefs</p>
-                  <p className="mt-2 text-sm font-semibold text-[#FFF7E8]">Trusted halwais and hospitality teams for flawless execution.</p>
+                <div className="rounded-2xl border border-[rgba(255,255,255,0.15)] bg-[rgba(10,20,35,0.88)] p-4 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-[0.14em] text-[#FFFFFF]">Professional Chefs</p>
+                  <p className="mt-2 text-sm font-semibold text-[rgba(255,255,255,0.90)]">Trusted halwais and hospitality teams for flawless execution.</p>
                 </div>
               </div>
             </div>
@@ -197,10 +200,10 @@ export default function Home() {
               <article key={item.title} className="premium-card overflow-hidden rounded-3xl">
                 <div className="relative h-52">
                   <Image src={item.image} alt={item.alt} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 20vw" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#060E1D]/88 via-[#060E1D]/35 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#060E1D]/90 via-[#060E1D]/48 to-transparent" />
                   <div className="absolute bottom-0 p-4">
-                    <h3 className="font-serif text-lg leading-tight text-[#FFF7E8]">{item.title}</h3>
-                    <p className="mt-1 text-xs leading-5 text-[#F2E8D6]">{item.subtitle}</p>
+                    <h3 className="font-serif text-lg leading-tight text-[#FFFFFF]">{item.title}</h3>
+                    <p className="mt-1 text-xs leading-5 text-[rgba(255,255,255,0.92)]">{item.subtitle}</p>
                   </div>
                 </div>
               </article>
@@ -264,14 +267,14 @@ export default function Home() {
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 1200px"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#040B17]/94 via-[#0B1830]/88 to-[#0F6456]/76" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#040B17]/84 via-[#0A172A]/80 to-[#0B2434]/80" />
 
           <div className="relative">
             <p className="type-label text-[#EDD9B6]">Final Call to Action</p>
-            <h2 className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight text-[#FFF8EA] sm:text-5xl">
+            <h2 className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight text-[#FFFFFF] sm:text-5xl">
               Ready to Grow Your Catering Business?
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#F7EEDF] sm:text-base">
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-[rgba(255,255,255,0.92)] sm:text-base">
               Join a premium marketplace crafted for trusted hospitality brands and celebration-focused customer discovery.
             </p>
 
