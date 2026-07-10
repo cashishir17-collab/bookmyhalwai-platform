@@ -73,6 +73,10 @@ h6 {
   letter-spacing: -0.01em;
 }
 
+.hero-heading {
+  color: #ffffff !important;
+}
+
 ::selection {
   background: color-mix(in srgb, var(--accent-champagne) 40%, white 60%);
   color: var(--primary-midnight);

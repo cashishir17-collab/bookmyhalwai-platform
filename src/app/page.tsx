@@ -145,7 +145,7 @@ export default function Home() {
             <div className="relative flex h-full flex-col justify-end p-8 sm:p-10">
               <p className="type-label text-[rgba(255,255,255,0.96)]">Luxury Hospitality Banner</p>
               <h2
-                className="mt-4 max-w-lg font-serif text-3xl font-bold leading-tight text-white sm:text-4xl"
+                className="hero-heading mt-4 max-w-lg font-serif text-3xl font-bold leading-tight sm:text-4xl"
                 style={{ textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}
               >
                 Crafted for Wedding Catering Excellence
@@ -272,7 +272,7 @@ export default function Home() {
           <div className="relative">
             <p className="type-label text-[#EDD9B6]">Final Call to Action</p>
             <h2
-              className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight text-white sm:text-5xl"
+              className="hero-heading mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight sm:text-5xl"
               style={{ textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}
             >
               Ready to Grow Your Catering Business?
