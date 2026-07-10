@@ -68,7 +68,7 @@ export default function ContactPage() {
     <main className="page-shell min-h-screen px-4 py-12 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-6xl gap-7 lg:grid-cols-[0.9fr_1.1fr]">
         <section className="section-shell rounded-[2rem] p-7 sm:p-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-700">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#C4B5FD] bg-[#F5F3FF] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#0F172A]">
             <Headset className="h-3.5 w-3.5" /> Contact
           </div>
           <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Vendor onboarding support across India</h1>
@@ -78,13 +78,13 @@ export default function ContactPage() {
 
           <div className="mt-7 space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-700">
             <p className="flex items-center gap-3">
-              <Mail className="h-4 w-4 text-orange-600" /> admin@bookmyhalwai.com
+              <Mail className="h-4 w-4 text-[#6D28D9]" /> admin@bookmyhalwai.com
             </p>
             <p className="flex items-center gap-3">
-              <Phone className="h-4 w-4 text-orange-600" /> +91 9557421217
+              <Phone className="h-4 w-4 text-[#6D28D9]" /> +91 9557421217
             </p>
             <p className="flex items-center gap-3">
-              <MapPin className="h-4 w-4 text-orange-600" /> Serving Vendors Across India
+              <MapPin className="h-4 w-4 text-[#6D28D9]" /> Serving Vendors Across India
             </p>
           </div>
 
@@ -109,7 +109,7 @@ export default function ContactPage() {
                 value={form.businessName}
                 onChange={(event) => updateField("businessName", event.target.value)}
                 required
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
                 placeholder="The Royal Caterers"
               />
             </label>
@@ -121,7 +121,7 @@ export default function ContactPage() {
                   value={form.ownerName}
                   onChange={(event) => updateField("ownerName", event.target.value)}
                   required
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
                   placeholder="Amit Sharma"
                 />
               </label>
@@ -132,7 +132,7 @@ export default function ContactPage() {
                   value={form.city}
                   onChange={(event) => updateField("city", event.target.value)}
                   required
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
                   placeholder="Noida"
                 />
               </label>
@@ -146,7 +146,7 @@ export default function ContactPage() {
                   value={form.email}
                   onChange={(event) => updateField("email", event.target.value)}
                   required
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
                   placeholder="yourbusiness@domain.com"
                 />
               </label>
@@ -157,7 +157,7 @@ export default function ContactPage() {
                   value={form.phone}
                   onChange={(event) => updateField("phone", event.target.value)}
                   required
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
                   placeholder="+91 9876543210"
                 />
               </label>
@@ -169,7 +169,7 @@ export default function ContactPage() {
                 value={form.helpNeeded}
                 onChange={(event) => updateField("helpNeeded", event.target.value)}
                 required
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
               >
                 <option>Vendor Registration</option>
                 <option>GST Registration</option>
@@ -185,7 +185,7 @@ export default function ContactPage() {
                 onChange={(event) => updateField("message", event.target.value)}
                 required
                 rows={5}
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
                 placeholder="Tell us about your business and the support you need."
               />
             </label>

@@ -180,7 +180,7 @@ export default function BookingCheckout({
             />
           </label>
 
-          <div className="rounded-[2rem] border border-slate-200 bg-orange-50 p-6 text-sm text-slate-700">
+          <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-6 text-sm text-slate-700">
             <div className="flex items-center justify-between">
               <span>Advance amount (20%)</span>
               <span className="font-semibold text-slate-900">₹{formatCurrency(advanceAmount)}</span>

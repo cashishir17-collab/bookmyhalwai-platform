@@ -29,13 +29,13 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/60">
+    <div className="fixed inset-0 z-[9999] bg-slate-950/60">
       <div className="min-h-screen overflow-y-auto px-4 py-20 sm:px-6 lg:px-8">
         <div className="flex min-h-screen items-start justify-center">
-          <div className="relative w-full max-w-xl rounded-3xl border border-white/60 bg-white p-6 shadow-2xl">
+          <div className="relative w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-500">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6D28D9]">
                   Welcome back
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-slate-900">Sign in to BookMyHalwai</h2>
@@ -43,7 +43,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-shrink-0 rounded-full border border-slate-200 p-2 text-slate-600 transition hover:border-orange-300 hover:text-orange-600"
+                className="flex-shrink-0 rounded-full border border-slate-200 p-2 text-slate-600 transition hover:border-slate-400 hover:text-[#0F172A]"
                 aria-label="Close login modal"
               >
                 ✕

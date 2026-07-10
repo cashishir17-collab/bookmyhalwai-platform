@@ -80,7 +80,7 @@ export default function Home() {
               <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
                 <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-emerald-500" /> Vendor Onboarding is LIVE
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-orange-700">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#C4B5FD] bg-[#F5F3FF] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#0F172A]">
                 <Sparkles className="h-3.5 w-3.5" /> Launch Offer: Free onboarding for early verified partners.
               </span>
             </div>
@@ -123,7 +123,7 @@ export default function Home() {
           <div className="grid gap-4 md:grid-cols-5">
             {onboardingSteps.map((step, index) => (
               <article key={step} className="premium-card rounded-2xl p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-700">Step {index + 1}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0F172A]">Step {index + 1}</p>
                 <p className="mt-2 text-sm leading-6 text-slate-700">{step}</p>
               </article>
             ))}
@@ -160,7 +160,7 @@ export default function Home() {
       <section className="px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="section-shell rounded-[1.8rem] p-7 sm:p-9">
-            <p className="type-label text-orange-700">Compliance Support</p>
+            <p className="type-label text-[#0F172A]">Compliance Support</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Need GST or FSSAI support?</h2>
             <p className="mt-3 text-sm leading-7 text-slate-700">
               Vyasa Vittam can help vendors with GST registration, FSSAI licensing, accounting, and tax support so your profile is marketplace-ready.
@@ -171,7 +171,7 @@ export default function Home() {
           </div>
 
           <div className="section-shell rounded-[1.8rem] p-7 sm:p-9">
-            <p className="type-label text-orange-700">Launch Readiness</p>
+            <p className="type-label text-[#0F172A]">Launch Readiness</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Built for trusted onboarding</h2>
             <ul className="mt-5 space-y-3 text-sm text-slate-700">
               <li className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">

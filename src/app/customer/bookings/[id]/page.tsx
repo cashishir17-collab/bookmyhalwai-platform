@@ -94,7 +94,7 @@ export default function CustomerBookingDetailsPage() {
         <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Booking Details</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">Booking Details</p>
               <h1 className="mt-2 text-3xl font-semibold text-slate-900">{booking.catererName || "Caterer"}</h1>
               <p className="mt-2 text-sm text-slate-500">{booking.bookingId || booking.id}</p>
             </div>
@@ -169,7 +169,7 @@ export default function CustomerBookingDetailsPage() {
             <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Invoice</h2>
               <p className="mt-4 text-sm text-slate-600">Invoice Number: {invoiceNumber}</p>
-              <button type="button" className="mt-4 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+              <button type="button" className="mt-4 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">
                 Download Invoice (Coming Soon)
               </button>
             </div>
@@ -188,7 +188,7 @@ export default function CustomerBookingDetailsPage() {
         </div>
 
         <div className="section-shell rounded-[2rem] p-8">
-          <Link href="/customer/bookings" className="text-sm font-semibold text-orange-600">
+          <Link href="/customer/bookings" className="text-sm font-semibold text-[#0F172A]">
             ← Back to bookings
           </Link>
         </div>

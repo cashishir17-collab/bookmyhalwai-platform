@@ -104,7 +104,7 @@ export default function VendorBookingDetailsPage() {
         <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Booking Details</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">Booking Details</p>
               <h1 className="mt-2 text-3xl font-semibold text-slate-900">{booking.customerName || "Customer"}</h1>
             </div>
             <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700">{booking.status || "Pending"}</span>
@@ -152,7 +152,7 @@ export default function VendorBookingDetailsPage() {
             </div>
 
             <div className="section-shell rounded-[2rem] p-8">
-              <Link href="/vendor/bookings" className="text-sm font-semibold text-orange-600">← Back to bookings</Link>
+              <Link href="/vendor/bookings" className="text-sm font-semibold text-[#0F172A]">← Back to bookings</Link>
             </div>
           </div>
         </div>

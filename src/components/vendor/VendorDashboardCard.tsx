@@ -6,7 +6,7 @@ interface VendorDashboardCardProps {
 }
 
 const accentStyles = {
-  orange: "badge-featured text-orange-700",
+  orange: "badge-featured text-[#0F172A]",
   emerald: "badge-success text-emerald-700",
   blue: "badge-info text-teal-700",
   violet: "bg-violet-50 text-violet-700",

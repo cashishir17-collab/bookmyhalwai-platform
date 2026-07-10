@@ -42,7 +42,7 @@ export default function BookingSidebar({ catererId }: BookingSidebarProps) {
   return (
     <aside className="section-shell sticky top-6 space-y-6 rounded-[2rem] p-6">
       <div className="space-y-4">
-        <p className="text-sm uppercase tracking-[0.24em] text-orange-600">Booking</p>
+        <p className="text-sm uppercase tracking-[0.24em] text-[#0F172A]">Booking</p>
         <h2 className="text-2xl font-semibold text-slate-900">Reserve your date</h2>
       </div>
 
@@ -78,8 +78,8 @@ export default function BookingSidebar({ catererId }: BookingSidebarProps) {
               type="button"
               onClick={() => setSelectedPackage(pkg.key)}
               className={`w-full rounded-2xl px-4 py-3 text-left text-sm transition ${selectedPackage === pkg.key ?
-                "border border-orange-300 bg-orange-100 text-orange-700" :
-                "border border-slate-200 bg-white text-slate-700 hover:border-orange-300 hover:text-orange-600"}`}
+                "border border-slate-300 bg-[#F5F3FF] text-[#0F172A]" :
+                "border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:text-[#0F172A]"}`}
             >
               <div className="flex items-center justify-between">
                 <span>{pkg.label}</span>

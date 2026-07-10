@@ -19,7 +19,7 @@ export default function BookingTimeline({ status }: BookingTimelineProps) {
             <div
               key={step}
               className={`rounded-full px-3 py-2 text-sm font-medium ${
-                isActive ? "bg-orange-600 text-white" : "bg-white text-slate-600"
+                isActive ? "bg-[#0F172A] text-white" : "bg-white text-slate-600"
               }`}
             >
               {step}

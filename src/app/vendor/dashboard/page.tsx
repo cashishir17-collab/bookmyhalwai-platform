@@ -126,13 +126,13 @@ export default function VendorDashboardPage() {
     <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-8">
         <div className="section-shell rounded-[2rem] p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Vendor Operations Center</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">Vendor Operations Center</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Welcome back, {user?.displayName || "vendor"}</h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">Keep bookings moving, manage your premium profile, and track customer enquiries from one streamlined workspace.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/vendor/bookings" className="btn btn-primary btn-md type-button">Review Bookings</Link>
-            <Link href="/vendor/menus" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">Update Menus</Link>
-            <Link href="/vendor/reviews" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">View Reviews</Link>
+            <Link href="/vendor/menus" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">Update Menus</Link>
+            <Link href="/vendor/reviews" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">View Reviews</Link>
           </div>
         </div>
 
@@ -140,7 +140,7 @@ export default function VendorDashboardPage() {
           <div className="section-shell rounded-[2rem] p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Application Status</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">Application Status</p>
                 <h2 className="mt-2 text-2xl font-semibold text-slate-900">{vendorApplication?.businessName || "Your application"}</h2>
               </div>
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700">✓ Registration Received</span>
@@ -152,10 +152,10 @@ export default function VendorDashboardPage() {
                   <p className="text-sm font-semibold text-slate-900">Application status</p>
                   <p className="mt-1 text-sm text-slate-600">Documents uploaded • Verification pending</p>
                 </div>
-                <div className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">{verificationStatus}</div>
+                <div className="rounded-full bg-[#F5F3FF] px-3 py-1 text-sm font-semibold text-[#0F172A]">{verificationStatus}</div>
               </div>
               <div className="mt-4 h-2.5 rounded-full bg-slate-200">
-                <div className="h-2.5 rounded-full bg-orange-600" style={{ width: `${completionPercent}%` }} />
+                <div className="h-2.5 rounded-full bg-[#0F172A]" style={{ width: `${completionPercent}%` }} />
               </div>
               <p className="mt-3 text-sm font-semibold text-slate-700">Profile completion {completionPercent}%</p>
             </div>
@@ -169,7 +169,7 @@ export default function VendorDashboardPage() {
               ))}
             </div>
 
-            <div className="mt-6 rounded-[1.75rem] border border-orange-200 bg-orange-50 p-5">
+            <div className="mt-6 rounded-[1.75rem] border border-slate-300 bg-slate-50 p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-slate-900">KYC follow-up</p>
@@ -204,7 +204,7 @@ export default function VendorDashboardPage() {
               <div className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-700">{completionPercent}% complete</div>
             </div>
             <div className="mt-4 h-2.5 rounded-full bg-slate-200">
-              <div className="h-2.5 rounded-full bg-orange-600" style={{ width: `${completionPercent}%` }} />
+              <div className="h-2.5 rounded-full bg-[#0F172A]" style={{ width: `${completionPercent}%` }} />
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link href="/vendor/menus" className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">Upload menu</Link>
@@ -219,7 +219,7 @@ export default function VendorDashboardPage() {
               <h2 className="text-2xl font-semibold text-slate-900">Recent bookings</h2>
               <p className="mt-2 text-sm text-slate-500">Track the latest customer requests and important updates.</p>
             </div>
-            <Link href="/vendor/bookings" className="text-sm font-semibold text-orange-600">View all</Link>
+            <Link href="/vendor/bookings" className="text-sm font-semibold text-[#0F172A]">View all</Link>
           </div>
 
           <div className="mt-6 space-y-4">

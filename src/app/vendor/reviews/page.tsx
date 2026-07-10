@@ -31,15 +31,15 @@ export default function VendorReviewsPage() {
     <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
         <div className="section-shell rounded-[2rem] p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Reviews</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">Reviews</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Customer feedback</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
             See how guests rate your service and keep improving your experience.
           </p>
         </div>
 
-        <div className="rounded-[2.5rem] border border-orange-200 bg-orange-50 p-6 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-700">Average Rating</p>
+        <div className="rounded-[2.5rem] border border-slate-300 bg-slate-50 p-6 shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0F172A]">Average Rating</p>
           <p className="mt-3 text-4xl font-semibold text-slate-900">⭐ {averageRating}/5</p>
         </div>
 

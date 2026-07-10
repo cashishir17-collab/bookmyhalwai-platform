@@ -19,7 +19,7 @@ export default function AboutPage() {
   return (
     <main className="page-shell min-h-screen px-4 py-14 text-slate-900 sm:px-6 lg:px-8">
       <section className="section-shell mx-auto max-w-6xl space-y-10 rounded-[2rem] p-8 sm:p-10 lg:p-12">
-        <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-orange-700">
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#C4B5FD] bg-[#F5F3FF] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[#0F172A]">
           <Sparkles className="h-3.5 w-3.5" /> About BookMyHalwai
         </div>
 
@@ -55,12 +55,12 @@ export default function AboutPage() {
           </div>
 
           <div className="space-y-5">
-            <article className="rounded-[2rem] border border-orange-100 bg-orange-50/70 p-6 shadow-sm">
+            <article className="rounded-[2rem] border border-[#DDD6FE] bg-[#F5F3FF] p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-slate-900">Why vendors should join</h2>
               <ul className="mt-5 space-y-3 text-sm text-slate-700">
                 {vendorReasons.map((item) => (
-                  <li key={item} className="flex items-center gap-3 rounded-2xl border border-orange-100 bg-white px-4 py-3">
-                    <BadgeCheck className="h-4 w-4 text-orange-600" /> {item}
+                  <li key={item} className="flex items-center gap-3 rounded-2xl border border-[#DDD6FE] bg-white px-4 py-3">
+                    <BadgeCheck className="h-4 w-4 text-[#6D28D9]" /> {item}
                   </li>
                 ))}
               </ul>
@@ -69,10 +69,10 @@ export default function AboutPage() {
             <article className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-slate-900">What we do</h2>
               <ul className="mt-5 space-y-3 text-sm text-slate-700">
-                <li className="flex items-center gap-3"><Store className="h-4 w-4 text-orange-600" /> Build trusted vendor presence online</li>
-                <li className="flex items-center gap-3"><ShieldCheck className="h-4 w-4 text-orange-600" /> Verify partners before listing</li>
-                <li className="flex items-center gap-3"><Building2 className="h-4 w-4 text-orange-600" /> Prepare vendors for city-wide scale</li>
-                <li className="flex items-center gap-3"><Rocket className="h-4 w-4 text-orange-600" /> Enable growth-ready launch advantage</li>
+                <li className="flex items-center gap-3"><Store className="h-4 w-4 text-[#6D28D9]" /> Build trusted vendor presence online</li>
+                <li className="flex items-center gap-3"><ShieldCheck className="h-4 w-4 text-[#6D28D9]" /> Verify partners before listing</li>
+                <li className="flex items-center gap-3"><Building2 className="h-4 w-4 text-[#6D28D9]" /> Prepare vendors for city-wide scale</li>
+                <li className="flex items-center gap-3"><Rocket className="h-4 w-4 text-[#6D28D9]" /> Enable growth-ready launch advantage</li>
               </ul>
             </article>
           </div>

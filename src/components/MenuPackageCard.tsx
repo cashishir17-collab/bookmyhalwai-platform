@@ -17,7 +17,7 @@ export default function MenuPackageCard({
     <article className="premium-card rounded-[2rem] p-6 transition hover:-translate-y-1">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">{title}</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">{title}</p>
           <p className="mt-3 text-3xl font-semibold text-slate-900">₹{price}</p>
           <p className="text-sm text-slate-500">per plate</p>
         </div>
@@ -29,7 +29,7 @@ export default function MenuPackageCard({
       <ul className="mt-6 space-y-3 text-sm text-slate-600">
         {features.map((feature) => (
           <li key={feature} className="flex items-center gap-3">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-orange-700">✓</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#F5F3FF] text-[#0F172A]">✓</span>
             <span>{feature}</span>
           </li>
         ))}

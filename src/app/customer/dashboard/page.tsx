@@ -66,7 +66,7 @@ export default function CustomerDashboardPage() {
     <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
         <div className="section-shell rounded-[2rem] p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">My Account</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">My Account</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Customer Dashboard</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
             Manage your booking requests, track your upcoming events, and keep your profile up to date.
@@ -104,13 +104,13 @@ export default function CustomerDashboardPage() {
           <div className="section-shell rounded-[2rem] p-8">
             <h2 className="text-2xl font-semibold text-slate-900">Quick Actions</h2>
             <div className="mt-6 space-y-3">
-              <Link href="/caterers" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+              <Link href="/caterers" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">
                 Find Caterers
               </Link>
-              <Link href="/customer/bookings" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+              <Link href="/customer/bookings" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">
                 My Bookings
               </Link>
-              <Link href="/customer/profile" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600">
+              <Link href="/customer/profile" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">
                 Edit Profile
               </Link>
             </div>

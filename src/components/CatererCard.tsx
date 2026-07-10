@@ -23,7 +23,7 @@ export default function CatererCard({ caterer }: CatererCardProps) {
     <article className="premium-card group overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1">
       <div className="h-52 border-b border-slate-200 bg-[#f8f4ea] px-6 py-5">
         <div className="flex h-full flex-col justify-between rounded-[2rem] bg-white p-5 text-slate-900 shadow-inner">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0F172A]">
             Caterer Spotlight
           </span>
           <div className="flex items-center justify-between gap-3">
@@ -53,7 +53,7 @@ export default function CatererCard({ caterer }: CatererCardProps) {
           <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
             <span className="rounded-full bg-slate-100 px-3 py-1">{caterer.events} events</span>
             <span className="rounded-full bg-slate-100 px-3 py-1">₹{caterer.price}/plate</span>
-            <span className="rounded-full bg-orange-100 px-3 py-1 text-orange-700">Top Rated</span>
+            <span className="rounded-full bg-[#F5F3FF] px-3 py-1 text-[#0F172A]">Top Rated</span>
           </div>
         </div>
 
@@ -68,7 +68,7 @@ export default function CatererCard({ caterer }: CatererCardProps) {
         <div className="pt-4">
           <Link
             href={`/caterers/${caterer.id}`}
-            className="inline-flex w-full items-center justify-center rounded-2xl bg-orange-700 px-4 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-orange-800"
+            className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0F172A] px-4 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#1E293B]"
           >
             View Details
           </Link>

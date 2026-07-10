@@ -552,52 +552,52 @@ export default function RegistrationWizard() {
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm font-medium text-slate-700">
               Business Name
-              <input value={form.businessName} onChange={(event) => updateField("businessName", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="The Royal Caterers" />
+              <input value={form.businessName} onChange={(event) => updateField("businessName", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="The Royal Caterers" />
               {errors.businessName ? <p className="mt-1 text-sm text-red-600">{errors.businessName}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Owner Name
-              <input value={form.ownerName} onChange={(event) => updateField("ownerName", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="Amit Sharma" />
+              <input value={form.ownerName} onChange={(event) => updateField("ownerName", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Amit Sharma" />
               {errors.ownerName ? <p className="mt-1 text-sm text-red-600">{errors.ownerName}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Mobile
-              <input value={form.mobile} onChange={(event) => updateField("mobile", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="+91 9876543210" />
+              <input value={form.mobile} onChange={(event) => updateField("mobile", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="+91 9876543210" />
               {errors.mobile ? <p className="mt-1 text-sm text-red-600">{errors.mobile}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               WhatsApp
-              <input value={form.whatsapp} onChange={(event) => updateField("whatsapp", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="+91 9876543210" />
+              <input value={form.whatsapp} onChange={(event) => updateField("whatsapp", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="+91 9876543210" />
               {errors.whatsapp ? <p className="mt-1 text-sm text-red-600">{errors.whatsapp}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Email
-              <input type="email" value={form.email} onChange={(event) => updateField("email", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="vendor@example.com" />
+              <input type="email" value={form.email} onChange={(event) => updateField("email", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="vendor@example.com" />
               {errors.email ? <p className="mt-1 text-sm text-red-600">{errors.email}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               City
-              <input value={form.city} onChange={(event) => updateField("city", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="Delhi NCR" />
+              <input value={form.city} onChange={(event) => updateField("city", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Delhi NCR" />
               {errors.city ? <p className="mt-1 text-sm text-red-600">{errors.city}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Areas Served
-              <input value={form.areasServed} onChange={(event) => updateField("areasServed", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="Noida, Gurgaon, Faridabad" />
+              <input value={form.areasServed} onChange={(event) => updateField("areasServed", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Noida, Gurgaon, Faridabad" />
               {errors.areasServed ? <p className="mt-1 text-sm text-red-600">{errors.areasServed}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Address
-              <input value={form.address} onChange={(event) => updateField("address", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="Sector 18, Noida" />
+              <input value={form.address} onChange={(event) => updateField("address", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Sector 18, Noida" />
               {errors.address ? <p className="mt-1 text-sm text-red-600">{errors.address}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Google Maps Link
-              <input value={form.googleMapsLink} onChange={(event) => updateField("googleMapsLink", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="https://maps.google.com/.." />
+              <input value={form.googleMapsLink} onChange={(event) => updateField("googleMapsLink", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="https://maps.google.com/.." />
               {errors.googleMapsLink ? <p className="mt-1 text-sm text-red-600">{errors.googleMapsLink}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Years Experience
-              <input value={form.yearsExperience} onChange={(event) => updateField("yearsExperience", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="12" />
+              <input value={form.yearsExperience} onChange={(event) => updateField("yearsExperience", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="12" />
               {errors.yearsExperience ? <p className="mt-1 text-sm text-red-600">{errors.yearsExperience}</p> : null}
             </label>
           </div>
@@ -621,7 +621,7 @@ export default function RegistrationWizard() {
                 ].map((service) => (
                   <label key={service.key} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
                     <span>{service.label}</span>
-                    <input type="checkbox" checked={form.services[service.key as keyof typeof form.services]} onChange={(event) => updateServiceField(service.key as keyof typeof form.services, event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500" />
+                    <input type="checkbox" checked={form.services[service.key as keyof typeof form.services]} onChange={(event) => updateServiceField(service.key as keyof typeof form.services, event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[#6D28D9] focus:ring-[#0F172A]" />
                   </label>
                 ))}
               </div>
@@ -631,12 +631,12 @@ export default function RegistrationWizard() {
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block text-sm font-medium text-slate-700">
                 Minimum Guests
-                <input type="number" value={form.minGuests} onChange={(event) => updateField("minGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="50" />
+                <input type="number" value={form.minGuests} onChange={(event) => updateField("minGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="50" />
                 {errors.minGuests ? <p className="mt-1 text-sm text-red-600">{errors.minGuests}</p> : null}
               </label>
               <label className="block text-sm font-medium text-slate-700">
                 Maximum Guests
-                <input type="number" value={form.maxGuests} onChange={(event) => updateField("maxGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="500" />
+                <input type="number" value={form.maxGuests} onChange={(event) => updateField("maxGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="500" />
                 {errors.maxGuests ? <p className="mt-1 text-sm text-red-600">{errors.maxGuests}</p> : null}
               </label>
             </div>
@@ -647,32 +647,32 @@ export default function RegistrationWizard() {
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm font-medium text-slate-700">
               Starting Price
-              <input type="number" value={form.pricing.startingPrice} onChange={(event) => updatePricingField("startingPrice", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="450" />
+              <input type="number" value={form.pricing.startingPrice} onChange={(event) => updatePricingField("startingPrice", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="450" />
               {errors.startingPrice ? <p className="mt-1 text-sm text-red-600">{errors.startingPrice}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Silver Package
-              <input type="number" value={form.pricing.silverPackage} onChange={(event) => updatePricingField("silverPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="9000" />
+              <input type="number" value={form.pricing.silverPackage} onChange={(event) => updatePricingField("silverPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="9000" />
               {errors.silverPackage ? <p className="mt-1 text-sm text-red-600">{errors.silverPackage}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Gold Package
-              <input type="number" value={form.pricing.goldPackage} onChange={(event) => updatePricingField("goldPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="18000" />
+              <input type="number" value={form.pricing.goldPackage} onChange={(event) => updatePricingField("goldPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="18000" />
               {errors.goldPackage ? <p className="mt-1 text-sm text-red-600">{errors.goldPackage}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Royal Package
-              <input type="number" value={form.pricing.royalPackage} onChange={(event) => updatePricingField("royalPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="30000" />
+              <input type="number" value={form.pricing.royalPackage} onChange={(event) => updatePricingField("royalPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="30000" />
               {errors.royalPackage ? <p className="mt-1 text-sm text-red-600">{errors.royalPackage}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Travel Charges
-              <input type="number" value={form.pricing.travelCharges} onChange={(event) => updatePricingField("travelCharges", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="1500" />
+              <input type="number" value={form.pricing.travelCharges} onChange={(event) => updatePricingField("travelCharges", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="1500" />
               {errors.travelCharges ? <p className="mt-1 text-sm text-red-600">{errors.travelCharges}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Advance %
-              <input type="number" value={form.pricing.advancePercentage} onChange={(event) => updatePricingField("advancePercentage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="50" />
+              <input type="number" value={form.pricing.advancePercentage} onChange={(event) => updatePricingField("advancePercentage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="50" />
               {errors.advancePercentage ? <p className="mt-1 text-sm text-red-600">{errors.advancePercentage}</p> : null}
             </label>
           </div>
@@ -682,23 +682,23 @@ export default function RegistrationWizard() {
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm font-medium text-slate-700">
               Instagram
-              <input value={form.social.instagram} onChange={(event) => updateSocialField("instagram", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="https://instagram.com/yourbrand" />
+              <input value={form.social.instagram} onChange={(event) => updateSocialField("instagram", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="https://instagram.com/yourbrand" />
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Facebook
-              <input value={form.social.facebook} onChange={(event) => updateSocialField("facebook", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="https://facebook.com/yourbrand" />
+              <input value={form.social.facebook} onChange={(event) => updateSocialField("facebook", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="https://facebook.com/yourbrand" />
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Website
-              <input value={form.social.website} onChange={(event) => updateSocialField("website", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="https://yourbrand.com" />
+              <input value={form.social.website} onChange={(event) => updateSocialField("website", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="https://yourbrand.com" />
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Google Business Profile
-              <input value={form.social.googleBusinessProfile} onChange={(event) => updateSocialField("googleBusinessProfile", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="https://maps.google.com/..." />
+              <input value={form.social.googleBusinessProfile} onChange={(event) => updateSocialField("googleBusinessProfile", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="https://maps.google.com/..." />
             </label>
             <label className="block text-sm font-medium text-slate-700 md:col-span-2">
               Google Review Link
-              <input value={form.social.googleReviewLink} onChange={(event) => updateSocialField("googleReviewLink", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="https://g.page/r/your-review" />
+              <input value={form.social.googleReviewLink} onChange={(event) => updateSocialField("googleReviewLink", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="https://g.page/r/your-review" />
             </label>
             {errors.social ? <p className="md:col-span-2 text-sm text-red-600">{errors.social}</p> : null}
           </div>
@@ -748,27 +748,27 @@ export default function RegistrationWizard() {
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm font-medium text-slate-700">
               Account Holder
-              <input value={form.bank.accountHolder} onChange={(event) => updateBankField("accountHolder", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="Amit Sharma" />
+              <input value={form.bank.accountHolder} onChange={(event) => updateBankField("accountHolder", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Amit Sharma" />
               {errors.accountHolder ? <p className="mt-1 text-sm text-red-600">{errors.accountHolder}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Bank
-              <input value={form.bank.bank} onChange={(event) => updateBankField("bank", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="HDFC Bank" />
+              <input value={form.bank.bank} onChange={(event) => updateBankField("bank", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="HDFC Bank" />
               {errors.bank ? <p className="mt-1 text-sm text-red-600">{errors.bank}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Account Number
-              <input value={form.bank.accountNumber} onChange={(event) => updateBankField("accountNumber", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="1234567890" />
+              <input value={form.bank.accountNumber} onChange={(event) => updateBankField("accountNumber", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="1234567890" />
               {errors.accountNumber ? <p className="mt-1 text-sm text-red-600">{errors.accountNumber}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               IFSC
-              <input value={form.bank.ifsc} onChange={(event) => updateBankField("ifsc", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="HDFC0001234" />
+              <input value={form.bank.ifsc} onChange={(event) => updateBankField("ifsc", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="HDFC0001234" />
               {errors.ifsc ? <p className="mt-1 text-sm text-red-600">{errors.ifsc}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700 md:col-span-2">
               UPI
-              <input value={form.bank.upi} onChange={(event) => updateBankField("upi", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400" placeholder="amitsharma@upi" />
+              <input value={form.bank.upi} onChange={(event) => updateBankField("upi", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="amitsharma@upi" />
               {errors.upi ? <p className="mt-1 text-sm text-red-600">{errors.upi}</p> : null}
             </label>
           </div>
@@ -783,11 +783,11 @@ export default function RegistrationWizard() {
       <div className="section-shell mx-auto max-w-5xl rounded-[2rem] p-6 sm:p-8 lg:p-10">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-700">Vendor Onboarding</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">Vendor Onboarding</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Become a BookMyHalwai Partner</h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">Vendor onboarding is now live. Customer booking will launch after verified partners are onboarded.</p>
           </div>
-          <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-medium text-orange-700">Step {progressLabel}</div>
+          <div className="rounded-2xl border border-[#C4B5FD] bg-[#F5F3FF] px-4 py-3 text-sm font-medium text-[#0F172A]">Step {progressLabel}</div>
         </div>
 
         <div className="mt-6 grid gap-4 rounded-3xl border border-emerald-200 bg-emerald-50/60 p-5 lg:grid-cols-[0.9fr_1.1fr]">
@@ -818,12 +818,12 @@ export default function RegistrationWizard() {
           {submitMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{submitMessage}</div> : null}
 
           <div className="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-between">
-            <button type="button" onClick={prevStep} disabled={step === 1} className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">Back</button>
+            <button type="button" onClick={prevStep} disabled={step === 1} className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">Back</button>
 
             {step < steps.length ? (
-              <button type="button" onClick={nextStep} className="w-full rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800 sm:w-auto">Continue</button>
+              <button type="button" onClick={nextStep} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] sm:w-auto">Continue</button>
             ) : (
-              <button type="submit" disabled={isSubmitting} className="w-full rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
+              <button type="submit" disabled={isSubmitting} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
             )}
           </div>
         </form>

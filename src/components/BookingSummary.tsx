@@ -47,8 +47,8 @@ export default function BookingSummary({
           <span className="font-semibold text-slate-900">₹{estimatedTotal.toLocaleString()}</span>
         </div>
       </div>
-      <div className="mt-6 rounded-3xl bg-orange-50 p-5 text-sm text-slate-700">
-        <p className="font-semibold text-orange-700">Payment split</p>
+      <div className="mt-6 rounded-3xl bg-slate-50 p-5 text-sm text-slate-700">
+        <p className="font-semibold text-[#0F172A]">Payment split</p>
         <div className="mt-3 grid gap-3">
           <div className="flex items-center justify-between rounded-2xl bg-white px-4 py-3">
             <span>Advance amount</span>

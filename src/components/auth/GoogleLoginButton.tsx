@@ -33,7 +33,7 @@ export default function GoogleLoginButton({
       type="button"
       onClick={handleGoogleLogin}
       disabled={loading || isPending}
-      className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:text-orange-600 disabled:cursor-not-allowed disabled:opacity-70"
+      className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-70"
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
         <path

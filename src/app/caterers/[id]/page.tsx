@@ -61,7 +61,7 @@ export default function CatererDetailsPage({ params }: CatererDetailsPageProps) 
         <div className="section-shell rounded-[2rem] p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-3">
-              <p className="text-sm uppercase tracking-[0.24em] text-orange-600">Verified caterer</p>
+              <p className="text-sm uppercase tracking-[0.24em] text-[#0F172A]">Verified caterer</p>
               <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
                 {caterer.name}
               </h1>
@@ -77,7 +77,7 @@ export default function CatererDetailsPage({ params }: CatererDetailsPageProps) 
             </div>
             <Link
               href="/caterers"
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 hover:text-[#0F172A]"
             >
               Back to Listings
             </Link>

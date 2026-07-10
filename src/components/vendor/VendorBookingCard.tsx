@@ -46,7 +46,7 @@ export default function VendorBookingCard({ booking, onUpdated }: VendorBookingC
     <div className="premium-card rounded-[1.75rem] p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">Booking #{booking.id}</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0F172A]">Booking #{booking.id}</p>
           <h3 className="mt-2 text-xl font-semibold text-slate-900">{booking.customerName || "Customer"}</h3>
           <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-600">
             <span className="rounded-full bg-slate-100 px-3 py-1">{booking.eventDate || "TBD"}</span>

@@ -26,7 +26,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-600">{booking.bookingId || `Booking #${booking.id}`}</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0F172A]">{booking.bookingId || `Booking #${booking.id}`}</p>
           <h3 className="mt-2 text-xl font-semibold text-slate-900">{booking.catererName || "Caterer"}</h3>
           <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-600">
             <span className="rounded-full bg-slate-100 px-3 py-1">{booking.eventDate || "TBD"}</span>

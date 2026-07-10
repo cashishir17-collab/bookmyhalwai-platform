@@ -117,7 +117,7 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
               value={phoneNumber}
               onChange={(event) => setPhoneNumber(event.target.value)}
               placeholder="+91 9876543210"
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400"
+              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
               required
               disabled={isSendingOtp}
             />
@@ -126,14 +126,14 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
           <button
             type="submit"
             disabled={isSendingOtp}
-            className="w-full rounded-full bg-orange-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-full bg-[#0F172A] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSendingOtp ? "Sending OTP..." : "Send OTP"}
           </button>
         </form>
       ) : (
         <div className="space-y-3">
-          <div className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          <div className="rounded-2xl border border-[#C4B5FD] bg-[#F5F3FF] px-4 py-3 text-sm text-[#5B21B6]">
             OTP sent to <span className="font-semibold">{phoneNumber}</span>
           </div>
 
@@ -149,7 +149,7 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
                 }}
                 placeholder="000000"
                 maxLength={6}
-                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold outline-none transition focus:border-orange-400"
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
                 required
                 disabled={isVerifyingOtp}
               />
@@ -164,7 +164,7 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
             <button
               type="submit"
               disabled={isVerifyingOtp || otp.length !== 6}
-              className="w-full rounded-full bg-orange-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full rounded-full bg-[#0F172A] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isVerifyingOtp ? "Verifying..." : "Verify OTP"}
             </button>
@@ -175,7 +175,7 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
               type="button"
               onClick={handleResendOtp}
               disabled={isSendingOtp || isVerifyingOtp}
-              className="flex-1 rounded-full border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-100 disabled:cursor-not-allowed disabled:opacity-70"
+              className="flex-1 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-4 py-3 text-sm font-semibold text-[#047857] transition hover:bg-[#D1FAE5] disabled:cursor-not-allowed disabled:opacity-70"
             >
               Resend OTP
             </button>

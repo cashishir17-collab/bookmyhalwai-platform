@@ -13,7 +13,7 @@ export default function ReviewCard({ name, rating, comment, eventType }: ReviewC
           <p className="text-lg font-semibold text-slate-900">{name}</p>
           <p className="text-sm text-slate-500">{eventType}</p>
         </div>
-        <div className="rounded-3xl bg-orange-100 px-3 py-2 text-sm font-semibold text-orange-700">
+        <div className="rounded-3xl bg-[#F5F3FF] px-3 py-2 text-sm font-semibold text-[#0F172A]">
           {rating.toFixed(1)} ★
         </div>
       </div>

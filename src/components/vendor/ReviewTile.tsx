@@ -17,7 +17,7 @@ export default function ReviewTile({ review }: ReviewTileProps) {
           <h3 className="text-lg font-semibold text-slate-900">{review.customerName || "Customer"}</h3>
           <p className="mt-1 text-sm text-slate-500">{review.eventDate || "Event date"}</p>
         </div>
-        <div className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">
+        <div className="rounded-full bg-[#F5F3FF] px-3 py-1 text-sm font-semibold text-[#0F172A]">
           ⭐ {review.rating || 0}/5
         </div>
       </div>

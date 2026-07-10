@@ -45,7 +45,7 @@ export default function CustomerProfilePage() {
     <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
         <div className="section-shell rounded-[2rem] p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Customer Profile</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0F172A]">Customer Profile</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Update your details</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
             Keep your profile details current so vendors can reach you easily for upcoming events.
