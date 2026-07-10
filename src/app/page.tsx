@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, CircleCheckBig, MapPin, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 
@@ -19,18 +20,87 @@ const whyItems = [
   {
     title: "Curated Vendor Profiles",
     description: "Elegant vendor pages with service highlights, menu visibility, and trust credentials.",
+    image: "/images/home/serving-staff.jpg",
+    alt: "Professional serving staff preparing a premium catering setup.",
   },
   {
     title: "Verification-First Approach",
     description: "Vendor quality checks help customers book with greater confidence.",
+    image: "/images/home/halwai-sweets.jpg",
+    alt: "A professional halwai preparing sweets in a commercial kitchen.",
   },
   {
     title: "Marketplace-Ready Experience",
     description: "Professional UI for premium discovery and efficient enquiry journeys.",
+    image: "/images/home/corporate-catering.jpg",
+    alt: "Corporate catering buffet setup with polished table presentation.",
   },
 ];
 
 const onboardingSteps = ["Register", "Verification", "Profile Live", "Receive Enquiries"];
+
+const experienceGallery = [
+  {
+    title: "Luxury Wedding Buffet",
+    subtitle: "Grand station styling and curated menus.",
+    image: "/images/home/hero-luxury.jpg",
+    alt: "Luxury wedding buffet with warm ambient lighting and curated food stations.",
+  },
+  {
+    title: "Professional Halwai",
+    subtitle: "Traditional craftsmanship with modern execution.",
+    image: "/images/home/halwai-sweets.jpg",
+    alt: "Professional halwai preparing sweets for an event.",
+  },
+  {
+    title: "Live Food Counters",
+    subtitle: "Interactive stations for memorable guest service.",
+    image: "/images/home/live-counters.jpg",
+    alt: "Live food counters serving fresh dishes at a celebration.",
+  },
+  {
+    title: "Corporate Catering",
+    subtitle: "Business events with hospitality-grade quality.",
+    image: "/images/home/corporate-catering.jpg",
+    alt: "Professional corporate catering display at a formal event.",
+  },
+  {
+    title: "Birthday Catering",
+    subtitle: "Custom experiences for intimate milestones.",
+    image: "/images/home/birthday-catering.jpg",
+    alt: "Birthday catering table with premium plated desserts and snacks.",
+  },
+  {
+    title: "Wedding Reception",
+    subtitle: "Elegant service for once-in-a-lifetime evenings.",
+    image: "/images/home/wedding-reception.jpg",
+    alt: "Wedding reception dinner arrangement with decorative lighting.",
+  },
+  {
+    title: "Guests Enjoying Food",
+    subtitle: "Moments that define trusted hospitality.",
+    image: "/images/home/guests-enjoying-food.jpg",
+    alt: "Guests enjoying food together at a catered event.",
+  },
+  {
+    title: "Festive Celebrations",
+    subtitle: "Indian celebrations with vibrant culinary spreads.",
+    image: "/images/home/festive-celebration.jpg",
+    alt: "Indian festive celebrations with decorated dining and food service.",
+  },
+  {
+    title: "Professional Serving Staff",
+    subtitle: "Disciplined teams for smooth service flow.",
+    image: "/images/home/serving-staff.jpg",
+    alt: "Professional serving staff managing guests and service flow.",
+  },
+  {
+    title: "Large Catering Setup",
+    subtitle: "Scaled operations for high-volume events.",
+    image: "/images/home/large-catering-setup.jpg",
+    alt: "Large catering setup with multiple counters and coordinated staff.",
+  },
+];
 
 export default function Home() {
   return (
@@ -61,27 +131,34 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[2rem] border border-[#DCCDB2] bg-gradient-to-br from-[#0B1830] via-[#1A3657] to-[#0F6456] p-8 shadow-[0_28px_58px_rgba(11,24,48,0.3)] sm:p-10">
-            <div className="pointer-events-none absolute -left-8 -top-8 h-36 w-36 rounded-full bg-[#D7BA7D]/30 blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-10 -right-8 h-40 w-40 rounded-full bg-[#FCF8EE]/20 blur-2xl" />
+          <div className="relative min-h-[430px] overflow-hidden rounded-[2rem] border border-[#DCCDB2] shadow-[0_28px_58px_rgba(11,24,48,0.3)] sm:min-h-[500px] lg:min-h-full">
+            <Image
+              src="/images/home/hero-luxury.jpg"
+              alt="Luxury wedding buffet setup for a premium celebration."
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 1024px) 100vw, 48vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#060E1D]/90 via-[#0B1830]/58 to-[#0F6456]/32" />
 
-            <div className="relative">
-              <p className="type-label text-[#E6D5B8]">Luxury Hospitality Banner</p>
-              <h2 className="mt-4 font-serif text-3xl font-semibold leading-tight tracking-tight text-[#F7F1E4] sm:text-4xl">
+            <div className="relative flex h-full flex-col justify-end p-8 sm:p-10">
+              <p className="type-label text-[#F1DFC0]">Luxury Hospitality Banner</p>
+              <h2 className="mt-4 max-w-lg font-serif text-3xl font-semibold leading-tight tracking-tight text-[#FFF7E8] sm:text-4xl">
                 Crafted for Wedding Catering Excellence
               </h2>
-              <p className="mt-4 max-w-md text-sm leading-7 text-[#E7DDCC] sm:text-base">
+              <p className="mt-4 max-w-md text-sm leading-7 text-[#F3EBDD] sm:text-base">
                 Showcase your culinary signature with a refined digital presence inspired by premium buffets, professional chefs, and celebration-first service.
               </p>
 
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-[#D7BA7D]/50 bg-[#F7F1E4]/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.14em] text-[#DCC8A3]">Wedding Catering</p>
-                  <p className="mt-2 text-sm font-semibold text-[#F7F1E4]">Signature menus and live counters for destination-style celebrations.</p>
+                <div className="rounded-2xl border border-[#E3CFA5]/65 bg-[#060E1D]/55 p-4 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-[0.14em] text-[#F1DFC0]">Wedding Catering</p>
+                  <p className="mt-2 text-sm font-semibold text-[#FFF7E8]">Signature menus and live counters for destination-style celebrations.</p>
                 </div>
-                <div className="rounded-2xl border border-[#D7BA7D]/50 bg-[#F7F1E4]/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.14em] text-[#DCC8A3]">Professional Chefs</p>
-                  <p className="mt-2 text-sm font-semibold text-[#F7F1E4]">Trusted halwais and hospitality teams for flawless execution.</p>
+                <div className="rounded-2xl border border-[#E3CFA5]/65 bg-[#060E1D]/55 p-4 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-[0.14em] text-[#F1DFC0]">Professional Chefs</p>
+                  <p className="mt-2 text-sm font-semibold text-[#FFF7E8]">Trusted halwais and hospitality teams for flawless execution.</p>
                 </div>
               </div>
             </div>
@@ -108,6 +185,30 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 text-center">
+            <p className="type-label text-[#0F6456]">Celebration Photography</p>
+            <h2 className="type-h2 mt-3 text-[#0B1830]">Premium Catering Moments Across Event Types</h2>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            {experienceGallery.map((item) => (
+              <article key={item.title} className="premium-card overflow-hidden rounded-3xl">
+                <div className="relative h-52">
+                  <Image src={item.image} alt={item.alt} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 20vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#060E1D]/88 via-[#060E1D]/35 to-transparent" />
+                  <div className="absolute bottom-0 p-4">
+                    <h3 className="font-serif text-lg leading-tight text-[#FFF7E8]">{item.title}</h3>
+                    <p className="mt-1 text-xs leading-5 text-[#F2E8D6]">{item.subtitle}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="mb-8 text-center">
@@ -117,7 +218,11 @@ export default function Home() {
 
           <div className="grid gap-5 md:grid-cols-3">
             {whyItems.map((item, index) => (
-              <article key={item.title} className="section-shell rounded-3xl p-7">
+              <article key={item.title} className="section-shell overflow-hidden rounded-3xl p-7">
+                <div className="relative -mt-2 mb-6 h-44 overflow-hidden rounded-2xl">
+                  <Image src={item.image} alt={item.alt} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1830]/58 to-transparent" />
+                </div>
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#0B1830] text-sm font-semibold text-[#F7F1E4]">
                   0{index + 1}
                 </span>
@@ -151,22 +256,33 @@ export default function Home() {
       </section>
 
       <section className="px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-20 lg:pt-14">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.2rem] border border-[#D7BA7D]/55 bg-gradient-to-r from-[#071123] via-[#0B1830] to-[#114C45] p-10 shadow-[0_28px_58px_rgba(11,24,48,0.32)] sm:p-14">
-          <p className="type-label text-[#DCC8A3]">Final Call to Action</p>
-          <h2 className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight text-[#F7F1E4] sm:text-5xl">
-            Ready to Grow Your Catering Business?
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-[#E8DECB] sm:text-base">
-            Join a premium marketplace crafted for trusted hospitality brands and celebration-focused customer discovery.
-          </p>
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.2rem] border border-[#D7BA7D]/55 p-10 shadow-[0_28px_58px_rgba(11,24,48,0.32)] sm:p-14">
+          <Image
+            src="/images/home/festive-celebration.jpg"
+            alt="Indian festive celebration with guests and premium catering atmosphere."
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 1200px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#040B17]/94 via-[#0B1830]/88 to-[#0F6456]/76" />
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/vendor/register" className="btn btn-outline btn-lg type-button w-full border-[#D7BA7D] bg-[#D7BA7D] text-[#0B1830] hover:bg-[#E3CCA0] sm:w-auto">
-              Become a Partner
-            </Link>
-            <Link href="/contact" className="btn btn-lg type-button w-full border border-[#D7BA7D]/60 bg-transparent px-7 text-[#F7F1E4] hover:bg-[#D7BA7D]/15 sm:w-auto">
-              Contact Us
-            </Link>
+          <div className="relative">
+            <p className="type-label text-[#EDD9B6]">Final Call to Action</p>
+            <h2 className="mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight text-[#FFF8EA] sm:text-5xl">
+              Ready to Grow Your Catering Business?
+            </h2>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#F7EEDF] sm:text-base">
+              Join a premium marketplace crafted for trusted hospitality brands and celebration-focused customer discovery.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/vendor/register" className="btn btn-outline btn-lg type-button w-full border-[#D7BA7D] bg-[#D7BA7D] text-[#0B1830] hover:bg-[#E3CCA0] sm:w-auto">
+                Become a Partner
+              </Link>
+              <Link href="/contact" className="btn btn-lg type-button w-full border border-[#D7BA7D]/70 bg-transparent px-7 text-[#FFF8EA] hover:bg-[#D7BA7D]/20 sm:w-auto">
+                Contact Us
+              </Link>
+            </div>
           </div>
         </div>
       </section>

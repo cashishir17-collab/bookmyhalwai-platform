@@ -49,8 +49,14 @@ export default function Header() {
             priority
           />
           <span className="leading-none">
-            <span className="block font-serif text-lg font-semibold tracking-[0.14em] sm:text-xl">BOOKMY</span>
-            <span className="block -mt-0.5 font-serif text-lg font-semibold tracking-[0.14em] text-[#0F6456] sm:text-xl">HALWAI</span>
+            <span className="block font-serif text-lg font-semibold tracking-[0.08em] text-[#0B1830] sm:text-xl">
+              Book
+              <span className="text-[#C7A667]">My</span>
+              Halwai
+            </span>
+            <span className="mt-0.5 block text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[#49607A] sm:text-[0.64rem]">
+              Premium Catering Marketplace
+            </span>
           </span>
         </Link>
 
