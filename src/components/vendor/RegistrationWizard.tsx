@@ -145,6 +145,20 @@ function calculateProfileCompletion(form: RegistrationForm) {
   return Math.round((filledFields / checks.length) * 100);
 }
 
+type VendorRegistrationAlertPayload = {
+  businessName: string;
+  ownerName: string;
+  mobile: string;
+  whatsapp: string;
+  email: string;
+  state: string;
+  city: string;
+  complianceStatus: string;
+  source: string;
+  campaign: string;
+  createdAt: string;
+};
+
 export default function RegistrationWizard() {
   const router = useRouter();
   const { user, loading } = useAuth();
@@ -153,6 +167,39 @@ export default function RegistrationWizard() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+
+  const sendVendorRegistrationAlert = async (payload: VendorRegistrationAlertPayload) => {
+    try {
+      const response = await fetch("/api/vendor-registration-alert", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const responseText = await response.text();
+        console.error("VENDOR_ALERT_API_FAILED", {
+          status: response.status,
+          responseText,
+          payload,
+        });
+        return;
+      }
+
+      const result = (await response.json()) as { success?: boolean; message?: string };
+      console.log("VENDOR_ALERT_API_SUCCESS", {
+        success: result.success,
+        message: result.message,
+      });
+    } catch (error) {
+      console.error("VENDOR_ALERT_API_ERROR", {
+        payload,
+        error,
+      });
+    }
+  };
 
   const progressLabel = useMemo(() => `${step} of ${steps.length}`, [step]);
 
@@ -508,6 +555,20 @@ export default function RegistrationWizard() {
       console.log("NETWORK STEP 3 - After addDoc", { operation: "Firestore addDoc" });
 
       console.log("STEP 10 - Firestore write success", { docId: docRef.id, vendorId: vendorDoc.vendorId });
+
+      await sendVendorRegistrationAlert({
+        businessName: vendorDoc.businessName,
+        ownerName: vendorDoc.ownerName,
+        mobile: vendorDoc.mobile,
+        whatsapp: vendorDoc.whatsapp,
+        email: vendorDoc.email,
+        state: "Not provided",
+        city: vendorDoc.city,
+        complianceStatus: vendorDoc.verificationStatus,
+        source: vendorDoc.source,
+        campaign: "Vendor Registration Wizard",
+        createdAt: new Date().toISOString(),
+      });
 
       if (uploadWarning) {
         setSubmitMessage("Registration submitted, but some document uploads failed. You can update uploads later from your dashboard.");
