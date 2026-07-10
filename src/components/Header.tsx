@@ -37,64 +37,61 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-[#FAFAF8]/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-[#1b3150]/15 bg-[#FBF8F0]/88 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-3 text-xl font-bold tracking-tight text-slate-900 md:text-2xl">
+        <Link href="/" className="flex items-center gap-3.5 text-[#0B1830]">
           <Image
             src="/bmh-logo.svg"
             alt="BookMyHalwai logo"
-            className="h-10 w-10 shrink-0 rounded-full border border-slate-200 bg-white object-cover shadow-sm sm:h-11 sm:w-11"
-            width={44}
-            height={44}
+            className="h-11 w-11 shrink-0 rounded-full border border-[#D4BF95] bg-[#FCF8EE] object-cover shadow-[0_10px_24px_rgba(11,24,48,0.2)] sm:h-12 sm:w-12"
+            width={48}
+            height={48}
+            priority
           />
           <span className="leading-none">
-            BookMy<span className="text-[#D4AF37]">Halwai</span>
+            <span className="block font-serif text-lg font-semibold tracking-[0.14em] sm:text-xl">BOOKMY</span>
+            <span className="block -mt-0.5 font-serif text-lg font-semibold tracking-[0.14em] text-[#0F6456] sm:text-xl">HALWAI</span>
           </span>
         </Link>
 
-        <div className="hidden items-center gap-6 lg:flex">
-          <nav className="flex items-center gap-2 text-sm font-medium text-slate-700">
+        <div className="hidden items-center gap-6 xl:flex">
+          <nav className="flex items-center gap-1 text-sm font-semibold uppercase tracking-[0.12em] text-[#3E5168]">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-full px-3 py-2 transition hover:bg-slate-100 hover:text-[#0F172A]"
+                className="rounded-full px-4 py-2.5 transition hover:bg-[#0B1830] hover:text-[#F7F1E3]"
               >
-                <span className="inline-flex items-center gap-2">
-                  {item.label}
-                  {item.href === "/caterers" ? (
-                    <span className="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-600">Coming Soon</span>
-                  ) : null}
-                </span>
+                {item.label}
               </Link>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
             {loading ? (
-              <span className="text-sm font-medium text-slate-500">Loading...</span>
+              <span className="text-sm font-semibold text-[#4B5F76]">Loading...</span>
             ) : user ? (
               <>
-                <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 shadow-sm">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0F172A] text-sm font-semibold text-white">
+                <div className="flex items-center gap-3 rounded-full border border-[#D9C8A7] bg-[#FFFCF5] px-3 py-2 shadow-[0_8px_18px_rgba(11,24,48,0.1)]">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0B1830] text-sm font-semibold text-white">
                     {avatarInitial}
                   </div>
-                  <span className="text-sm font-semibold text-slate-700">{displayName}</span>
+                  <span className="max-w-[160px] truncate text-sm font-semibold text-[#243955]">{displayName}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   {quickLinks.map((link) => (
-                    <Link key={link.href} href={link.href} className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-[#0F172A]">
+                    <Link key={link.href} href={link.href} className="rounded-full px-3 py-2 text-sm font-semibold text-[#40536A] transition hover:bg-[#EEE6D5] hover:text-[#0B1830]">
                       {link.label}
                     </Link>
                   ))}
-                  <Link href="/customer/profile" className="rounded-full px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-[#0F172A]">
+                  <Link href="/customer/profile" className="rounded-full px-3 py-2 text-sm font-semibold text-[#40536A] transition hover:bg-[#EEE6D5] hover:text-[#0B1830]">
                     Profile
                   </Link>
                 </div>
                 <button
                   type="button"
                   onClick={() => logout()}
-                  className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-[#0F172A]"
+                  className="rounded-full border border-[#D1BD98] px-4 py-2 text-sm font-semibold text-[#3C4F67] transition hover:border-[#BFA36E] hover:text-[#0B1830]"
                 >
                   Logout
                 </button>
@@ -103,18 +100,17 @@ export default function Header() {
               <button
                 type="button"
                 onClick={() => setIsLoginOpen(true)}
-                className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-[#0F172A]"
+                className="rounded-full border border-[#D1BD98] px-4 py-2 text-sm font-semibold text-[#3C4F67] transition hover:border-[#BFA36E] hover:text-[#0B1830]"
               >
                 Login
               </button>
             )}
+
             <Link
               href="/vendor/register"
-              className="inline-flex items-center gap-2 rounded-full bg-[#0F172A] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1E293B]"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#0B1830] to-[#1E426A] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.1em] text-[#F8F2E5] shadow-[0_12px_26px_rgba(11,24,48,0.3)] transition hover:translate-y-[-1px]"
             >
-              <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-300" />
               Become a Partner
-              <span className="rounded-full border border-white/40 bg-white/10 px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-white">LIVE</span>
             </Link>
           </div>
         </div>
@@ -122,7 +118,7 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setIsOpen((current) => !current)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 transition hover:border-slate-400 hover:text-[#0F172A] lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#D1BD98] bg-[#FFFBEF] text-[#334A63] transition hover:border-[#BFA36E] hover:text-[#0B1830] xl:hidden"
           aria-label="Toggle navigation"
         >
           <span className="sr-only">Toggle navigation</span>
@@ -133,35 +129,30 @@ export default function Header() {
       </div>
 
       {isOpen ? (
-        <div className="border-t border-slate-200 bg-[#FAFAF8] px-4 py-4 shadow-sm backdrop-blur-sm lg:hidden">
+        <div className="border-t border-[#D7C8AC] bg-[#FDF9F0] px-4 py-4 shadow-sm backdrop-blur-sm xl:hidden">
           <nav className="space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="block rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-[#0F172A]"
+                className="block rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-[#3E5168] transition hover:bg-[#EDE4D2] hover:text-[#0B1830]"
                 onClick={() => setIsOpen(false)}
               >
-                <span className="inline-flex items-center gap-2">
-                  {item.label}
-                  {item.href === "/caterers" ? (
-                    <span className="rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-600">Soon</span>
-                  ) : null}
-                </span>
+                {item.label}
               </Link>
             ))}
             {user ? (
               <>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
-                  <div className="font-semibold text-slate-900">{displayName}</div>
-                  <div className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">{user.role}</div>
+                <div className="rounded-2xl border border-[#D9C8A7] bg-[#FFFDF8] px-4 py-3 text-sm font-medium text-[#3E5168]">
+                  <div className="font-semibold text-[#0B1830]">{displayName}</div>
+                  <div className="mt-1 text-xs uppercase tracking-[0.2em] text-[#63778D]">{user.role}</div>
                 </div>
                 {quickLinks.map((link) => (
-                  <Link key={link.href} href={link.href} className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-[#0F172A]" onClick={() => setIsOpen(false)}>
+                  <Link key={link.href} href={link.href} className="block rounded-2xl px-4 py-3 text-left text-sm font-semibold uppercase tracking-[0.08em] text-[#3E5168] transition hover:bg-[#EDE4D2] hover:text-[#0B1830]" onClick={() => setIsOpen(false)}>
                     {link.label}
                   </Link>
                 ))}
-                <Link href="/customer/profile" className="block rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-[#0F172A]" onClick={() => setIsOpen(false)}>
+                <Link href="/customer/profile" className="block rounded-2xl px-4 py-3 text-left text-sm font-semibold uppercase tracking-[0.08em] text-[#3E5168] transition hover:bg-[#EDE4D2] hover:text-[#0B1830]" onClick={() => setIsOpen(false)}>
                   Profile
                 </Link>
                 <button
@@ -170,7 +161,7 @@ export default function Header() {
                     logout();
                     setIsOpen(false);
                   }}
-                  className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-[#0F172A]"
+                  className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold uppercase tracking-[0.08em] text-[#3E5168] transition hover:bg-[#EDE4D2] hover:text-[#0B1830]"
                 >
                   Logout
                 </button>
@@ -182,19 +173,17 @@ export default function Header() {
                   setIsLoginOpen(true);
                   setIsOpen(false);
                 }}
-                className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-[#0F172A]"
+                className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold uppercase tracking-[0.08em] text-[#3E5168] transition hover:bg-[#EDE4D2] hover:text-[#0B1830]"
               >
                 Login
               </button>
             )}
             <Link
               href="/vendor/register"
-              className="mt-2 flex items-center justify-center gap-2 rounded-2xl bg-[#0F172A] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#1E293B]"
+              className="mt-2 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#0B1830] to-[#1E426A] px-4 py-3 text-center text-sm font-semibold uppercase tracking-[0.1em] text-[#F8F2E5]"
               onClick={() => setIsOpen(false)}
             >
-              <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-300" />
               Become a Partner
-              <span className="rounded-full border border-white/40 bg-white/10 px-2 py-0.5 text-[10px] font-bold tracking-[0.12em] text-white">LIVE</span>
             </Link>
           </nav>
         </div>

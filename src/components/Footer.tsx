@@ -1,48 +1,73 @@
 import Link from "next/link";
 
+const linkGroups = [
+  {
+    title: "Marketplace",
+    links: [
+      { label: "Find Caterers", href: "/caterers" },
+      { label: "Become a Partner", href: "/vendor/register" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Support", href: "/support" },
+      { label: "Vendor Onboarding", href: "/vendor/register" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Customer Dashboard", href: "/customer/dashboard" },
+      { label: "Vendor Dashboard", href: "/vendor/dashboard" },
+      { label: "New Booking", href: "/bookings/new" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms", href: "/terms" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Compliance", href: "/contact" },
+    ],
+  },
+];
+
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-[#FAFAF8] text-slate-700">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="mt-20 border-t border-[#CDBA95] bg-gradient-to-b from-[#0B1830] to-[#081221] text-[#F4EEE2]">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="grid gap-10 lg:grid-cols-[1.2fr_2fr]">
           <div>
-            <p className="text-xl font-semibold tracking-tight text-slate-900">
-              BookMy<span className="text-[#D4AF37]">Halwai</span>
+            <p className="font-serif text-3xl font-semibold tracking-[0.08em] text-[#F7F1E4]">BOOKMYHALWAI</p>
+            <p className="mt-4 max-w-md text-sm leading-7 text-[#D6C7AC]">
+              Premium hospitality marketplace for trusted halwais and caterers. Built for modern discovery, verified quality, and wedding-ready service excellence.
             </p>
-            <p className="mt-3 text-sm leading-7 text-slate-600">
-              India&apos;s premium marketplace for trusted halwais, caterers, and event food partners.
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Marketplace</p>
-            <div className="mt-3 space-y-2 text-sm">
-              <Link href="/caterers" className="block transition hover:text-[#0F172A]">Find Caterers</Link>
-              <Link href="/vendor/register" className="block transition hover:text-[#0F172A]">Become a Partner</Link>
-              <Link href="/contact" className="block transition hover:text-[#0F172A]">Onboarding Support</Link>
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D4BF95]/50 bg-[#D4BF95]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#E8DAC0]">
+              Growing Across India
             </div>
           </div>
 
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Company</p>
-            <div className="mt-3 space-y-2 text-sm">
-              <Link href="/about" className="block transition hover:text-[#0F172A]">About</Link>
-              <Link href="/contact" className="block transition hover:text-[#0F172A]">Contact</Link>
-              <Link href="/support" className="block transition hover:text-[#0F172A]">Support</Link>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Legal</p>
-            <div className="mt-3 space-y-2 text-sm">
-              <Link href="/terms" className="block transition hover:text-[#0F172A]">Terms</Link>
-              <Link href="/privacy" className="block transition hover:text-[#0F172A]">Privacy</Link>
-            </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {linkGroups.map((group) => (
+              <div key={group.title}>
+                <p className="font-serif text-lg tracking-[0.08em] text-[#F7F1E4]">{group.title}</p>
+                <div className="mt-4 space-y-2.5 text-sm">
+                  {group.links.map((link) => (
+                    <Link key={link.href + link.label} href={link.href} className="block text-[#CFBEA0] transition hover:text-[#F7F1E4]">
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="mt-10 border-t border-slate-200 pt-5 text-sm text-slate-500">
-          © 2026 BookMyHalwai. All rights reserved.
+        <div className="mt-12 border-t border-[#D4BF95]/20 pt-6 text-sm text-[#CFBEA0]">
+          <p>© 2026 BookMyHalwai. All rights reserved.</p>
         </div>
       </div>
     </footer>

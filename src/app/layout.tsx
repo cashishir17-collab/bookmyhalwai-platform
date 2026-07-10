@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Manrope } from "next/font/google";
+import { Cinzel, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import DemoSeedLoader from "@/components/DemoSeedLoader";
 
-const manrope = Manrope({
-  variable: "--font-geist-sans",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-body",
+  subsets: ["latin"],
+});
+
+const cinzel = Cinzel({
+  variable: "--font-display",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
@@ -29,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${jakarta.variable} ${cinzel.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="page-shell min-h-full flex flex-col text-slate-900">
         <AuthProvider>

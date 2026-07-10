@@ -1,20 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
-  <title id="title">BookMyHalwai BMH logo</title>
-  <desc id="desc">Circular monogram with BMH initials and a subtle serving cloche.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">BookMyHalwai BMH emblem</title>
+  <desc id="desc">Minimal circular luxury emblem with BMH initials and a subtle chef cloche line.</desc>
   <defs>
-    <linearGradient id="goldRing" x1="0%" x2="100%" y1="0%" y2="100%">
-      <stop offset="0%" stop-color="#D4AF37"/>
-      <stop offset="100%" stop-color="#B89422"/>
+    <linearGradient id="ring" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#D7BA7D"/>
+      <stop offset="100%" stop-color="#B4904E"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0%" x2="0%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#10233E"/>
+      <stop offset="100%" stop-color="#0A162B"/>
     </linearGradient>
   </defs>
-  <circle cx="120" cy="120" r="112" fill="#FAFAF8" stroke="#0F172A" stroke-width="10"/>
-  <circle cx="120" cy="120" r="93" fill="#0F172A"/>
-  <circle cx="120" cy="120" r="77" fill="none" stroke="#10B981" stroke-width="3" opacity="0.45"/>
-  <g transform="translate(120 78)">
-    <path d="M-28 6h56c0-15-12-27-28-27S-28-9-28 6Z" fill="none" stroke="url(#goldRing)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M-30 10h60c0 4-3 7-7 7h-46c-4 0-7-3-7-7Z" fill="#D4AF37" opacity="0.95"/>
-    <path d="M0 -24c4 0 7 3 7 7 0 3-2 5-4 7h-6c-2-2-4-4-4-7 0-4 3-7 7-7Z" fill="#10B981"/>
+
+  <circle cx="128" cy="128" r="120" fill="#FCF8EE" stroke="url(#ring)" stroke-width="8"/>
+  <circle cx="128" cy="128" r="102" fill="url(#core)"/>
+  <circle cx="128" cy="128" r="84" fill="none" stroke="#0F6456" stroke-width="2.5" opacity="0.5"/>
+
+  <g transform="translate(128 83)">
+    <path d="M-32 8h64c0-17-14-30-32-30S-32-9-32 8Z" fill="none" stroke="url(#ring)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-35 12h70c0 5-4 8-8 8h-54c-4 0-8-3-8-8Z" fill="#D7BA7D"/>
+    <circle cx="0" cy="-24" r="4" fill="#0F6456"/>
   </g>
-  <text x="120" y="144" fill="#FAFAF8" font-family="Inter, Arial, sans-serif" font-size="46" font-weight="800" text-anchor="middle" letter-spacing="2">BMH</text>
-  <text x="120" y="173" fill="#10B981" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="3">BOOKMYHALWAI</text>
+
+  <text x="128" y="150" fill="#F7F1E4" font-family="Cinzel, serif" font-size="52" font-weight="700" letter-spacing="3" text-anchor="middle">BMH</text>
 </svg>
