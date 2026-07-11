@@ -188,6 +188,8 @@ export default function VendorVerificationDetailPage() {
     );
   }
 
+  const vendorRegistrationNumber = vendor.registrationNumber || (vendor.id.startsWith("BMH-V-") ? vendor.id : "—");
+
   return (
     <div className="page-shell min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -196,6 +198,7 @@ export default function VendorVerificationDetailPage() {
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Vendor Verification Review</p>
               <h1 className="mt-2 text-3xl font-semibold text-slate-900">{vendor.businessName || "Vendor KYC"}</h1>
+              <p className="mt-2 text-sm font-semibold text-slate-700">Registration Number: {vendorRegistrationNumber}</p>
               <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">Inspect uploaded documents, confirm mandatory checks, and decide whether the vendor is approved, rejected, or asked to re-upload.</p>
             </div>
             <Link href="/admin/vendors/verification" className="btn btn-outline btn-sm type-button">Back to queue</Link>

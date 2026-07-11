@@ -52,10 +52,17 @@ export function mapVendorRegistrationToVerificationRecord(id: string, rawData: u
   const documents = pickRecord(data.documents) ?? pickRecord(data.uploadedFiles);
   const social = pickRecord(data.social) ?? pickRecord(data.socialLinks);
   const bank = pickRecord(data.bank) ?? pickRecord(data.bankDetails);
+  const registrationNumber =
+    typeof data.registrationNumber === "string"
+      ? data.registrationNumber
+      : id.startsWith("BMH-V-")
+        ? id
+        : undefined;
 
   return {
     id,
     ...data,
+    registrationNumber,
     documents,
     social,
     bank,

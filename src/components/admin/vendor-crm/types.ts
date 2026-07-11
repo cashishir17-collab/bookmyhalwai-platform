@@ -1,5 +1,6 @@
 export interface VendorRecord {
   id: string;
+  registrationNumber?: string;
   businessName?: string;
   ownerName?: string;
   city?: string;

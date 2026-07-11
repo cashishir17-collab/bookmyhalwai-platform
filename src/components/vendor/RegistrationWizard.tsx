@@ -3,7 +3,7 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { doc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { app, db, storage } from "@/lib/firebase";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
@@ -77,6 +77,9 @@ const initialState = {
 type RegistrationForm = typeof initialState;
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const VENDOR_COUNTER_COLLECTION = "systemCounters";
+const VENDOR_COUNTER_DOCUMENT = "vendorRegistration";
+const VENDOR_REGISTRATION_PREFIX = "BMH-V";
 
 async function withTimeout<T>(
   promise: Promise<T>,
@@ -102,6 +105,32 @@ async function withTimeout<T>(
 function toNumber(value: string) {
   const numericValue = Number(value);
   return Number.isNaN(numericValue) ? 0 : numericValue;
+}
+
+async function getNextVendorRegistrationNumber() {
+  if (!db) {
+    throw new Error("Firestore is not configured yet.");
+  }
+
+  const currentYear = new Date().getFullYear();
+  const counterRef = doc(db, VENDOR_COUNTER_COLLECTION, VENDOR_COUNTER_DOCUMENT);
+
+  return runTransaction(db, async (transaction) => {
+    const counterSnapshot = await transaction.get(counterRef);
+    const counterData = counterSnapshot.data() as { currentYear?: unknown; lastSequence?: unknown } | undefined;
+
+    const storedYear = typeof counterData?.currentYear === "number" ? counterData.currentYear : null;
+    const storedSequence = typeof counterData?.lastSequence === "number" ? counterData.lastSequence : 0;
+    const nextSequence = storedYear === currentYear ? storedSequence + 1 : 1;
+
+    transaction.set(counterRef, {
+      currentYear,
+      lastSequence: nextSequence,
+      updatedAt: serverTimestamp(),
+    });
+
+    return `${VENDOR_REGISTRATION_PREFIX}-${currentYear}-${String(nextSequence).padStart(6, "0")}`;
+  });
 }
 
 function calculateProfileCompletion(form: RegistrationForm) {
@@ -167,6 +196,8 @@ export default function RegistrationWizard() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [registrationNumber, setRegistrationNumber] = useState("");
+  const [copyMessage, setCopyMessage] = useState("");
 
   const sendVendorRegistrationAlert = async (payload: VendorRegistrationAlertPayload) => {
     try {
@@ -198,6 +229,19 @@ export default function RegistrationWizard() {
         payload,
         error,
       });
+    }
+  };
+
+  const handleCopyRegistrationNumber = async () => {
+    if (!registrationNumber) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(registrationNumber);
+      setCopyMessage("Registration number copied.");
+    } catch {
+      setCopyMessage("Copy failed. Please copy the number manually.");
     }
   };
 
@@ -478,8 +522,10 @@ export default function RegistrationWizard() {
       }
 
       const profileCompletion = calculateProfileCompletion(form);
+      const generatedRegistrationNumber = await getNextVendorRegistrationNumber();
       const vendorDoc = {
-        vendorId: `vendor-${Date.now()}`,
+        vendorId: generatedRegistrationNumber,
+        registrationNumber: generatedRegistrationNumber,
         userId: user.uid,
         businessName: form.businessName.trim(),
         ownerName: form.ownerName.trim(),
@@ -544,17 +590,17 @@ export default function RegistrationWizard() {
       };
 
       console.log("STEP 8 - Vendor object", vendorDoc);
-      console.log("STEP 9 - Writing Firestore", { collection: "vendors", db: Boolean(db) });
+      console.log("STEP 9 - Writing Firestore", { collection: "vendors", db: Boolean(db), registrationNumber: generatedRegistrationNumber });
 
-      console.log("NETWORK STEP 3 - Before addDoc", { operation: "Firestore addDoc" });
-      const docRef = await withTimeout(
-        addDoc(collection(db, "vendors"), vendorDoc),
+      console.log("NETWORK STEP 3 - Before setDoc", { operation: "Firestore setDoc", registrationNumber: generatedRegistrationNumber });
+      await withTimeout(
+        setDoc(doc(db, "vendors", generatedRegistrationNumber), vendorDoc),
         25000,
-        "Firestore addDoc",
+        "Firestore setDoc",
       );
-      console.log("NETWORK STEP 3 - After addDoc", { operation: "Firestore addDoc" });
+      console.log("NETWORK STEP 3 - After setDoc", { operation: "Firestore setDoc", registrationNumber: generatedRegistrationNumber });
 
-      console.log("STEP 10 - Firestore write success", { docId: docRef.id, vendorId: vendorDoc.vendorId });
+      console.log("STEP 10 - Firestore write success", { docId: generatedRegistrationNumber, vendorId: vendorDoc.vendorId });
 
       await sendVendorRegistrationAlert({
         businessName: vendorDoc.businessName,
@@ -575,9 +621,10 @@ export default function RegistrationWizard() {
       } else {
         setSubmitMessage("Registration submitted successfully. Our team will verify your profile shortly.");
       }
+      setRegistrationNumber(generatedRegistrationNumber);
+      setCopyMessage("");
 
-      console.log("STEP 11 - Redirecting to /vendor/dashboard");
-      router.push("/vendor/dashboard");
+      console.log("STEP 11 - Registration complete and confirmation panel shown");
     } catch (error) {
       console.error("FIRESTORE_WRITE_FAILED - Error details:");
       if (error instanceof Error) {
@@ -873,21 +920,50 @@ export default function RegistrationWizard() {
           <ProgressStepper steps={steps} currentStep={step} />
         </div>
 
-        <form className="vendor-form mt-8 space-y-6" onSubmit={handleSubmit}>
-          {renderStep()}
+        {registrationNumber ? (
+          <div className="mt-8 rounded-3xl border border-emerald-300 bg-emerald-50 px-6 py-8 text-center sm:px-10">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Registration Successful</p>
+            <h2 className="mt-3 text-3xl font-semibold text-emerald-950">Your BookMyHalwai Vendor Registration Number is:</h2>
+            <p className="mt-5 rounded-2xl border border-emerald-300 bg-white px-4 py-4 text-2xl font-bold tracking-wide text-emerald-800">{registrationNumber}</p>
+            <p className="mt-4 text-sm text-emerald-900">Please save this number for future communication and verification.</p>
 
-          {submitMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{submitMessage}</div> : null}
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={handleCopyRegistrationNumber}
+                className="w-full rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 sm:w-auto"
+              >
+                Copy Registration Number
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push("/vendor/dashboard")}
+                className="w-full rounded-full border border-emerald-400 bg-white px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100 sm:w-auto"
+              >
+                Go to Dashboard
+              </button>
+            </div>
 
-          <div className="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-between">
-            <button type="button" onClick={prevStep} disabled={step === 1} className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">Back</button>
-
-            {step < steps.length ? (
-              <button type="button" onClick={nextStep} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] sm:w-auto">Continue</button>
-            ) : (
-              <button type="submit" disabled={isSubmitting} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
-            )}
+            {copyMessage ? <p className="mt-3 text-sm font-medium text-emerald-700">{copyMessage}</p> : null}
+            {submitMessage ? <p className="mt-2 text-sm text-emerald-700">{submitMessage}</p> : null}
           </div>
-        </form>
+        ) : (
+          <form className="vendor-form mt-8 space-y-6" onSubmit={handleSubmit}>
+            {renderStep()}
+
+            {submitMessage ? <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{submitMessage}</div> : null}
+
+            <div className="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-between">
+              <button type="button" onClick={prevStep} disabled={step === 1} className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">Back</button>
+
+              {step < steps.length ? (
+                <button type="button" onClick={nextStep} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] sm:w-auto">Continue</button>
+              ) : (
+                <button type="submit" disabled={isSubmitting} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
+              )}
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

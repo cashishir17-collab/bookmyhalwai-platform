@@ -30,6 +30,7 @@ const verificationStyles: Record<string, string> = {
 export default function VendorPipelineCard({ vendor, isSelected, onSelect }: VendorPipelineCardProps) {
   const profileCompletion = calculateProfileCompletion(vendor);
   const qualityScore = calculateVendorQualityScore(vendor);
+  const vendorRegistrationNumber = vendor.registrationNumber || (vendor.id.startsWith("BMH-V-") ? vendor.id : "—");
 
   return (
     <button
@@ -57,6 +58,7 @@ export default function VendorPipelineCard({ vendor, isSelected, onSelect }: Ven
       <div className="mt-4 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
         <p>City: {vendor.city || "—"}</p>
         <p>Mobile: {vendor.mobile || "—"}</p>
+        <p>Registration No: {vendorRegistrationNumber}</p>
         <p>WhatsApp: {vendor.whatsapp || "—"}</p>
         <p>Email: {vendor.email || "—"}</p>
       </div>

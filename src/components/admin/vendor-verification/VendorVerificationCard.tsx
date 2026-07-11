@@ -8,6 +8,7 @@ interface VendorVerificationCardProps {
 
 export default function VendorVerificationCard({ vendor }: VendorVerificationCardProps) {
   const createdAtDate = toDateValue(vendor.createdAt);
+  const vendorRegistrationNumber = vendor.registrationNumber || (vendor.id.startsWith("BMH-V-") ? vendor.id : "—");
   const registrationDate = createdAtDate
     ? new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "short", year: "numeric" }).format(createdAtDate)
     : "—";
@@ -25,6 +26,7 @@ export default function VendorVerificationCard({ vendor }: VendorVerificationCar
       <div className="mt-4 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
         <p>City: {vendor.city || "—"}</p>
         <p>Mobile: {vendor.mobile || "—"}</p>
+        <p>Registration No: {vendorRegistrationNumber}</p>
         <p>Registered: {registrationDate}</p>
         <p>WhatsApp: {vendor.whatsapp || "—"}</p>
         <p>Email: {vendor.email || "—"}</p>

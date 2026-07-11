@@ -15,6 +15,7 @@ export interface VerificationDocument {
 
 export interface VendorVerificationRecord {
   id: string;
+  registrationNumber?: string;
   businessName?: string;
   ownerName?: string;
   city?: string;

@@ -108,6 +108,7 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
   };
 
   const qualityScore = calculateVendorQualityScore(localVendor);
+  const vendorRegistrationNumber = localVendor.registrationNumber || (localVendor.id.startsWith("BMH-V-") ? localVendor.id : "—");
 
   return (
     <div id="crm-detail" className="space-y-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
@@ -115,6 +116,7 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-600">Vendor CRM</p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-900">{localVendor.businessName || "Vendor Detail"}</h2>
+          <p className="mt-2 text-sm font-semibold text-slate-700">Registration Number: {vendorRegistrationNumber}</p>
           <p className="mt-2 text-sm text-slate-500">Internal operational view for onboarding, verification, and follow-up.</p>
         </div>
         <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700">
