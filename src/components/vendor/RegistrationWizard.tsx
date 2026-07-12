@@ -602,6 +602,8 @@ export default function RegistrationWizard() {
 
       console.log("STEP 10 - Firestore write success", { docId: generatedRegistrationNumber, vendorId: vendorDoc.vendorId });
 
+      await setDoc(doc(db, "users", user.uid), { role: "vendor", updatedAt: serverTimestamp() }, { merge: true });
+
       await sendVendorRegistrationAlert({
         businessName: vendorDoc.businessName,
         ownerName: vendorDoc.ownerName,

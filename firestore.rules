@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function role() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role; }
+    function admin() { return signedIn() && role() == 'admin'; }
+    match /vendors/{vendorId} {
+      allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified'] || admin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if admin() || (signedIn() && resource.data.userId == request.auth.uid);
+    }
+    match /enquiries/{enquiryId} {
+      allow create: if signedIn() && role() == 'customer' && request.resource.data.customerId == request.auth.uid;
+      allow read: if admin() || (signedIn() && (resource.data.customerId == request.auth.uid || resource.data.vendorOwnerId == request.auth.uid));
+      allow update: if admin() || (signedIn() && (resource.data.customerId == request.auth.uid || resource.data.vendorOwnerId == request.auth.uid));
+      allow delete: if admin();
+    }
+    match /users/{userId} { allow read, create, update: if signedIn() && (request.auth.uid == userId || admin()); }
+    match /{document=**} { allow read, write: if admin(); }
+  }
+}
