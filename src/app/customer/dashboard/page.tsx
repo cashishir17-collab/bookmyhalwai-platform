@@ -110,6 +110,7 @@ export default function CustomerDashboardPage() {
               <Link href="/customer/bookings" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">
                 My Bookings
               </Link>
+              <Link href="/customer/enquiries" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">My Enquiries & Quotations</Link>
               <Link href="/customer/profile" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">
                 Edit Profile
               </Link>

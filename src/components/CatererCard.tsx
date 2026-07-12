@@ -73,6 +73,7 @@ export default function CatererCard({ caterer }: CatererCardProps) {
         </div>
 
         <div className="pt-4">
+          <Link href={`/enquiries/new?vendorId=${encodeURIComponent(caterer.id)}&vendorName=${encodeURIComponent(caterer.name)}`} className="mb-2 inline-flex w-full items-center justify-center rounded-2xl bg-[#0F6456] px-4 py-3 text-sm font-semibold text-white">Request Quotation</Link>
           <Link
             href={`/caterers/${caterer.id}`}
             className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0F172A] px-4 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-[#1E293B]"

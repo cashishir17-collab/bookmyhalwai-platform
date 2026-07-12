@@ -131,6 +131,7 @@ export default function VendorDashboardPage() {
           <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">Keep bookings moving, manage your premium profile, and track customer enquiries from one streamlined workspace.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/vendor/bookings" className="btn btn-primary btn-md type-button">Review Bookings</Link>
+            <Link href="/vendor/enquiries" className="btn btn-outline btn-md type-button">Enquiries & Quotations</Link>
             <Link href="/vendor/menus" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">Update Menus</Link>
             <Link href="/vendor/reviews" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">View Reviews</Link>
           </div>

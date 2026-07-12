@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import CatererCard, { type Caterer } from "@/components/CatererCard";
-import { caterers } from "@/data/caterers";
+import { db } from "@/lib/firebase";
 
 const foodTypeOptions = ["All", "Veg", "Non-Veg"] as const;
 const budgetOptions = ["Any Budget", "Under ₹500", "₹500–₹700", "Above ₹700"] as const;
@@ -17,20 +18,28 @@ function matchesBudget(price: number, budgetFilter: (typeof budgetOptions)[numbe
 }
 
 export default function CatererMarketplace() {
+  const [marketplaceCaterers, setMarketplaceCaterers] = useState<Caterer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCity, setSelectedCity] = useState("All Cities");
   const [selectedFoodType, setSelectedFoodType] = useState<(typeof foodTypeOptions)[number]>("All");
   const [selectedBudget, setSelectedBudget] = useState<(typeof budgetOptions)[number]>("Any Budget");
 
-  const cityOptions = useMemo(
-    () => ["All Cities", ...Array.from(new Set(caterers.map((item) => item.city))).sort((a, b) => a.localeCompare(b))],
-    [],
-  );
+  useEffect(() => {
+    const load = async () => {
+      if (!db) { setLoading(false); return; }
+      const snapshot = await getDocs(query(collection(db, "vendors"), where("verificationStatus", "in", ["Approved", "Published", "Verified"])));
+      setMarketplaceCaterers(snapshot.docs.map((item) => { const row = item.data(); const services = row.services || {}; const uploads = row.uploadedFiles || row.documents || {}; const tags = Object.entries(services).filter(([, enabled]) => enabled).map(([name]) => name.replace(/([A-Z])/g, " $1")); return { id:item.id, name:row.businessName||"Verified Caterer", location:row.serviceAreas?.join?.(", ")||row.city||"India", city:row.city||"India", image:uploads.foodPhotos?.[0]||uploads.kitchenPhotos?.[0]||uploads.logo||"/images/home/hero-luxury.jpg", price:Number(row.pricing?.startingPrice||0), rating:Number(row.rating||0), events:Number(row.completedEvents||0), cuisines:tags.length?tags:["Catering"], foodType:services.veg&&!services.nonVeg?"Veg":services.nonVeg?"Non-Veg":"Veg", liveCounter:Boolean(services.liveCounter), outdoorCatering:Boolean(services.outdoorCatering) } as Caterer; }));
+      setLoading(false);
+    }; void load();
+  }, []);
+  const source = marketplaceCaterers;
+  const cityOptions = useMemo(() => ["All Cities", ...Array.from(new Set(source.map((item) => item.city))).sort((a, b) => a.localeCompare(b))], [source]);
 
   const filteredCaterers = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
 
-    return (caterers as Caterer[]).filter((caterer) => {
+    return source.filter((caterer) => {
       const searchableFields = [
         caterer.name,
         caterer.city,
@@ -48,7 +57,7 @@ export default function CatererMarketplace() {
 
       return matchesSearch && matchesCity && matchesFoodType && matchesPrice;
     });
-  }, [searchTerm, selectedCity, selectedFoodType, selectedBudget]);
+  }, [searchTerm, selectedCity, selectedFoodType, selectedBudget, source]);
 
   return (
     <main className="page-shell min-h-screen px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
@@ -130,7 +139,7 @@ export default function CatererMarketplace() {
           </div>
         </section>
 
-        {filteredCaterers.length > 0 ? (
+        {loading ? <section className="section-shell rounded-[2rem] p-10 text-center">Loading approved caterers…</section> : filteredCaterers.length > 0 ? (
           <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {filteredCaterers.map((caterer) => (
               <CatererCard key={caterer.id} caterer={caterer} />
@@ -138,10 +147,9 @@ export default function CatererMarketplace() {
           </section>
         ) : (
           <section className="section-shell rounded-[2rem] p-10 text-center">
-            <h2 className="text-2xl font-semibold text-[#0B1830]">No caterers match these filters</h2>
+            <h2 className="text-2xl font-semibold text-[#0B1830]">No approved caterers are live yet</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#51657D]">
-              Try broadening your city, budget, or food type selection. You can also search by a cuisine or event keyword like Wedding,
-              Corporate, Sweets, or Live Counters.
+              New profiles will appear here automatically after admin verification.
             </p>
           </section>
         )}
