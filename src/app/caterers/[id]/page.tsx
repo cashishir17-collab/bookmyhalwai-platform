@@ -6,9 +6,9 @@ import MenuPackageCard from "@/components/MenuPackageCard";
 import ReviewCard from "@/components/ReviewCard";
 
 interface CatererDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const sampleReviews = [
@@ -48,8 +48,9 @@ export function generateStaticParams() {
   return caterers.map((caterer) => ({ id: caterer.id }));
 }
 
-export default function CatererDetailsPage({ params }: CatererDetailsPageProps) {
-  const caterer = caterers.find((item) => item.id === params.id);
+export default async function CatererDetailsPage({ params }: CatererDetailsPageProps) {
+  const { id } = await params;
+  const caterer = caterers.find((item) => item.id === id);
 
   if (!caterer) {
     notFound();
