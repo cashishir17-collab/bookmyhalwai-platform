@@ -24,6 +24,7 @@ export default function CatererMarketplace() {
   const [selectedCity, setSelectedCity] = useState("All Cities");
   const [selectedFoodType, setSelectedFoodType] = useState<(typeof foodTypeOptions)[number]>("All");
   const [selectedBudget, setSelectedBudget] = useState<(typeof budgetOptions)[number]>("Any Budget");
+  const [recommendedFirst, setRecommendedFirst] = useState(true);
 
   useEffect(() => {
     const load = async () => {
@@ -39,7 +40,7 @@ export default function CatererMarketplace() {
   const filteredCaterers = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
 
-    return source.filter((caterer) => {
+    const matches = source.filter((caterer) => {
       const searchableFields = [
         caterer.name,
         caterer.city,
@@ -57,7 +58,8 @@ export default function CatererMarketplace() {
 
       return matchesSearch && matchesCity && matchesFoodType && matchesPrice;
     });
-  }, [searchTerm, selectedCity, selectedFoodType, selectedBudget, source]);
+    return recommendedFirst ? [...matches].sort((a, b) => (b.rating * 20 + b.events - b.price / 100) - (a.rating * 20 + a.events - a.price / 100)) : matches;
+  }, [searchTerm, selectedCity, selectedFoodType, selectedBudget, recommendedFirst, source]);
 
   return (
     <main className="page-shell min-h-screen px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
@@ -133,6 +135,7 @@ export default function CatererMarketplace() {
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[#0B1830] px-4 py-3 text-sm text-[#F7F1E4]">
             <p className="font-semibold">{filteredCaterers.length} verified caterer{filteredCaterers.length === 1 ? "" : "s"} found</p>
+            <label className="flex items-center gap-2 text-xs font-semibold"><input type="checkbox" checked={recommendedFirst} onChange={(event) => setRecommendedFirst(event.target.checked)}/> Best match first</label>
             <Link href="/customer/dashboard" className="rounded-full border border-[#C7A667] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] transition hover:bg-[#122748]">
               Go to Dashboard
             </Link>

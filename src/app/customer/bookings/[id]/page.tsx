@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useParams } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { addNotification } from "@/lib/notifications";
+import { useAuth } from "@/hooks/useAuth";
 import BookingTimeline from "@/components/customer/BookingTimeline";
 import StatusBadge from "@/components/customer/StatusBadge";
 
@@ -30,13 +30,20 @@ interface BookingDetailsRecord {
   customerName?: string;
   customerPhone?: string;
   customerEmail?: string;
+  customerId?: string;
+  vendorId?: string;
+  reviewSubmitted?: boolean;
+  cancellationReason?: string;
 }
 
 export default function CustomerBookingDetailsPage() {
   const params = useParams();
+  const { user } = useAuth();
   const [booking, setBooking] = useState<BookingDetailsRecord | null>(null);
-  const [isPaying, setIsPaying] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState("");
+  const [cancellationReason, setCancellationReason] = useState("");
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState("");
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -51,29 +58,20 @@ export default function CustomerBookingDetailsPage() {
   }, [params?.id]);
 
   const handlePayAdvance = async () => {
-    if (!db || !booking?.id) return;
-    setIsPaying(true);
-    setPaymentMessage("");
+    setPaymentMessage("Secure online payments are being activated. No amount has been charged.");
+  };
 
-    try {
-      await updateDoc(doc(db, "bookings", booking.id), {
-        paymentStatus: "Advance Paid",
-        updatedAt: serverTimestamp(),
-      });
+  const requestCancellation = async () => {
+    if (!db || !booking?.id || !cancellationReason.trim()) return;
+    await updateDoc(doc(db, "bookings", booking.id), { status: "Cancellation Requested", cancellationReason: cancellationReason.trim(), cancellationRequestedAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    setBooking((current) => current ? { ...current, status: "Cancellation Requested", cancellationReason } : current);
+  };
 
-      await addNotification({
-        userId: booking.id,
-        bookingId: booking.id,
-        type: "advance_paid",
-        title: "Advance paid",
-        message: "Your advance payment has been recorded for this booking.",
-      });
-
-      setBooking((current) => (current ? { ...current, paymentStatus: "Advance Paid" } : current));
-      setPaymentMessage("Advance payment recorded. The booking remains pending vendor approval.");
-    } finally {
-      setIsPaying(false);
-    }
+  const submitReview = async () => {
+    if (!db || !booking?.id || !user || !review.trim()) return;
+    await addDoc(collection(db, "reviews"), { bookingId: booking.id, customerId: user.uid, customerName: user.displayName || booking.customerName || "Customer", vendorId: booking.vendorId || "", rating, review: review.trim(), eventDate: booking.eventDate || "", verified: true, createdAt: serverTimestamp() });
+    await updateDoc(doc(db, "bookings", booking.id), { reviewSubmitted: true, updatedAt: serverTimestamp() });
+    setBooking((current) => current ? { ...current, reviewSubmitted: true } : current);
   };
 
   if (!booking) {
@@ -158,13 +156,17 @@ export default function CustomerBookingDetailsPage() {
               <button
                 type="button"
                 onClick={handlePayAdvance}
-                disabled={isPaying || booking.paymentStatus === "Advance Paid"}
+                disabled={booking.paymentStatus === "Advance Paid"}
                 className="btn btn-primary btn-md type-button mt-6 w-full disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isPaying ? "Updating payment..." : booking.paymentStatus === "Advance Paid" ? "Advance Paid" : "Pay Advance"}
+                {booking.paymentStatus === "Advance Paid" ? "Advance Paid" : "Pay Advance Securely"}
               </button>
               {paymentMessage ? <p className="mt-3 text-sm text-emerald-700">{paymentMessage}</p> : null}
             </div>
+
+            {!(["Completed", "Cancelled", "Cancellation Requested"].includes(booking.status || "")) ? <div className="section-shell rounded-[2rem] p-8"><h2 className="text-2xl font-semibold text-slate-900">Cancellation</h2><textarea value={cancellationReason} onChange={(event) => setCancellationReason(event.target.value)} rows={3} placeholder="Tell us why you need to cancel" className="form-control mt-4"/><button type="button" onClick={requestCancellation} className="btn btn-outline btn-sm mt-4">Request cancellation</button></div> : null}
+
+            {booking.status === "Completed" && !booking.reviewSubmitted ? <div className="section-shell rounded-[2rem] p-8"><h2 className="text-2xl font-semibold text-slate-900">Verified review</h2><select value={rating} onChange={(event) => setRating(Number(event.target.value))} className="form-control mt-4">{[5,4,3,2,1].map((value) => <option key={value} value={value}>{value} stars</option>)}</select><textarea value={review} onChange={(event) => setReview(event.target.value)} rows={4} placeholder="Share your experience" className="form-control mt-3"/><button type="button" onClick={submitReview} className="btn btn-primary btn-sm mt-4">Publish verified review</button></div> : null}
 
             <div className="section-shell rounded-[2rem] p-8">
               <h2 className="text-2xl font-semibold text-slate-900">Invoice</h2>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
 import ReviewTile from "@/components/vendor/ReviewTile";
 
 interface ReviewRecord {
@@ -13,17 +14,21 @@ interface ReviewRecord {
 }
 
 export default function VendorReviewsPage() {
+  const { user } = useAuth();
   const [reviews, setReviews] = useState<ReviewRecord[]>([]);
 
   useEffect(() => {
     const fetchReviews = async () => {
-      if (!db) return;
-      const snapshot = await getDocs(collection(db, "reviews"));
+      if (!db || !user) return;
+      const vendors = await getDocs(query(collection(db, "vendors"), where("userId", "==", user.uid)));
+      const vendorId = vendors.docs[0]?.id;
+      if (!vendorId) return;
+      const snapshot = await getDocs(query(collection(db, "reviews"), where("vendorId", "==", vendorId)));
       setReviews(snapshot.docs.map((docSnapshot) => docSnapshot.data() as ReviewRecord));
     };
 
     fetchReviews();
-  }, []);
+  }, [user]);
 
   const averageRating = reviews.length > 0 ? (reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / reviews.length).toFixed(1) : "0.0";
 

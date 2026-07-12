@@ -4,6 +4,7 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function role() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role; }
     function admin() { return signedIn() && role() == 'admin'; }
+    function ownsVendor(vendorId) { return signedIn() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid; }
     match /vendors/{vendorId} {
       allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified'] || admin() || (signedIn() && resource.data.userId == request.auth.uid);
       allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
@@ -16,6 +17,22 @@ service cloud.firestore {
       allow delete: if admin();
     }
     match /users/{userId} { allow read, create, update: if signedIn() && (request.auth.uid == userId || admin()); }
+    match /bookings/{bookingId} {
+      allow create: if signedIn() && role() == 'customer' && request.resource.data.customerId == request.auth.uid;
+      allow read, update: if admin() || (signedIn() && resource.data.customerId == request.auth.uid) || ownsVendor(resource.data.vendorId);
+      allow delete: if admin();
+    }
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if signedIn() && role() == 'customer' && request.resource.data.customerId == request.auth.uid && request.resource.data.verified == true;
+      allow update, delete: if admin();
+    }
+    match /availability/{availabilityId} {
+      allow read: if true;
+      allow create: if admin() || (signedIn() && request.resource.data.ownerId == request.auth.uid);
+      allow update: if admin() || (signedIn() && resource.data.ownerId == request.auth.uid && request.resource.data.ownerId == request.auth.uid);
+      allow delete: if admin() || (signedIn() && resource.data.ownerId == request.auth.uid);
+    }
     match /{document=**} { allow read, write: if admin(); }
   }
 }

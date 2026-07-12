@@ -134,6 +134,7 @@ export default function VendorDashboardPage() {
             <Link href="/vendor/enquiries" className="btn btn-outline btn-md type-button">Enquiries & Quotations</Link>
             <Link href="/vendor/menus" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">Update Menus</Link>
             <Link href="/vendor/reviews" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">View Reviews</Link>
+            <Link href="/vendor/calendar" className="rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-[#0F172A]">Manage Availability</Link>
           </div>
         </div>
 

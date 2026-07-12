@@ -198,8 +198,9 @@ export default function BookingCheckout({
             disabled={isSubmitting}
             className="btn btn-primary btn-lg type-button w-full disabled:cursor-not-allowed disabled:opacity-75"
           >
-            {isSubmitting ? "Creating booking..." : "Pay Advance & Confirm Booking"}
+            {isSubmitting ? "Creating booking..." : "Request Booking"}
           </button>
+          <p className="text-center text-xs text-slate-500">No payment will be collected until the secure payment gateway is activated.</p>
         </form>
       </section>
 
