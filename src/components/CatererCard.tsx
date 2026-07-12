@@ -1,10 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export interface Caterer {
   id: string;
   name: string;
   location: string;
   city: string;
+  image?: string;
   price: number;
   rating: number;
   events: number;
@@ -19,21 +21,26 @@ interface CatererCardProps {
 }
 
 export default function CatererCard({ caterer }: CatererCardProps) {
+  const imageSrc = caterer.image || "/images/home/hero-luxury.jpg";
+
   return (
     <article className="premium-card group overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1">
-      <div className="h-52 border-b border-slate-200 bg-[#f8f4ea] px-6 py-5">
-        <div className="flex h-full flex-col justify-between rounded-[2rem] bg-white p-5 text-slate-900 shadow-inner">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0F172A]">
-            Caterer Spotlight
-          </span>
-          <div className="flex items-center justify-between gap-3">
-            <div className="space-y-2">
-              <p className="text-4xl font-semibold leading-tight">{caterer.rating.toFixed(1)}</p>
-              <p className="text-sm text-slate-500">Rated high by customers</p>
-            </div>
-            <div className="rounded-3xl bg-slate-100 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700 shadow-sm">
-              {caterer.city}
-            </div>
+      <div className="relative h-56 overflow-hidden border-b border-slate-200">
+        <Image
+          src={imageSrc}
+          alt={`${caterer.name} catering presentation in ${caterer.city}`}
+          fill
+          className="object-cover transition duration-500 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#081427]/88 via-[#081427]/45 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-5 pb-4">
+          <div className="rounded-2xl border border-[rgba(255,255,255,0.18)] bg-[rgba(8,20,39,0.78)] px-3 py-2 text-white backdrop-blur-sm">
+            <p className="text-xs uppercase tracking-[0.16em] text-[rgba(255,255,255,0.86)]">Customer Rating</p>
+            <p className="mt-1 text-xl font-semibold">{caterer.rating.toFixed(1)} / 5</p>
+          </div>
+          <div className="rounded-full bg-[#F5E7C8] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#0B1830] shadow-sm">
+            {caterer.city}
           </div>
         </div>
       </div>

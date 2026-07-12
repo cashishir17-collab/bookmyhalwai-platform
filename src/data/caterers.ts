@@ -2,6 +2,7 @@ export const caterers = [
   {
     id: "sharma-halwai",
     name: "Sharma Halwai & Caterers",
+    image: "/images/home/halwai-sweets.jpg",
     location: "Noida",
     city: "Noida",
     price: 450,
@@ -15,6 +16,7 @@ export const caterers = [
   {
     id: "royal-feast",
     name: "Royal Feast Caterers",
+    image: "/images/home/wedding-reception.jpg",
     location: "Delhi NCR",
     city: "Delhi",
     price: 650,
@@ -28,6 +30,7 @@ export const caterers = [
   {
     id: "annapurna-rasoi",
     name: "Annapurna Rasoi",
+    image: "/images/home/festive-celebration.jpg",
     location: "Ghaziabad",
     city: "Ghaziabad",
     price: 350,
@@ -41,6 +44,7 @@ export const caterers = [
   {
     id: "bikaneri-bhoj",
     name: "Bikaneri Bhoj Caterers",
+    image: "/images/home/live-counters.jpg",
     location: "Gurugram",
     city: "Gurugram",
     price: 550,
