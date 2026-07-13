@@ -7,6 +7,7 @@ import { doc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { app, db, storage } from "@/lib/firebase";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
+import { INDIA_STATES } from "@/data/indiaLocations";
 
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads", "Bank Details"];
 
@@ -35,6 +36,7 @@ const initialState = {
   mobile: "",
   whatsapp: "",
   email: "",
+  state: "",
   city: "",
   areasServed: "",
   address: "",
@@ -191,6 +193,7 @@ function calculateProfileCompletion(form: RegistrationForm) {
     form.mobile.trim(),
     form.whatsapp.trim(),
     form.email.trim(),
+    form.state.trim(),
     form.city.trim(),
     form.areasServed.trim(),
     form.address.trim(),
@@ -249,6 +252,10 @@ export default function RegistrationWizard() {
   const [submitMessage, setSubmitMessage] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
+  const availableCities = useMemo(
+    () => INDIA_STATES.find((item) => item.name === form.state)?.cities ?? [],
+    [form.state],
+  );
 
   const sendVendorRegistrationAlert = async (payload: VendorRegistrationAlertPayload) => {
     try {
@@ -383,7 +390,8 @@ export default function RegistrationWizard() {
       if (!form.mobile.trim()) newErrors.mobile = "Mobile number is required.";
       if (!form.whatsapp.trim()) newErrors.whatsapp = "WhatsApp number is required.";
       if (!form.email.trim()) newErrors.email = "Email is required.";
-      if (!form.city.trim()) newErrors.city = "City is required.";
+      if (!form.state.trim()) newErrors.state = "State or union territory is required.";
+      if (!form.city.trim()) newErrors.city = "City or town is required.";
       if (!form.areasServed.trim()) newErrors.areasServed = "Areas served is required.";
       if (!form.address.trim()) newErrors.address = "Address is required.";
       if (!form.googleMapsLink.trim()) newErrors.googleMapsLink = "Google Maps link is required.";
@@ -596,6 +604,7 @@ export default function RegistrationWizard() {
         mobile: form.mobile.trim(),
         whatsapp: form.whatsapp.trim(),
         email: form.email.trim(),
+        state: form.state.trim(),
         city: form.city.trim(),
         areasServed: form.areasServed.trim(),
         address: form.address.trim(),
@@ -681,7 +690,7 @@ export default function RegistrationWizard() {
         mobile: vendorDoc.mobile,
         whatsapp: vendorDoc.whatsapp,
         email: vendorDoc.email,
-        state: "Not provided",
+        state: vendorDoc.state,
         city: vendorDoc.city,
         complianceStatus: vendorDoc.verificationStatus,
         source: vendorDoc.source,
@@ -765,8 +774,35 @@ export default function RegistrationWizard() {
               {errors.email ? <p className="mt-1 text-sm text-red-600">{errors.email}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              City
-              <input value={form.city} onChange={(event) => updateField("city", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Delhi NCR" />
+              State / Union Territory
+              <select
+                value={form.state}
+                onChange={(event) => {
+                  updateField("state", event.target.value);
+                  updateField("city", "");
+                }}
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]"
+              >
+                <option value="">Select state or union territory</option>
+                {INDIA_STATES.map((item) => (
+                  <option key={item.code} value={item.name}>{item.name}</option>
+                ))}
+              </select>
+              {errors.state ? <p className="mt-1 text-sm text-red-600">{errors.state}</p> : null}
+            </label>
+            <label className="block text-sm font-medium text-slate-700">
+              City / Town
+              <select
+                value={form.city}
+                onChange={(event) => updateField("city", event.target.value)}
+                disabled={!form.state}
+                className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500"
+              >
+                <option value="">{form.state ? "Select city or town" : "Select a state first"}</option>
+                {availableCities.map((city) => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
               {errors.city ? <p className="mt-1 text-sm text-red-600">{errors.city}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
