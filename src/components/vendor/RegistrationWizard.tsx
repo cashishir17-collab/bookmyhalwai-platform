@@ -17,7 +17,19 @@ const trustPoints = [
   "Direct support from BookMyHalwai team",
 ];
 
+const providerCategories = [
+  { value: "halwai_caterer", label: "Halwai / Caterer" },
+  { value: "decorator", label: "Decorator" },
+  { value: "tent_house", label: "Tent House" },
+  { value: "dj", label: "DJ" },
+  { value: "photographer", label: "Photographer" },
+  { value: "venue_banquet", label: "Venue / Banquet Hall" },
+] as const;
+
+type ProviderCategory = (typeof providerCategories)[number]["value"];
+
 const initialState = {
+  providerCategory: "" as ProviderCategory | "",
   businessName: "",
   ownerName: "",
   mobile: "",
@@ -28,6 +40,11 @@ const initialState = {
   address: "",
   googleMapsLink: "",
   yearsExperience: "",
+  servicesDescription: "",
+  venueType: "",
+  venueSetting: "",
+  parkingAvailable: "",
+  roomsAvailable: "",
   services: {
     veg: false,
     nonVeg: false,
@@ -326,6 +343,7 @@ export default function RegistrationWizard() {
     const newErrors: Record<string, string> = {};
 
     if (step === 1) {
+      if (!form.providerCategory) newErrors.providerCategory = "Provider category is required.";
       if (!form.businessName.trim()) newErrors.businessName = "Business name is required.";
       if (!form.ownerName.trim()) newErrors.ownerName = "Owner name is required.";
       if (!form.mobile.trim()) newErrors.mobile = "Mobile number is required.";
@@ -339,13 +357,21 @@ export default function RegistrationWizard() {
     }
 
     if (step === 2) {
-      if (!form.services.veg && !form.services.nonVeg && !form.services.jain && !form.services.liveCounter && !form.services.outdoorCatering && !form.services.birthday && !form.services.wedding && !form.services.corporate && !form.services.houseParty) {
-        newErrors.services = "Select at least one service or event type.";
+      if (form.providerCategory === "halwai_caterer") {
+        if (!form.services.veg && !form.services.nonVeg && !form.services.jain && !form.services.liveCounter && !form.services.outdoorCatering && !form.services.birthday && !form.services.wedding && !form.services.corporate && !form.services.houseParty) {
+          newErrors.services = "Select at least one service or event type.";
+        }
+      } else if (!form.servicesDescription.trim()) {
+        newErrors.servicesDescription = "Describe the services or packages you offer.";
       }
-      if (!form.minGuests.trim()) newErrors.minGuests = "Minimum guests is required.";
-      if (!form.maxGuests.trim()) newErrors.maxGuests = "Maximum guests is required.";
+      if (form.providerCategory === "venue_banquet") {
+        if (!form.venueType.trim()) newErrors.venueType = "Venue type is required.";
+        if (!form.venueSetting) newErrors.venueSetting = "Venue setting is required.";
+      }
+      if (!form.minGuests.trim()) newErrors.minGuests = "Minimum event capacity is required.";
+      if (!form.maxGuests.trim()) newErrors.maxGuests = "Maximum event capacity is required.";
       if (toNumber(form.maxGuests) < toNumber(form.minGuests)) {
-        newErrors.maxGuests = "Maximum guests cannot be less than minimum guests.";
+        newErrors.maxGuests = "Maximum capacity cannot be less than minimum capacity.";
       }
     }
 
@@ -366,12 +392,14 @@ export default function RegistrationWizard() {
 
     if (step === 5) {
       if (!form.uploads.logo) newErrors.logo = "Logo is required.";
-      if (form.uploads.kitchenPhotos.length === 0) newErrors.kitchenPhotos = "Upload at least one kitchen photo.";
-      if (form.uploads.foodPhotos.length === 0) newErrors.foodPhotos = "Upload at least one food photo.";
-      if (form.uploads.staffPhotos.length === 0) newErrors.staffPhotos = "Upload at least one staff photo.";
-      if (!form.uploads.menuPdf) newErrors.menuPdf = "Menu PDF is required.";
-      if (!form.uploads.fssai) newErrors.fssai = "FSSAI document is required.";
-      if (!form.uploads.gst) newErrors.gst = "GST document is required.";
+      if (form.uploads.kitchenPhotos.length === 0) newErrors.kitchenPhotos = "Upload at least one portfolio photo.";
+      if (form.providerCategory === "halwai_caterer") {
+        if (form.uploads.foodPhotos.length === 0) newErrors.foodPhotos = "Upload at least one food photo.";
+        if (form.uploads.staffPhotos.length === 0) newErrors.staffPhotos = "Upload at least one staff photo.";
+        if (!form.uploads.menuPdf) newErrors.menuPdf = "Menu PDF is required.";
+        if (!form.uploads.fssai) newErrors.fssai = "FSSAI document is required.";
+        if (!form.uploads.gst) newErrors.gst = "GST document is required.";
+      }
     }
 
     if (step === 6) {
@@ -527,6 +555,8 @@ export default function RegistrationWizard() {
         vendorId: generatedRegistrationNumber,
         registrationNumber: generatedRegistrationNumber,
         userId: user.uid,
+        providerCategory: form.providerCategory,
+        providerCategoryLabel: providerCategories.find((category) => category.value === form.providerCategory)?.label ?? "Service Provider",
         businessName: form.businessName.trim(),
         ownerName: form.ownerName.trim(),
         mobile: form.mobile.trim(),
@@ -537,6 +567,13 @@ export default function RegistrationWizard() {
         address: form.address.trim(),
         googleMapsLink: form.googleMapsLink.trim(),
         yearsExperience: form.yearsExperience.trim(),
+        servicesDescription: form.servicesDescription.trim(),
+        categoryDetails: {
+          venueType: form.providerCategory === "venue_banquet" ? form.venueType.trim() : "",
+          venueSetting: form.providerCategory === "venue_banquet" ? form.venueSetting : "",
+          parkingAvailable: form.providerCategory === "venue_banquet" ? form.parkingAvailable : "",
+          roomsAvailable: form.providerCategory === "venue_banquet" ? form.roomsAvailable : "",
+        },
         services: {
           veg: form.services.veg,
           nonVeg: form.services.nonVeg,
@@ -660,6 +697,14 @@ export default function RegistrationWizard() {
       case 1:
         return (
           <div className="grid gap-4 md:grid-cols-2">
+            <label className="block text-sm font-medium text-slate-700 md:col-span-2">
+              Provider Category
+              <select value={form.providerCategory} onChange={(event) => updateField("providerCategory", event.target.value as ProviderCategory)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]">
+                <option value="">Select your category</option>
+                {providerCategories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}
+              </select>
+              {errors.providerCategory ? <p className="mt-1 text-sm text-red-600">{errors.providerCategory}</p> : null}
+            </label>
             <label className="block text-sm font-medium text-slate-700">
               Business Name
               <input value={form.businessName} onChange={(event) => updateField("businessName", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="The Royal Caterers" />
@@ -715,38 +760,67 @@ export default function RegistrationWizard() {
       case 2:
         return (
           <div className="space-y-6">
-            <div className="space-y-3">
-              <p className="text-sm font-semibold text-slate-700">Service Categories</p>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {[
-                  { key: "veg", label: "Veg" },
-                  { key: "nonVeg", label: "Non Veg" },
-                  { key: "jain", label: "Jain" },
-                  { key: "liveCounter", label: "Live Counter" },
-                  { key: "outdoorCatering", label: "Outdoor Catering" },
-                  { key: "birthday", label: "Birthday" },
-                  { key: "wedding", label: "Wedding" },
-                  { key: "corporate", label: "Corporate" },
-                  { key: "houseParty", label: "House Party" },
-                ].map((service) => (
-                  <label key={service.key} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-                    <span>{service.label}</span>
-                    <input type="checkbox" checked={form.services[service.key as keyof typeof form.services]} onChange={(event) => updateServiceField(service.key as keyof typeof form.services, event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[#6D28D9] focus:ring-[#0F172A]" />
-                  </label>
-                ))}
+            {form.providerCategory === "halwai_caterer" ? (
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-slate-700">Service Categories</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {[
+                    { key: "veg", label: "Veg" }, { key: "nonVeg", label: "Non Veg" },
+                    { key: "jain", label: "Jain" }, { key: "liveCounter", label: "Live Counter" },
+                    { key: "outdoorCatering", label: "Outdoor Catering" }, { key: "birthday", label: "Birthday" },
+                    { key: "wedding", label: "Wedding" }, { key: "corporate", label: "Corporate" },
+                    { key: "houseParty", label: "House Party" },
+                  ].map((service) => (
+                    <label key={service.key} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                      <span>{service.label}</span>
+                      <input type="checkbox" checked={form.services[service.key as keyof typeof form.services]} onChange={(event) => updateServiceField(service.key as keyof typeof form.services, event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[#6D28D9] focus:ring-[#0F172A]" />
+                    </label>
+                  ))}
+                </div>
+                {errors.services ? <p className="mt-2 text-sm text-red-600">{errors.services}</p> : null}
               </div>
-              {errors.services ? <p className="mt-2 text-sm text-red-600">{errors.services}</p> : null}
-            </div>
+            ) : (
+              <label className="block text-sm font-medium text-slate-700">
+                Services / Packages Offered
+                <textarea value={form.servicesDescription} onChange={(event) => updateField("servicesDescription", event.target.value)} className="mt-2 min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Describe your services, packages, equipment, style and event types." />
+                {errors.servicesDescription ? <p className="mt-1 text-sm text-red-600">{errors.servicesDescription}</p> : null}
+              </label>
+            )}
+
+            {form.providerCategory === "venue_banquet" ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="block text-sm font-medium text-slate-700">
+                  Venue Type
+                  <input value={form.venueType} onChange={(event) => updateField("venueType", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Banquet hall, lawn, farmhouse, resort..." />
+                  {errors.venueType ? <p className="mt-1 text-sm text-red-600">{errors.venueType}</p> : null}
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Venue Setting
+                  <select value={form.venueSetting} onChange={(event) => updateField("venueSetting", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]">
+                    <option value="">Select setting</option><option value="indoor">Indoor</option><option value="outdoor">Outdoor</option><option value="both">Indoor & Outdoor</option>
+                  </select>
+                  {errors.venueSetting ? <p className="mt-1 text-sm text-red-600">{errors.venueSetting}</p> : null}
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Parking Available
+                  <select value={form.parkingAvailable} onChange={(event) => updateField("parkingAvailable", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm"><option value="">Select</option><option value="yes">Yes</option><option value="no">No</option></select>
+                </label>
+                <label className="block text-sm font-medium text-slate-700">
+                  Rooms Available
+                  <select value={form.roomsAvailable} onChange={(event) => updateField("roomsAvailable", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm"><option value="">Select</option><option value="yes">Yes</option><option value="no">No</option></select>
+                </label>
+              </div>
+            ) : null}
 
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block text-sm font-medium text-slate-700">
-                Minimum Guests
-                <input type="number" value={form.minGuests} onChange={(event) => updateField("minGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="50" />
+                Minimum Event Capacity
+                <input type="number" value={form.minGuests} onChange={(event) => updateField("minGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" />
                 {errors.minGuests ? <p className="mt-1 text-sm text-red-600">{errors.minGuests}</p> : null}
               </label>
               <label className="block text-sm font-medium text-slate-700">
-                Maximum Guests
-                <input type="number" value={form.maxGuests} onChange={(event) => updateField("maxGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="500" />
+                Maximum Event Capacity
+                <input type="number" value={form.maxGuests} onChange={(event) => updateField("maxGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" />
                 {errors.maxGuests ? <p className="mt-1 text-sm text-red-600">{errors.maxGuests}</p> : null}
               </label>
             </div>
@@ -822,32 +896,32 @@ export default function RegistrationWizard() {
               {errors.logo ? <p className="mt-1 text-sm text-red-600">{errors.logo}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              Kitchen Photos
+              {form.providerCategory === "halwai_caterer" ? "Kitchen Photos" : "Portfolio Photos"}
               <input type="file" accept="image/*" multiple onChange={(event) => handleMultipleFileChange(event, "kitchenPhotos")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.kitchenPhotos ? <p className="mt-1 text-sm text-red-600">{errors.kitchenPhotos}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              Food Photos
+              {form.providerCategory === "halwai_caterer" ? "Food Photos" : "Additional Portfolio Photos (Optional)"}
               <input type="file" accept="image/*" multiple onChange={(event) => handleMultipleFileChange(event, "foodPhotos")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.foodPhotos ? <p className="mt-1 text-sm text-red-600">{errors.foodPhotos}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              Staff Photos
+              {form.providerCategory === "halwai_caterer" ? "Staff Photos" : "Team / Setup Photos (Optional)"}
               <input type="file" accept="image/*" multiple onChange={(event) => handleMultipleFileChange(event, "staffPhotos")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.staffPhotos ? <p className="mt-1 text-sm text-red-600">{errors.staffPhotos}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              Menu PDF
+              {form.providerCategory === "halwai_caterer" ? "Menu PDF" : "Service Brochure (Optional)"}
               <input type="file" accept="application/pdf" onChange={(event) => handleFileChange(event, "menuPdf")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.menuPdf ? <p className="mt-1 text-sm text-red-600">{errors.menuPdf}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              FSSAI
+              {form.providerCategory === "halwai_caterer" ? "FSSAI" : "Business Licence (Optional)"}
               <input type="file" accept="application/pdf,image/*" onChange={(event) => handleFileChange(event, "fssai")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.fssai ? <p className="mt-1 text-sm text-red-600">{errors.fssai}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              GST
+              {form.providerCategory === "halwai_caterer" ? "GST" : "GST (Optional)"}
               <input type="file" accept="application/pdf,image/*" onChange={(event) => handleFileChange(event, "gst")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.gst ? <p className="mt-1 text-sm text-red-600">{errors.gst}</p> : null}
             </label>
