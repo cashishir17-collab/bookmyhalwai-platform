@@ -96,7 +96,25 @@ type RegistrationForm = typeof initialState;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const VENDOR_COUNTER_COLLECTION = "systemCounters";
 const VENDOR_COUNTER_DOCUMENT = "vendorRegistration";
-const VENDOR_REGISTRATION_PREFIX = "BMH-V";
+const VENDOR_REGISTRATION_PREFIX = "BMH";
+
+const VENDOR_CATEGORY_CODES: Record<ProviderCategory, string> = {
+  halwai_caterer: "HC",
+  decorator: "DEC",
+  tent_house: "TNT",
+  dj: "DJ",
+  photographer: "PHO",
+  venue_banquet: "VEN",
+};
+
+type VendorCategoryCounter = {
+  currentYear?: unknown;
+  lastSequence?: unknown;
+};
+
+type VendorRegistrationCounterData = {
+  categoryCounters?: Partial<Record<ProviderCategory, VendorCategoryCounter>>;
+};
 
 async function withTimeout<T>(
   promise: Promise<T>,
@@ -124,29 +142,45 @@ function toNumber(value: string) {
   return Number.isNaN(numericValue) ? 0 : numericValue;
 }
 
-async function getNextVendorRegistrationNumber() {
+async function getNextVendorRegistrationNumber(providerCategory: ProviderCategory | "") {
   if (!db) {
     throw new Error("Firestore is not configured yet.");
   }
 
+  if (!providerCategory) {
+    throw new Error("Provider category is required to create a registration number.");
+  }
+
+  const categoryCode = VENDOR_CATEGORY_CODES[providerCategory];
   const currentYear = new Date().getFullYear();
   const counterRef = doc(db, VENDOR_COUNTER_COLLECTION, VENDOR_COUNTER_DOCUMENT);
 
   return runTransaction(db, async (transaction) => {
     const counterSnapshot = await transaction.get(counterRef);
-    const counterData = counterSnapshot.data() as { currentYear?: unknown; lastSequence?: unknown } | undefined;
+    const counterData = counterSnapshot.data() as VendorRegistrationCounterData | undefined;
+    const categoryCounters = counterData?.categoryCounters ?? {};
+    const storedCounter = categoryCounters[providerCategory];
 
-    const storedYear = typeof counterData?.currentYear === "number" ? counterData.currentYear : null;
-    const storedSequence = typeof counterData?.lastSequence === "number" ? counterData.lastSequence : 0;
+    const storedYear = typeof storedCounter?.currentYear === "number" ? storedCounter.currentYear : null;
+    const storedSequence = typeof storedCounter?.lastSequence === "number" ? storedCounter.lastSequence : 0;
     const nextSequence = storedYear === currentYear ? storedSequence + 1 : 1;
 
-    transaction.set(counterRef, {
-      currentYear,
-      lastSequence: nextSequence,
-      updatedAt: serverTimestamp(),
-    });
+    transaction.set(
+      counterRef,
+      {
+        categoryCounters: {
+          ...categoryCounters,
+          [providerCategory]: {
+            currentYear,
+            lastSequence: nextSequence,
+          },
+        },
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
 
-    return `${VENDOR_REGISTRATION_PREFIX}-${currentYear}-${String(nextSequence).padStart(6, "0")}`;
+    return `${VENDOR_REGISTRATION_PREFIX}-${categoryCode}-${currentYear}-${String(nextSequence).padStart(6, "0")}`;
   });
 }
 
@@ -550,7 +584,7 @@ export default function RegistrationWizard() {
       }
 
       const profileCompletion = calculateProfileCompletion(form);
-      const generatedRegistrationNumber = await getNextVendorRegistrationNumber();
+      const generatedRegistrationNumber = await getNextVendorRegistrationNumber(form.providerCategory);
       const vendorDoc = {
         vendorId: generatedRegistrationNumber,
         registrationNumber: generatedRegistrationNumber,
