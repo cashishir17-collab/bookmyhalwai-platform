@@ -10,15 +10,3 @@ export interface AppUser {
   createdAt?: unknown;
   updatedAt?: unknown;
 }
-export type UserRole = "customer" | "vendor" | "sales_executive" | "admin";
-
-export interface AppUser {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL?: string | null;
-  phoneNumber?: string | null;
-  role: UserRole;
-  createdAt?: unknown;
-  updatedAt?: unknown;
-}
