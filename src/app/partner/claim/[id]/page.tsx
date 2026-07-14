@@ -1,41 +1,92 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { doc, getDoc, runTransaction, serverTimestamp } from "firebase/firestore";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import PhoneLogin from "@/components/auth/PhoneLogin";
-import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
-import { normalizeIndianPhone } from "@/lib/partnerOnboarding";
+import { db } from "@/lib/firebase";
+import type { PartnerRegistration } from "@/lib/partner";
 
-export default function ClaimPartnerPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params); const router = useRouter(); const { user, loading } = useAuth();
-  const [state, setState] = useState("Verify the registered owner mobile number to claim this business profile.");
+export default function ClaimPartnerPage() {
+  const { id } = useParams<{ id: string }>();
+  const { user, loading } = useAuth();
+  const [record, setRecord] = useState<PartnerRegistration | null>(null);
+  const [message, setMessage] = useState("");
   const [working, setWorking] = useState(false);
-  const [done, setDone] = useState(false);
-  useEffect(() => {
-    if (loading || !user || working || done || !db) return;
-    const firestore = db;
-    const claim = async () => {
+
+  const claim = async () => {
+    if (!db || !user?.uid || !user.phoneNumber) return;
+    try {
       setWorking(true);
-      try {
-        const onboardingRef = doc(firestore, "partnerOnboarding", id);
-        const snapshot = await getDoc(onboardingRef);
-        if (!snapshot.exists()) throw new Error("This ownership link is invalid or expired.");
-        const data = snapshot.data();
-        if (normalizeIndianPhone(user.phoneNumber || "") !== normalizeIndianPhone(data.ownerPhone || "")) throw new Error("This signed-in mobile number does not match the registered owner number.");
-        await runTransaction(firestore, async (transaction) => {
-          transaction.update(onboardingRef, { ownerUid: user.uid, status: "ownership_verified", ownershipVerifiedAt: serverTimestamp(), updatedAt: serverTimestamp() });
-          transaction.update(doc(firestore, "vendors", data.vendorId), { userId: user.uid, verificationStatus: "Pending", leadStage: "Verification", ownershipVerified: true, updatedAt: serverTimestamp() });
-          transaction.set(doc(firestore, "users", user.uid), { uid: user.uid, phoneNumber: user.phoneNumber, role: "vendor", vendorId: data.vendorId, updatedAt: serverTimestamp() }, { merge: true });
-        });
-        setState("Ownership verified. Your profile is now awaiting administrator approval.");
-        setDone(true);
-        window.setTimeout(() => router.replace("/vendor/dashboard"), 1200);
-      } catch (error) { setState(error instanceof Error ? error.message : "Could not verify ownership."); }
-      finally { setWorking(false); }
-    };
-    void claim();
-  }, [done, id, loading, router, user, working]);
-  return <main className="page-shell min-h-screen px-4 py-12"><section className="section-shell mx-auto max-w-lg rounded-[2rem] p-8"><p className="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">Business Ownership</p><h1 className="mt-2 text-3xl font-semibold">Claim vendor profile</h1><div className="my-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">{working ? "Verifying ownership..." : state}</div>{!user ? <PhoneLogin onError={setState} /> : null}</section></main>;
+      const ref = doc(db, "partnerOnboarding", id);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) throw new Error("Registration link not found.");
+      const data = { id: snap.id, ...snap.data() } as PartnerRegistration;
+      if (data.phoneE164 !== user.phoneNumber) throw new Error("This login number does not match the registered vendor number.");
+      if (data.ownerUid && data.ownerUid !== user.uid) throw new Error("This registration has already been claimed.");
+      if (data.status === "otp_pending") await updateDoc(ref, { ownerUid: user.uid, status: "ownership_verified", ownershipVerifiedAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      setRecord({ ...data, ownerUid: user.uid, status: "ownership_verified" });
+      setMessage("Mobile ownership verified. Your application is now awaiting administrator approval.");
+    } catch (err) { setMessage(err instanceof Error ? err.message : "Ownership verification failed."); }
+    finally { setWorking(false); }
+  };
+
+  useEffect(() => { if (!loading && user) void claim(); }, [loading, user?.uid]);
+  return <main className="page-shell min-h-screen px-4 py-16"><section className="section-shell mx-auto max-w-lg rounded-[2rem] p-8">
+    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Vendor Ownership</p><h1 className="mt-2 text-3xl font-semibold">Verify your mobile number</h1>
+    <p className="mt-3 text-sm text-slate-600">The vendor must complete OTP verification personally. This securely transfers the assisted registration to the vendor.</p>
+    {message && <p className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700">{message}</p>}
+    {!loading && !user && <div className="mt-6"><PhoneLogin onError={setMessage} /></div>}
+    {working && <p className="mt-5 text-sm text-slate-500">Confirming ownership...</p>}
+    {record && <div className="mt-6"><p className="font-semibold">{record.businessName}</p><p className="text-sm text-slate-500">{record.ownerName} · {record.city}</p><Link href="/vendor/dashboard" className="btn btn-primary btn-md mt-5 inline-flex">Continue to vendor dashboard</Link></div>}
+  </section></main>;
+}
+"use client";
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import PhoneLogin from "@/components/auth/PhoneLogin";
+import { useAuth } from "@/hooks/useAuth";
+import { db } from "@/lib/firebase";
+import type { PartnerRegistration } from "@/lib/partner";
+
+export default function ClaimPartnerPage() {
+  const { id } = useParams<{ id: string }>();
+  const { user, loading } = useAuth();
+  const [record, setRecord] = useState<PartnerRegistration | null>(null);
+  const [message, setMessage] = useState("");
+  const [working, setWorking] = useState(false);
+
+  const claim = async () => {
+    if (!db || !user?.uid || !user.phoneNumber) return;
+    try {
+      setWorking(true);
+      const ref = doc(db, "partnerOnboarding", id);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) throw new Error("Registration link not found.");
+      const data = { id: snap.id, ...snap.data() } as PartnerRegistration;
+      if (data.phoneE164 !== user.phoneNumber) throw new Error("This login number does not match the registered vendor number.");
+      if (data.ownerUid && data.ownerUid !== user.uid) throw new Error("This registration has already been claimed.");
+      if (data.status === "otp_pending") await updateDoc(ref, { ownerUid: user.uid, status: "ownership_verified", ownershipVerifiedAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      setRecord({ ...data, ownerUid: user.uid, status: "ownership_verified" });
+      setMessage("Mobile ownership verified. Your application is now awaiting administrator approval.");
+    } catch (err) { setMessage(err instanceof Error ? err.message : "Ownership verification failed."); }
+    finally { setWorking(false); }
+  };
+
+  useEffect(() => { if (!loading && user) void claim(); }, [loading, user?.uid]);
+  return <main className="page-shell min-h-screen px-4 py-16"><section className="section-shell mx-auto max-w-lg rounded-[2rem] p-8">
+    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Vendor Ownership</p><h1 className="mt-2 text-3xl font-semibold">Verify your mobile number</h1>
+    <p className="mt-3 text-sm text-slate-600">The vendor must complete OTP verification personally. This securely transfers the assisted registration to the vendor.</p>
+    {message && <p className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700">{message}</p>}
+    {!loading && !user && <div className="mt-6"><PhoneLogin onError={setMessage} /></div>}
+    {working && <p className="mt-5 text-sm text-slate-500">Confirming ownership...</p>}
+    {record && <div className="mt-6"><p className="font-semibold">{record.businessName}</p><p className="text-sm text-slate-500">{record.ownerName} · {record.city}</p><Link href="/vendor/dashboard" className="btn btn-primary btn-md mt-5 inline-flex">Continue to vendor dashboard</Link></div>}
+  </section></main>;
 }
