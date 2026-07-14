@@ -4,11 +4,13 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function role() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role; }
     function admin() { return signedIn() && role() == 'admin'; }
+    function sales() { return signedIn() && role() == 'sales'; }
     function ownsVendor(vendorId) { return signedIn() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid; }
     match /vendors/{vendorId} {
-      allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified'] || admin() || (signedIn() && resource.data.userId == request.auth.uid);
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if admin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified'] || admin() || sales() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if admin() || sales() || (signedIn() && request.resource.data.userId == request.auth.uid);
+      allow update: if admin() || (signedIn() && resource.data.userId == request.auth.uid) ||
+        (signedIn() && request.auth.token.phone_number == resource.data.ownerPhone && request.resource.data.userId == request.auth.uid);
     }
     match /enquiries/{enquiryId} {
       allow create: if signedIn() && role() == 'customer' && request.resource.data.customerId == request.auth.uid;
@@ -16,7 +18,13 @@ service cloud.firestore {
       allow update: if admin() || (signedIn() && (resource.data.customerId == request.auth.uid || resource.data.vendorOwnerId == request.auth.uid));
       allow delete: if admin();
     }
-    match /users/{userId} { allow read, create, update: if signedIn() && (request.auth.uid == userId || admin()); }
+    match /users/{userId} {
+      allow read: if admin() || (signedIn() && request.auth.uid == userId);
+      allow create: if admin() || (signedIn() && request.auth.uid == userId && request.resource.data.role in ['customer', 'vendor']);
+      allow update: if admin() || (signedIn() && request.auth.uid == userId &&
+        ((resource.data.role in ['sales', 'admin'] && request.resource.data.role == resource.data.role) ||
+         (resource.data.role in ['customer', 'vendor'] && request.resource.data.role in ['customer', 'vendor'])));
+    }
     match /bookings/{bookingId} {
       allow create: if signedIn() && role() == 'customer' && request.resource.data.customerId == request.auth.uid;
       allow read, update: if admin() || (signedIn() && resource.data.customerId == request.auth.uid) || ownsVendor(resource.data.vendorId);
@@ -32,6 +40,21 @@ service cloud.firestore {
       allow create: if admin() || (signedIn() && request.resource.data.ownerId == request.auth.uid);
       allow update: if admin() || (signedIn() && resource.data.ownerId == request.auth.uid && request.resource.data.ownerId == request.auth.uid);
       allow delete: if admin() || (signedIn() && resource.data.ownerId == request.auth.uid);
+    }
+    match /partnerOnboarding/{onboardingId} {
+      allow create: if admin() || (sales() && request.resource.data.salesExecutiveId == request.auth.uid);
+      allow read: if admin() || (sales() && resource.data.salesExecutiveId == request.auth.uid) ||
+        (signedIn() && request.auth.token.phone_number == resource.data.ownerPhone);
+      allow update: if admin() ||
+        (sales() && resource.data.salesExecutiveId == request.auth.uid && request.resource.data.salesExecutiveId == request.auth.uid) ||
+        (signedIn() && request.auth.token.phone_number == resource.data.ownerPhone && request.resource.data.ownerUid == request.auth.uid);
+      allow delete: if admin();
+    }
+    match /supportTickets/{ticketId} {
+      allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow read: if admin() || (signedIn() && resource.data.createdBy == request.auth.uid);
+      allow update: if admin();
+      allow delete: if admin();
     }
     match /{document=**} { allow read, write: if admin(); }
   }

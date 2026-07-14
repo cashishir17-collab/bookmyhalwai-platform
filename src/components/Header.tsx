@@ -23,9 +23,10 @@ export default function Header() {
   const avatarInitial = displayName.charAt(0).toUpperCase();
   const isVendor = user?.role === "vendor";
   const isAdmin = user?.role === "admin";
+  const isSales = user?.role === "sales";
   const quickLinks = [
-    { label: "Dashboard", href: isVendor ? "/vendor/dashboard" : "/customer/dashboard" },
-    { label: "Bookings", href: isVendor ? "/vendor/bookings" : "/customer/bookings" },
+    { label: "Dashboard", href: isSales ? "/partner/dashboard" : isVendor ? "/vendor/dashboard" : "/customer/dashboard" },
+    ...(!isSales ? [{ label: "Bookings", href: isVendor ? "/vendor/bookings" : "/customer/bookings" }] : []),
     ...(isVendor
       ? [
           { label: "Menus", href: "/vendor/menus" },
@@ -34,6 +35,7 @@ export default function Header() {
         ]
       : []),
     ...(isAdmin ? [{ label: "Admin", href: "/admin" }] : []),
+    { label: "Support", href: "/support" },
   ];
 
   return (

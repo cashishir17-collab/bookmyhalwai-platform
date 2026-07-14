@@ -139,6 +139,8 @@ export default function AdminPage() {
             Open Vendor CRM
           </Link>
           <Link href="/admin/enquiries" className="btn btn-outline btn-md type-button ml-3 mt-5 inline-flex">Open Enquiry CRM</Link>
+          <Link href="/support" className="btn btn-outline btn-md type-button ml-3 mt-5 inline-flex">Support Tickets</Link>
+          <Link href="/admin/sales" className="btn btn-outline btn-md type-button ml-3 mt-5 inline-flex">Sales Executives</Link>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
