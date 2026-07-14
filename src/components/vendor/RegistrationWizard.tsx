@@ -25,6 +25,11 @@ const providerCategories = [
   { value: "dj", label: "DJ" },
   { value: "photographer", label: "Photographer" },
   { value: "venue_banquet", label: "Venue / Banquet Hall" },
+  { value: "makeup_artist", label: "Makeup Artist" },
+  { value: "pandit", label: "Pandit" },
+  { value: "mehendi_artist", label: "Mehendi Artist" },
+  { value: "return_gifts", label: "Return Gifts" },
+  { value: "choreographer", label: "Choreographer" },
 ] as const;
 
 type ProviderCategory = (typeof providerCategories)[number]["value"];
@@ -107,6 +112,11 @@ const VENDOR_CATEGORY_CODES: Record<ProviderCategory, string> = {
   dj: "DJ",
   photographer: "PHO",
   venue_banquet: "VEN",
+  makeup_artist: "MUA",
+  pandit: "PAN",
+  mehendi_artist: "MEH",
+  return_gifts: "GFT",
+  choreographer: "CHO",
 };
 
 type VendorCategoryCounter = {
