@@ -9,7 +9,7 @@ import { app, db, storage } from "@/lib/firebase";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
 import { INDIA_STATES } from "@/data/indiaLocations";
 
-const steps = ["Business", "Services", "Pricing", "Social", "Uploads", "Bank Details"];
+const steps = ["Business", "Services", "Pricing", "Social", "Uploads"];
 
 const trustPoints = [
   "Free onboarding during launch phase",
@@ -88,13 +88,6 @@ const initialState = {
     menuPdf: null as File | null,
     fssai: null as File | null,
     gst: null as File | null,
-  },
-  bank: {
-    accountHolder: "",
-    bank: "",
-    accountNumber: "",
-    ifsc: "",
-    upi: "",
   },
 };
 
@@ -227,11 +220,6 @@ function calculateProfileCompletion(form: RegistrationForm) {
     form.uploads.menuPdf,
     form.uploads.fssai,
     form.uploads.gst,
-    form.bank.accountHolder.trim(),
-    form.bank.bank.trim(),
-    form.bank.accountNumber.trim(),
-    form.bank.ifsc.trim(),
-    form.bank.upi.trim(),
   ];
 
   const filledFields = checks.filter(Boolean).length;
@@ -340,13 +328,6 @@ export default function RegistrationWizard() {
     }));
   };
 
-  const updateBankField = <T extends keyof RegistrationForm["bank"]>(field: T, value: RegistrationForm["bank"][T]) => {
-    setForm((current) => ({
-      ...current,
-      bank: { ...current.bank, [field]: value },
-    }));
-  };
-
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>, field: keyof RegistrationForm["uploads"]) => {
     const file = event.target.files?.[0] ?? null;
     if (!file) {
@@ -452,14 +433,6 @@ export default function RegistrationWizard() {
         if (!form.uploads.fssai) newErrors.fssai = "FSSAI document is required.";
         if (!form.uploads.gst) newErrors.gst = "GST document is required.";
       }
-    }
-
-    if (step === 6) {
-      if (!form.bank.accountHolder.trim()) newErrors.accountHolder = "Account holder is required.";
-      if (!form.bank.bank.trim()) newErrors.bank = "Bank name is required.";
-      if (!form.bank.accountNumber.trim()) newErrors.accountNumber = "Account number is required.";
-      if (!form.bank.ifsc.trim()) newErrors.ifsc = "IFSC code is required.";
-      if (!form.bank.upi.trim()) newErrors.upi = "UPI is required.";
     }
 
     setErrors(newErrors);
@@ -663,13 +636,6 @@ export default function RegistrationWizard() {
           menuPdf: uploadedDocuments.menuPdf,
           fssai: uploadedDocuments.fssai,
           gst: uploadedDocuments.gst,
-        },
-        bankDetails: {
-          accountHolder: form.bank.accountHolder.trim(),
-          bank: form.bank.bank.trim(),
-          accountNumber: form.bank.accountNumber.trim(),
-          ifsc: form.bank.ifsc.trim(),
-          upi: form.bank.upi.trim(),
         },
         leadStage: "Registered",
         profileCompletion,
@@ -1004,36 +970,6 @@ export default function RegistrationWizard() {
               {form.providerCategory === "halwai_caterer" ? "GST" : "GST (Optional)"}
               <input type="file" accept="application/pdf,image/*" onChange={(event) => handleFileChange(event, "gst")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.gst ? <p className="mt-1 text-sm text-red-600">{errors.gst}</p> : null}
-            </label>
-          </div>
-        );
-      case 6:
-        return (
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="block text-sm font-medium text-slate-700">
-              Account Holder
-              <input value={form.bank.accountHolder} onChange={(event) => updateBankField("accountHolder", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Amit Sharma" />
-              {errors.accountHolder ? <p className="mt-1 text-sm text-red-600">{errors.accountHolder}</p> : null}
-            </label>
-            <label className="block text-sm font-medium text-slate-700">
-              Bank
-              <input value={form.bank.bank} onChange={(event) => updateBankField("bank", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="HDFC Bank" />
-              {errors.bank ? <p className="mt-1 text-sm text-red-600">{errors.bank}</p> : null}
-            </label>
-            <label className="block text-sm font-medium text-slate-700">
-              Account Number
-              <input value={form.bank.accountNumber} onChange={(event) => updateBankField("accountNumber", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="1234567890" />
-              {errors.accountNumber ? <p className="mt-1 text-sm text-red-600">{errors.accountNumber}</p> : null}
-            </label>
-            <label className="block text-sm font-medium text-slate-700">
-              IFSC
-              <input value={form.bank.ifsc} onChange={(event) => updateBankField("ifsc", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="HDFC0001234" />
-              {errors.ifsc ? <p className="mt-1 text-sm text-red-600">{errors.ifsc}</p> : null}
-            </label>
-            <label className="block text-sm font-medium text-slate-700 md:col-span-2">
-              UPI
-              <input value={form.bank.upi} onChange={(event) => updateBankField("upi", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="amitsharma@upi" />
-              {errors.upi ? <p className="mt-1 text-sm text-red-600">{errors.upi}</p> : null}
             </label>
           </div>
         );

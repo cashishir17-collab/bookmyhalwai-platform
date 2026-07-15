@@ -19,7 +19,6 @@ export function calculateProfileCompletion(vendor: Partial<VendorRecord>) {
     vendor.social?.instagram || vendor.social?.facebook || vendor.social?.website,
     vendor.social?.googleBusinessProfile,
     vendor.social?.googleReviewLink,
-    vendor.bank?.accountHolder && vendor.bank?.bank && vendor.bank?.accountNumber && vendor.bank?.ifsc && vendor.bank?.upi,
   ];
 
   const filled = checks.filter(Boolean).length;
@@ -41,19 +40,14 @@ export function calculateVendorQualityScore(vendor: Partial<VendorRecord>) {
   );
   const years = Number(vendor.yearsExperience || 0);
   const experiencePresent = years >= 1;
-  const bankDetailsPresent = Boolean(
-    vendor.bank?.accountHolder && vendor.bank?.accountNumber && vendor.bank?.ifsc && vendor.bank?.bank,
-  );
-
   const score =
-    (profileCompletion / 100) * 30 +
+    (profileCompletion / 100) * 35 +
     (fssaiPresent ? 10 : 0) +
     (gstPresent ? 10 : 0) +
     (photosUploaded ? 15 : 0) +
     (menuUploaded ? 10 : 0) +
     (socialLinksPresent ? 10 : 0) +
-    (experiencePresent ? 10 : 0) +
-    (bankDetailsPresent ? 5 : 0);
+    (experiencePresent ? 10 : 0);
 
   return Math.round(Math.min(score, 100));
 }

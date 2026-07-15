@@ -110,11 +110,6 @@ export default function VendorVerificationDetailPage() {
         label: "Social proof and review links",
         status: vendor.social?.instagram || vendor.social?.website || vendor.social?.googleReviewLink ? "Approved" : "Pending",
       },
-      {
-        id: "bank",
-        label: "Bank details",
-        status: vendor.bank?.accountHolder && vendor.bank?.bank && vendor.bank?.accountNumber && vendor.bank?.ifsc ? "Approved" : "Pending",
-      },
     ];
   }, [vendor]);
 
