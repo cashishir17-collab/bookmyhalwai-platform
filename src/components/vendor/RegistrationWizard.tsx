@@ -181,6 +181,7 @@ async function getNextVendorRegistrationNumber(providerCategory: ProviderCategor
             lastSequence: nextSequence,
           },
         },
+        lastCategory: providerCategory,
         updatedAt: serverTimestamp(),
       },
       { merge: true },
@@ -248,7 +249,9 @@ export default function RegistrationWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
+  const [ownershipLink, setOwnershipLink] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
+  const assistedBySales = user?.role === "sales_executive";
   const availableCities = useMemo(
     () => INDIA_STATES.find((item) => item.name === form.state)?.cities ?? [],
     [form.state],
@@ -576,7 +579,13 @@ export default function RegistrationWizard() {
       const vendorDoc = {
         vendorId: generatedRegistrationNumber,
         registrationNumber: generatedRegistrationNumber,
-        userId: user.uid,
+        userId: assistedBySales ? null : user.uid,
+        ownerUid: assistedBySales ? null : user.uid,
+        salesExecutiveId: assistedBySales ? user.uid : null,
+        salesExecutiveName: assistedBySales ? (user.displayName || user.phoneNumber || "Sales executive") : null,
+        registrationSource: assistedBySales ? "sales_executive" : "vendor_self",
+        ownershipStatus: assistedBySales ? "otp_pending" : "self_registered",
+        phoneE164: toIndianPhoneE164(form.mobile),
         providerCategory: form.providerCategory,
         providerCategoryLabel: providerCategories.find((category) => category.value === form.providerCategory)?.label ?? "Service Provider",
         businessName: form.businessName.trim(),
@@ -637,7 +646,7 @@ export default function RegistrationWizard() {
         leadStage: "Registered",
         profileCompletion,
         verificationStatus: "Pending",
-        source: "Vendor Acquisition Campaign",
+        source: assistedBySales ? "Sales Executive Assisted Registration" : "Vendor Acquisition Campaign",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
@@ -655,7 +664,27 @@ export default function RegistrationWizard() {
 
       console.log("STEP 10 - Firestore write success", { docId: generatedRegistrationNumber, vendorId: vendorDoc.vendorId });
 
-      await setDoc(doc(db, "users", user.uid), { role: "vendor", updatedAt: serverTimestamp() }, { merge: true });
+      if (assistedBySales) {
+        await setDoc(doc(db, "partnerOnboarding", generatedRegistrationNumber), {
+          vendorId: generatedRegistrationNumber,
+          businessName: vendorDoc.businessName,
+          ownerName: vendorDoc.ownerName,
+          phoneE164: vendorDoc.phoneE164,
+          city: vendorDoc.city,
+          category: vendorDoc.providerCategoryLabel,
+          address: vendorDoc.address,
+          salesExecutiveId: user.uid,
+          salesExecutiveName: vendorDoc.salesExecutiveName,
+          ownerUid: null,
+          status: "otp_pending",
+          registrationSource: "sales_executive",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        setOwnershipLink(`${window.location.origin}/partner/claim/${generatedRegistrationNumber}`);
+      } else {
+        await setDoc(doc(db, "users", user.uid), { role: "vendor", updatedAt: serverTimestamp() }, { merge: true });
+      }
 
       await sendVendorRegistrationAlert({
         businessName: vendorDoc.businessName,
@@ -674,7 +703,7 @@ export default function RegistrationWizard() {
       if (uploadWarning) {
         setSubmitMessage("Registration submitted, but some document uploads failed. You can update uploads later from your dashboard.");
       } else {
-        setSubmitMessage("Registration submitted successfully. Our team will verify your profile shortly.");
+        setSubmitMessage(assistedBySales ? "Registration saved. Ask the vendor to verify ownership using the OTP link below." : "Registration submitted successfully. Our team will verify your profile shortly.");
       }
       setRegistrationNumber(generatedRegistrationNumber);
       setCopyMessage("");
@@ -1015,6 +1044,13 @@ export default function RegistrationWizard() {
             <h2 className="mt-3 text-3xl font-semibold text-emerald-950">Your BookMyHalwai Vendor Registration Number is:</h2>
             <p className="mt-5 rounded-2xl border border-emerald-300 bg-white px-4 py-4 text-2xl font-bold tracking-wide text-emerald-800">{registrationNumber}</p>
             <p className="mt-4 text-sm text-emerald-900">Please save this number for future communication and verification.</p>
+            {ownershipLink ? (
+              <div className="mt-5 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-left">
+                <p className="text-sm font-semibold text-amber-900">Vendor OTP ownership link</p>
+                <p className="mt-2 break-all text-sm text-amber-800">{ownershipLink}</p>
+                <p className="mt-2 text-xs text-amber-700">Share this link only with the vendor whose mobile number was registered.</p>
+              </div>
+            ) : null}
 
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <button
