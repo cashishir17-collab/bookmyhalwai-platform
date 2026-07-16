@@ -8,6 +8,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { app, db, storage } from "@/lib/firebase";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
 import { INDIA_STATES } from "@/data/indiaLocations";
+import IndiaPhoneInput, { isValidIndianMobile, toIndianPhoneE164 } from "@/components/forms/IndiaPhoneInput";
 
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads"];
 
@@ -378,8 +379,8 @@ export default function RegistrationWizard() {
       if (!form.providerCategory) newErrors.providerCategory = "Provider category is required.";
       if (!form.businessName.trim()) newErrors.businessName = "Business name is required.";
       if (!form.ownerName.trim()) newErrors.ownerName = "Owner name is required.";
-      if (!form.mobile.trim()) newErrors.mobile = "Mobile number is required.";
-      if (!form.whatsapp.trim()) newErrors.whatsapp = "WhatsApp number is required.";
+      if (!isValidIndianMobile(form.mobile)) newErrors.mobile = "Enter a valid 10-digit mobile number.";
+      if (!isValidIndianMobile(form.whatsapp)) newErrors.whatsapp = "Enter a valid 10-digit WhatsApp number.";
       if (!form.email.trim()) newErrors.email = "Email is required.";
       if (!form.state.trim()) newErrors.state = "State or union territory is required.";
       if (!form.city.trim()) newErrors.city = "City or town is required.";
@@ -584,8 +585,8 @@ export default function RegistrationWizard() {
         providerCategoryLabel: providerCategories.find((category) => category.value === form.providerCategory)?.label ?? "Service Provider",
         businessName: form.businessName.trim(),
         ownerName: form.ownerName.trim(),
-        mobile: form.mobile.trim(),
-        whatsapp: form.whatsapp.trim(),
+        mobile: toIndianPhoneE164(form.mobile),
+        whatsapp: toIndianPhoneE164(form.whatsapp),
         email: form.email.trim(),
         state: form.state.trim(),
         city: form.city.trim(),
@@ -736,12 +737,12 @@ export default function RegistrationWizard() {
             </label>
             <label className="block text-sm font-medium text-slate-700">
               Mobile
-              <input value={form.mobile} onChange={(event) => updateField("mobile", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="+91 9876543210" />
+              <IndiaPhoneInput value={form.mobile} onChange={(value) => updateField("mobile", value)} required className="mt-2" />
               {errors.mobile ? <p className="mt-1 text-sm text-red-600">{errors.mobile}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
               WhatsApp
-              <input value={form.whatsapp} onChange={(event) => updateField("whatsapp", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="+91 9876543210" />
+              <IndiaPhoneInput value={form.whatsapp} onChange={(value) => updateField("whatsapp", value)} required className="mt-2" />
               {errors.whatsapp ? <p className="mt-1 text-sm text-red-600">{errors.whatsapp}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
