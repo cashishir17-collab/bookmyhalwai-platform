@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, writeBatch } from "firebase/firestore";
 import PhoneLogin from "@/components/auth/PhoneLogin";
 import { useAuth } from "@/hooks/useAuth";
 import { db } from "@/lib/firebase";
@@ -27,7 +27,29 @@ export default function ClaimPartnerPage() {
       const data = { id: snap.id, ...snap.data() } as PartnerRegistration;
       if (data.phoneE164 !== user.phoneNumber) throw new Error("This login number does not match the registered vendor number.");
       if (data.ownerUid && data.ownerUid !== user.uid) throw new Error("This registration has already been claimed.");
-      if (data.status === "otp_pending") await updateDoc(ref, { ownerUid: user.uid, status: "ownership_verified", ownershipVerifiedAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      if (data.status === "otp_pending") {
+        const batch = writeBatch(db);
+        batch.update(ref, {
+          ownerUid: user.uid,
+          status: "ownership_verified",
+          ownershipVerifiedAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        const vendorId = data.vendorId || data.id;
+        batch.update(doc(db, "vendors", vendorId), {
+          userId: user.uid,
+          ownerUid: user.uid,
+          ownershipStatus: "ownership_verified",
+          ownershipVerifiedAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        batch.set(doc(db, "users", user.uid), {
+          role: "vendor",
+          phoneNumber: user.phoneNumber,
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        await batch.commit();
+      }
       setRecord({ ...data, ownerUid: user.uid, status: "ownership_verified" });
       setMessage("Mobile ownership verified. Your application is now awaiting administrator approval.");
     } catch (err) { setMessage(err instanceof Error ? err.message : "Ownership verification failed."); }
