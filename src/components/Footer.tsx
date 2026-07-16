@@ -22,15 +22,15 @@ const linkGroups = [
     links: [
       { label: "Customer Dashboard", href: "/customer/dashboard" },
       { label: "Vendor Dashboard", href: "/vendor/dashboard" },
-      { label: "New Booking", href: "/bookings/new" },
+      { label: "Unified Login", href: "/login" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Terms", href: "/terms" },
-      { label: "Privacy", href: "/privacy" },
-      { label: "Compliance", href: "/contact" },
+      { label: "Terms & Conditions", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Legal & Compliance", href: "/compliance" },
     ],
   },
 ];
@@ -43,7 +43,7 @@ export default function Footer() {
           <div>
             <p className="font-serif text-3xl font-semibold tracking-[0.08em] text-[#F7F1E4]">BOOKMYHALWAI</p>
             <p className="mt-4 max-w-md text-sm leading-7 text-[#D6C7AC]">
-              Premium hospitality marketplace for trusted halwais and caterers. Built for modern discovery, verified quality, and wedding-ready service excellence.
+              India-wide marketplace for trusted event-service professionals, venues, halwais and caterers. Built for modern discovery, verified quality and celebration-ready service.
             </p>
             <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#D4BF95]/50 bg-[#D4BF95]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#E8DAC0]">
               Growing Across India
