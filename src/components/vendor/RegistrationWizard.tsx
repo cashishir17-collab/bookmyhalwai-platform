@@ -219,8 +219,6 @@ function calculateProfileCompletion(form: RegistrationForm) {
     form.uploads.foodPhotos.length > 0,
     form.uploads.staffPhotos.length > 0,
     form.uploads.menuPdf,
-    form.uploads.fssai,
-    form.uploads.gst,
   ];
 
   const filledFields = checks.filter(Boolean).length;
@@ -431,8 +429,6 @@ export default function RegistrationWizard() {
         if (form.uploads.foodPhotos.length === 0) newErrors.foodPhotos = "Upload at least one food photo.";
         if (form.uploads.staffPhotos.length === 0) newErrors.staffPhotos = "Upload at least one staff photo.";
         if (!form.uploads.menuPdf) newErrors.menuPdf = "Menu PDF is required.";
-        if (!form.uploads.fssai) newErrors.fssai = "FSSAI document is required.";
-        if (!form.uploads.gst) newErrors.gst = "GST document is required.";
       }
     }
 
@@ -963,12 +959,12 @@ export default function RegistrationWizard() {
               {errors.menuPdf ? <p className="mt-1 text-sm text-red-600">{errors.menuPdf}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              {form.providerCategory === "halwai_caterer" ? "FSSAI" : "Business Licence (Optional)"}
+              {form.providerCategory === "halwai_caterer" ? "FSSAI (Optional)" : "Business Licence (Optional)"}
               <input type="file" accept="application/pdf,image/*" onChange={(event) => handleFileChange(event, "fssai")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.fssai ? <p className="mt-1 text-sm text-red-600">{errors.fssai}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              {form.providerCategory === "halwai_caterer" ? "GST" : "GST (Optional)"}
+              {form.providerCategory === "halwai_caterer" ? "GST (Optional)" : "GST (Optional)"}
               <input type="file" accept="application/pdf,image/*" onChange={(event) => handleFileChange(event, "gst")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.gst ? <p className="mt-1 text-sm text-red-600">{errors.gst}</p> : null}
             </label>
