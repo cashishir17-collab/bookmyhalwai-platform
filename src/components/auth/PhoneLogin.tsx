@@ -9,9 +9,11 @@ interface PhoneLoginProps {
   onError?: (message: string) => void;
 }
 
+const INDIA_COUNTRY_CODE = "+91";
+
 export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
   const { loginWithPhone, verifyOtp } = useAuth();
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] =
     useState<ConfirmationResult | null>(null);
@@ -19,19 +21,28 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [otpError, setOtpError] = useState("");
 
+  const firebasePhoneNumber = `${INDIA_COUNTRY_CODE}${mobileNumber}`;
+  const displayPhoneNumber = `${INDIA_COUNTRY_CODE} ${mobileNumber}`;
+
+  const validateMobileNumber = () => {
+    if (!/^\d{10}$/.test(mobileNumber)) {
+      onError?.("Please enter a valid 10-digit mobile number.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSendOtp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setOtpError("");
 
-    if (!phoneNumber.trim()) {
-      onError?.("Please enter a phone number");
+    if (!validateMobileNumber()) {
       return;
     }
 
     try {
       setIsSendingOtp(true);
-      const result = await loginWithPhone(phoneNumber);
-      console.log("LOGIN STEP 4 - Confirmation stored");
+      const result = await loginWithPhone(firebasePhoneNumber);
       setConfirmationResult(result);
       setOtp("");
     } catch (error) {
@@ -82,7 +93,7 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
   const handleBack = () => {
     setConfirmationResult(null);
     setOtp("");
-    setPhoneNumber("");
+    setMobileNumber("");
     setOtpError("");
   };
 
@@ -90,10 +101,13 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
     setOtpError("");
     setOtp("");
 
+    if (!validateMobileNumber()) {
+      return;
+    }
+
     try {
       setIsSendingOtp(true);
-      const result = await loginWithPhone(phoneNumber);
-      console.log("LOGIN STEP 4 - Confirmation stored (resend)");
+      const result = await loginWithPhone(firebasePhoneNumber);
       setConfirmationResult(result);
     } catch (error) {
       const message =
@@ -111,21 +125,41 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
       {!confirmationResult ? (
         <form onSubmit={handleSendOtp} className="space-y-3">
           <label className="block text-sm font-medium text-slate-700">
-            Phone number
-            <input
-              type="tel"
-              value={phoneNumber}
-              onChange={(event) => setPhoneNumber(event.target.value)}
-              placeholder="+91 9876543210"
-              className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A] focus:ring-2 focus:ring-slate-100"
-              required
-              disabled={isSendingOtp}
-            />
+            Mobile number
+            <span className="mt-2 flex overflow-hidden rounded-2xl border border-slate-200 bg-white transition focus-within:border-[#0F172A] focus-within:ring-2 focus-within:ring-slate-100">
+              <span
+                className="flex items-center border-r border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-700"
+                aria-label="India country code"
+              >
+                +91
+              </span>
+              <input
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                value={mobileNumber}
+                onChange={(event) => {
+                  const digits = event.target.value.replace(/\D/g, "").slice(0, 10);
+                  setMobileNumber(digits);
+                }}
+                placeholder="10-digit mobile number"
+                minLength={10}
+                maxLength={10}
+                pattern="[0-9]{10}"
+                className="min-w-0 flex-1 bg-white px-4 py-3 text-sm outline-none"
+                required
+                disabled={isSendingOtp}
+                aria-describedby="mobile-number-help"
+              />
+            </span>
           </label>
+          <p id="mobile-number-help" className="text-xs text-slate-500">
+            India (+91) is selected automatically. Enter only your 10-digit mobile number.
+          </p>
 
           <button
             type="submit"
-            disabled={isSendingOtp}
+            disabled={isSendingOtp || mobileNumber.length !== 10}
             className="w-full rounded-full bg-[#0F172A] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSendingOtp ? "Sending OTP..." : "Send OTP"}
@@ -134,7 +168,7 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
       ) : (
         <div className="space-y-3">
           <div className="rounded-2xl border border-[#C4B5FD] bg-[#F5F3FF] px-4 py-3 text-sm text-[#5B21B6]">
-            OTP sent to <span className="font-semibold">{phoneNumber}</span>
+            OTP sent to <span className="font-semibold">{displayPhoneNumber}</span>
           </div>
 
           <form onSubmit={handleVerifyOtp} className="space-y-3">
@@ -142,6 +176,8 @@ export default function PhoneLogin({ onSuccess, onError }: PhoneLoginProps) {
               Enter 6-digit OTP
               <input
                 type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
                 value={otp}
                 onChange={(event) => {
                   const value = event.target.value.replace(/\D/g, "").slice(0, 6);
