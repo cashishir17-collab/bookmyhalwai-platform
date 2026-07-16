@@ -8,6 +8,7 @@ import { addDoc, collection, getDocs, query, serverTimestamp, where } from "fire
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 import { normalizeIndianPhone, statusLabel, type PartnerRegistration } from "@/lib/partner";
+import IndiaPhoneInput from "@/components/forms/IndiaPhoneInput";
 
 const blank = { businessName: "", ownerName: "", phone: "", city: "", category: "Halwai & Caterer", address: "" };
 
@@ -52,7 +53,8 @@ export default function PartnerPage() {
     <section className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
       <form onSubmit={submit} className="section-shell space-y-4 rounded-[2rem] p-7">
         <h2 className="text-2xl font-semibold">Register a vendor</h2>
-        {([['businessName','Business name'],['ownerName','Owner name'],['phone','Mobile number'],['city','City'],['address','Business address']] as const).map(([key,label]) => <label key={key} className="block text-sm font-semibold text-slate-700">{label}<input required={key !== 'address'} value={form[key]} onChange={e => setForm({...form,[key]:e.target.value})} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3" /></label>)}
+        {([['businessName','Business name'],['ownerName','Owner name'],['city','City'],['address','Business address']] as const).map(([key,label]) => <label key={key} className="block text-sm font-semibold text-slate-700">{label}<input required={key !== 'address'} value={form[key]} onChange={e => setForm({...form,[key]:e.target.value})} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3" /></label>)}
+        <label className="block text-sm font-semibold text-slate-700">Mobile number<IndiaPhoneInput value={form.phone} onChange={(phone) => setForm({ ...form, phone })} required className="mt-2" /></label>
         <label className="block text-sm font-semibold text-slate-700">Category<select value={form.category} onChange={e => setForm({...form,category:e.target.value})} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3"><option>Halwai & Caterer</option><option>Wedding Caterer</option><option>Corporate Caterer</option><option>Home Caterer</option></select></label>
         <button disabled={saving || (user?.role !== "sales_executive" && user?.role !== "admin")} className="btn btn-primary btn-md w-full">{saving ? "Saving..." : "Save & create OTP link"}</button>
       </form>
