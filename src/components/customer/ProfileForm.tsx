@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import IndiaPhoneInput, { isValidIndianMobile, toIndianMobileDigits, toIndianPhoneE164 } from "@/components/forms/IndiaPhoneInput";
 
 interface ProfileFormProps {
   user: {
@@ -27,7 +28,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
   const [form, setForm] = useState({
     name: initialData?.name || user.displayName || "",
     email: initialData?.email || user.email || "",
-    phone: initialData?.phone || user.phoneNumber || "",
+    phone: toIndianMobileDigits(initialData?.phone || user.phoneNumber || ""),
     address: initialData?.address || "",
     city: initialData?.city || "",
     cuisine: initialData?.cuisine || "",
@@ -42,12 +43,17 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
       return;
     }
 
+    if (!isValidIndianMobile(form.phone)) {
+      setMessage("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
     setIsSaving(true);
     try {
       await updateDoc(doc(db, "users", user.uid), {
         displayName: form.name,
         email: form.email,
-        phone: form.phone,
+        phone: toIndianPhoneE164(form.phone),
         address: form.address,
         preferredCity: form.city,
         preferredCuisine: form.cuisine,
@@ -83,11 +89,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Phone
-          <input
-            value={form.phone}
-            onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-            className="form-control"
-          />
+          <IndiaPhoneInput value={form.phone} onChange={(phone) => setForm((current) => ({ ...current, phone }))} required className="mt-2" />
         </label>
         <label className="block text-sm font-medium text-slate-700">
           Preferred City
