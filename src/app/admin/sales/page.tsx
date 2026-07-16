@@ -26,12 +26,12 @@ export default function SalesExecutivesPage() {
     if (!loading && user?.role === "admin") void loadAccounts();
   }, [loadAccounts, loading, router, user?.role]);
 
-  const setRole = async (account: Account, role: "sales" | "customer") => {
+  const setRole = async (account: Account, role: "sales_executive" | "customer") => {
     if (!db) return;
     setMessage("");
     try {
       await updateDoc(doc(db, "users", account.id), { role });
-      setMessage(`${account.displayName || account.phoneNumber || account.id} is now ${role === "sales" ? "a sales executive" : "a standard user"}.`);
+      setMessage(`${account.displayName || account.phoneNumber || account.id} is now ${role === "sales_executive" ? "a sales executive" : "a standard user"}.`);
       await loadAccounts();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not update this account.");
@@ -50,7 +50,7 @@ export default function SalesExecutivesPage() {
     <section className="section-shell rounded-[2rem] p-8">
       <div className="space-y-3">{accounts.map((account) => <article key={account.id} className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
         <div><p className="font-semibold text-slate-900">{account.displayName || account.phoneNumber || account.email || "Unnamed account"}</p><p className="text-sm text-slate-500">{account.phoneNumber || account.email || account.id} · {account.role || "customer"}</p></div>
-        {account.role === "sales" ? <button onClick={() => void setRole(account, "customer")} className="btn btn-outline btn-sm">Remove sales access</button> : account.role !== "admin" ? <button onClick={() => void setRole(account, "sales")} className="btn btn-primary btn-sm">Make sales executive</button> : null}
+        {(account.role === "sales_executive" || account.role === "sales") ? <button onClick={() => void setRole(account, "customer")} className="btn btn-outline btn-sm">Remove sales access</button> : account.role !== "admin" ? <button onClick={() => void setRole(account, "sales_executive")} className="btn btn-primary btn-sm">Make sales executive</button> : null}
       </article>)}</div>
     </section>
   </div></main>;
