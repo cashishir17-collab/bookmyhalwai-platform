@@ -140,6 +140,7 @@ export default function AdminPage() {
           </Link>
           <Link href="/admin/enquiries" className="btn btn-outline btn-md type-button ml-3 mt-5 inline-flex">Open Enquiry CRM</Link>
           <Link href="/admin/partner-onboarding" className="btn btn-outline btn-md type-button ml-3 mt-5 inline-flex">Partner Approvals & Support</Link>
+          <Link href="/admin/sales" className="btn btn-outline btn-md type-button ml-3 mt-5 inline-flex">Sales Executive Access</Link>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
