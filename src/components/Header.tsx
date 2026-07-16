@@ -21,7 +21,7 @@ export default function Header() {
   const avatarInitial = displayName.charAt(0).toUpperCase();
   const isVendor = user?.role === "vendor";
   const isAdmin = user?.role === "admin";
-  const isSales = user?.role === "sales";
+  const isSales = user?.role === "sales_executive" || user?.role === "sales";
   const quickLinks = [
     { label: "Dashboard", href: isSales ? "/partner/dashboard" : isVendor ? "/vendor/dashboard" : "/customer/dashboard" },
     ...(!isSales ? [{ label: "Bookings", href: isVendor ? "/vendor/bookings" : "/customer/bookings" }] : []),
