@@ -7,6 +7,7 @@ import BookingSummary from "@/components/BookingSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { db } from "@/lib/firebase";
 import { addNotification } from "@/lib/notifications";
+import IndiaPhoneInput, { isValidIndianMobile, toIndianPhoneE164 } from "@/components/forms/IndiaPhoneInput";
 
 interface BookingCheckoutProps {
   catererId: string;
@@ -53,7 +54,7 @@ export default function BookingCheckout({
       return;
     }
 
-    if (!fullName || !mobileNumber || !email || !eventAddress) {
+    if (!fullName || !isValidIndianMobile(mobileNumber) || !email || !eventAddress) {
       setSubmitError("Please fill in your name, contact details, and event address.");
       return;
     }
@@ -77,7 +78,7 @@ export default function BookingCheckout({
         advanceAmount,
         remainingAmount,
         customerName: fullName || user?.displayName || "Guest",
-        customerPhone: mobileNumber || user?.phoneNumber || "",
+        customerPhone: toIndianPhoneE164(mobileNumber) || user?.phoneNumber || "",
         customerEmail: email || user?.email || "",
         eventAddress,
         specialInstructions: instructions,
@@ -137,13 +138,7 @@ export default function BookingCheckout({
 
             <label className="block text-sm font-medium text-slate-700">
               Mobile Number
-              <input
-                value={mobileNumber}
-                onChange={(event) => setMobileNumber(event.target.value)}
-                type="tel"
-                placeholder="Enter mobile number"
-                className="form-control"
-              />
+              <IndiaPhoneInput value={mobileNumber} onChange={setMobileNumber} required className="mt-2" />
             </label>
           </div>
 
