@@ -2,6 +2,7 @@ export type PartnerStatus = "otp_pending" | "ownership_verified" | "approved" | 
 
 export interface PartnerRegistration {
   id: string;
+  vendorId?: string;
   businessName: string;
   ownerName: string;
   phoneE164: string;
