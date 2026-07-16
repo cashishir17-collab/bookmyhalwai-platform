@@ -11,6 +11,7 @@ import {
   GoogleAuthProvider,
   RecaptchaVerifier,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   signInWithPhoneNumber,
   signInWithPopup,
   signOut,
@@ -30,12 +31,15 @@ interface AuthContextValue {
   user: AppUser | null;
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
+  loginAdminWithEmail: (email: string, password: string) => Promise<void>;
   loginWithPhone: (phoneNumber: string) => Promise<ConfirmationResult>;
   verifyOtp: (confirmationResult: ConfirmationResult, otp: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+const ADMIN_EMAIL = "admin@bookmyhalwai.com";
 
 function mapFirebaseUser(firebaseUser: FirebaseUser | null): AppUser | null {
   if (!firebaseUser) {
@@ -93,7 +97,7 @@ async function ensureUserDocument(firebaseUser: FirebaseUser): Promise<AppUser> 
     displayName: firebaseUser.displayName,
     photoURL: firebaseUser.photoURL,
     phoneNumber: firebaseUser.phoneNumber,
-    role: data.role ?? "customer",
+    role: data.role === "admin" && firebaseUser.email?.toLowerCase() !== ADMIN_EMAIL ? "customer" : data.role ?? "customer",
   };
 }
 
@@ -156,6 +160,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       await signInWithPopup(auth, provider);
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
+  };
+
+  const loginAdminWithEmail = async (email: string, password: string) => {
+    if (!auth) {
+      throw new Error("Firebase authentication is not configured.");
+    }
+
+    if (email.trim().toLowerCase() !== ADMIN_EMAIL) {
+      throw new Error("Only admin@bookmyhalwai.com is authorised for admin login.");
+    }
+
+    setLoading(true);
+    try {
+      const credential = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, password);
+      if (credential.user.email?.toLowerCase() !== ADMIN_EMAIL) {
+        await signOut(auth);
+        throw new Error("This account is not authorised for admin access.");
+      }
     } catch (error) {
       setLoading(false);
       throw error;
@@ -242,6 +268,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       loading,
       loginWithGoogle,
+      loginAdminWithEmail,
       loginWithPhone,
       verifyOtp,
       logout,
