@@ -7,9 +7,30 @@ service cloud.firestore {
     function salesExecutive() { return signedIn() && role() == 'sales_executive'; }
     function ownsVendor(vendorId) { return signedIn() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid; }
     match /vendors/{vendorId} {
-      allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified'] || admin() || (signedIn() && resource.data.userId == request.auth.uid);
-      allow create: if admin() || (signedIn() && request.resource.data.userId == request.auth.uid);
-      allow update: if admin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified']
+        || admin()
+        || (signedIn() && resource.data.userId == request.auth.uid)
+        || (salesExecutive() && resource.data.salesExecutiveId == request.auth.uid);
+      allow create: if admin()
+        || (signedIn() && request.resource.data.userId == request.auth.uid)
+        || (salesExecutive()
+          && request.resource.data.salesExecutiveId == request.auth.uid
+          && request.resource.data.userId == null
+          && request.resource.data.ownerUid == null
+          && request.resource.data.ownershipStatus == 'otp_pending'
+          && request.resource.data.verificationStatus == 'Pending');
+      allow update: if admin()
+        || (signedIn() && resource.data.userId == request.auth.uid)
+        || (signedIn()
+          && resource.data.userId == null
+          && resource.data.ownershipStatus == 'otp_pending'
+          && request.auth.token.phone_number == resource.data.phoneE164
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'userId', 'ownerUid', 'ownershipStatus', 'ownershipVerifiedAt', 'updatedAt'
+          ])
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.ownerUid == request.auth.uid
+          && request.resource.data.ownershipStatus == 'ownership_verified');
     }
     match /enquiries/{enquiryId} {
       allow create: if signedIn() && role() == 'customer' && request.resource.data.customerId == request.auth.uid;
@@ -19,9 +40,62 @@ service cloud.firestore {
     }
     match /users/{userId} {
       allow read: if signedIn() && (request.auth.uid == userId || admin());
-      allow create: if signedIn() && request.auth.uid == userId && request.resource.data.role == 'customer';
-      allow update: if admin() || (signedIn() && request.auth.uid == userId && request.resource.data.role == resource.data.role);
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.role in ['customer', 'vendor'];
+      allow update: if admin()
+        || (signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.role == resource.data.role)
+        || (signedIn()
+          && request.auth.uid == userId
+          && resource.data.role == 'customer'
+          && request.resource.data.role == 'vendor'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'role', 'phoneNumber', 'updatedAt'
+          ]));
     }
+    match /systemCounters/vendorRegistration {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.lastCategory in [
+          'halwai_caterer', 'decorator', 'tent_house', 'dj', 'photographer',
+          'venue_banquet', 'makeup_artist', 'pandit', 'mehendi_artist',
+          'return_gifts', 'choreographer'
+        ]
+        && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence == 1;
+      allow update: if signedIn()
+        && request.resource.data.lastCategory in [
+          'halwai_caterer', 'decorator', 'tent_house', 'dj', 'photographer',
+          'venue_banquet', 'makeup_artist', 'pandit', 'mehendi_artist',
+          'return_gifts', 'choreographer'
+        ]
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'categoryCounters', 'lastCategory', 'updatedAt'
+        ])
+        && request.resource.data.categoryCounters.diff(resource.data.categoryCounters).affectedKeys().hasOnly([
+          request.resource.data.lastCategory
+        ])
+        && (
+          (
+            !(request.resource.data.lastCategory in resource.data.categoryCounters)
+            && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence == 1
+          )
+          || (
+            request.resource.data.categoryCounters[request.resource.data.lastCategory].currentYear
+              == resource.data.categoryCounters[request.resource.data.lastCategory].currentYear
+            && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence
+              == resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence + 1
+          )
+          || (
+            request.resource.data.categoryCounters[request.resource.data.lastCategory].currentYear
+              > resource.data.categoryCounters[request.resource.data.lastCategory].currentYear
+            && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence == 1
+          )
+        );
+      allow delete: if admin();
+    }
+
     match /partnerOnboarding/{registrationId} {
       allow create: if salesExecutive()
         && request.resource.data.salesExecutiveId == request.auth.uid
