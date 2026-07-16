@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
+import { useAuth } from "@/hooks/useAuth";
 
 const roleCards = [
   {
@@ -31,7 +31,26 @@ const roleCards = [
 
 export default function UnifiedLoginPage() {
   const router = useRouter();
+  const { loginAdminWithEmail, logout } = useAuth();
+  const [adminEmail, setAdminEmail] = useState("admin@bookmyhalwai.com");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [isAdminPending, setIsAdminPending] = useState(false);
   const [error, setError] = useState("");
+
+  const handleAdminLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError("");
+    setIsAdminPending(true);
+    try {
+      await loginAdminWithEmail(adminEmail, adminPassword);
+      router.replace("/admin");
+    } catch {
+      await logout();
+      setError("Admin login failed. Check the password for admin@bookmyhalwai.com.");
+    } finally {
+      setIsAdminPending(false);
+    }
+  };
 
   return (
     <main className="page-shell min-h-screen px-4 py-12 sm:px-6 lg:px-8">
@@ -51,12 +70,33 @@ export default function UnifiedLoginPage() {
               {card.href ? (
                 <Link href={card.href} className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-[#0B1830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1E426A]">Open {card.title}</Link>
               ) : (
-                <div className="mt-6 rounded-2xl bg-white p-3">
-                  <GoogleLoginButton
-                    onSuccess={() => router.replace("/admin")}
-                    onError={(message) => setError(message)}
-                  />
-                </div>
+                <form onSubmit={handleAdminLogin} className="mt-6 space-y-3 rounded-2xl bg-white p-4">
+                  <label className="block text-sm font-semibold text-slate-700">
+                    Admin email
+                    <input
+                      type="email"
+                      value={adminEmail}
+                      onChange={(event) => setAdminEmail(event.target.value)}
+                      autoComplete="username"
+                      required
+                      className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#0B1830]"
+                    />
+                  </label>
+                  <label className="block text-sm font-semibold text-slate-700">
+                    Password
+                    <input
+                      type="password"
+                      value={adminPassword}
+                      onChange={(event) => setAdminPassword(event.target.value)}
+                      autoComplete="current-password"
+                      required
+                      className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#0B1830]"
+                    />
+                  </label>
+                  <button type="submit" disabled={isAdminPending} className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0B1830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1E426A] disabled:cursor-not-allowed disabled:opacity-60">
+                    {isAdminPending ? "Signing in..." : "Admin Login"}
+                  </button>
+                </form>
               )}
             </article>
           ))}
