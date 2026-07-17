@@ -89,6 +89,11 @@ function extractGeminiAnswer(payload: unknown) {
   const record = payload as Record<string, unknown>;
   if (typeof record.output_text === "string") return record.output_text.trim();
 
+  if (Array.isArray(record.candidates)) {
+    const candidateText = collectText(record.candidates.slice(0, 1)).join("\n").trim();
+    if (candidateText) return candidateText;
+  }
+
   const candidates = Array.isArray(record.outputs)
     ? record.outputs.slice(-1)
     : Array.isArray(record.steps)
@@ -132,30 +137,37 @@ export async function POST(request: NextRequest) {
   }
 
   const history = sanitizeHistory(body.history);
-  const conversation = history
-    .map((item) => `${item.role === "user" ? "Vendor" : "Utsav Saathi"}: ${item.content}`)
-    .join("\n");
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
+  const contents = [
+    ...history.map((item) => ({
+      role: item.role === "assistant" ? "model" : "user",
+      parts: [{ text: item.content }],
+    })),
+    { role: "user", parts: [{ text: message }] },
+  ];
 
   try {
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/interactions", {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-goog-api-key": apiKey,
       },
       body: JSON.stringify({
-        model: process.env.GEMINI_MODEL || "gemini-3.5-flash",
-        system_instruction: buildUtsavSystemInstruction(body.vendor),
-        input: `${conversation ? `Recent conversation:\n${conversation}\n\n` : ""}Vendor's latest question: ${message}`,
-        store: false,
-        generation_config: {
+        systemInstruction: {
+          parts: [{ text: buildUtsavSystemInstruction(body.vendor) }],
+        },
+        contents,
+        generationConfig: {
           temperature: 0.2,
-          thinking_level: "low",
-          max_output_tokens: 500,
+          maxOutputTokens: 500,
         },
       }),
-      signal: AbortSignal.timeout(15_000),
-    });
+      signal: AbortSignal.timeout(12_000),
+      },
+    );
 
     if (!response.ok) {
       console.error("Utsav Saathi Gemini request failed", response.status);
