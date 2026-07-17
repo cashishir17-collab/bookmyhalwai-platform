@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
+import { StateVisual } from "@/components/marketplace/StateVisual";
 import { INDIA_STATES } from "@/data/indiaLocations";
 
 export const metadata: Metadata = {
@@ -19,11 +20,14 @@ export default function LocationsPage() {
         </div>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {INDIA_STATES.map((state) => (
-            <article key={state.code} className="premium-card rounded-3xl p-6">
-              <MapPin className="h-6 w-6 text-[#0F6456]" />
-              <h2 className="mt-4 text-lg font-semibold text-[#0B1830]">{state.name}</h2>
-              <p className="mt-2 text-sm text-[#5A6E84]">{state.cities.length.toLocaleString("en-IN")} cities, towns & localities</p>
-              <Link href={`/vendors?state=${encodeURIComponent(state.name)}`} className="mt-4 inline-flex text-sm font-semibold text-[#0F6456] hover:underline">Browse approved vendors</Link>
+            <article key={state.code} className="premium-card overflow-hidden rounded-3xl">
+              <StateVisual code={state.code} stateName={state.name} />
+              <div className="p-6">
+                <MapPin className="h-6 w-6 text-[#0F6456]" />
+                <h2 className="mt-4 text-lg font-semibold text-[#0B1830]">{state.name}</h2>
+                <p className="mt-2 text-sm text-[#5A6E84]">{state.cities.length.toLocaleString("en-IN")} cities, towns & localities</p>
+                <Link href={`/vendors?state=${encodeURIComponent(state.name)}`} className="mt-4 inline-flex text-sm font-semibold text-[#0F6456] hover:underline">Browse approved vendors</Link>
+              </div>
             </article>
           ))}
         </div>

@@ -51,11 +51,17 @@ export default function Home() {
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {MARKETPLACE_SERVICES.map((service) => (
-              <Link key={service.slug} href={`/vendors/${service.slug}`} className="premium-card group rounded-3xl p-5">
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#EEF5F3] text-[#0F6456]"><ServiceIcon name={service.icon} /></span>
-                <h3 className="mt-4 text-lg font-semibold text-[#0B1830]">{service.label}</h3>
-                <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5A6E84]">{service.description}</p>
-                <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.12em] text-[#0F6456]">Find vendors <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></span>
+              <Link key={service.slug} href={`/vendors/${service.slug}`} className="premium-card group overflow-hidden rounded-3xl">
+                <div className="relative h-36 overflow-hidden">
+                  <Image src={service.image} alt={`${service.label} service`} fill className="object-cover transition duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07162B]/75 via-transparent to-transparent" />
+                  <span className="absolute bottom-3 left-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/95 text-[#0F6456] shadow-lg"><ServiceIcon name={service.icon} /></span>
+                </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-[#0B1830]">{service.label}</h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5A6E84]">{service.description}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.12em] text-[#0F6456]">Find vendors <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></span>
+                </div>
               </Link>
             ))}
           </div>

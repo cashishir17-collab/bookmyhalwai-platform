@@ -6,6 +6,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Catering",
     description: "Traditional halwais, wedding caterers, live counters and complete food service.",
     icon: "utensils",
+    image: "/images/home/halwai-sweets.jpg",
   },
   {
     slug: "venues-banquet-halls",
@@ -14,6 +15,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Venues",
     description: "Banquet halls, lawns and event spaces for celebrations of every size.",
     icon: "building",
+    image: "/images/home/wedding-reception.jpg",
   },
   {
     slug: "decorators",
@@ -22,6 +24,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Decor",
     description: "Wedding stages, floral concepts, lighting and complete event decor.",
     icon: "sparkles",
+    image: "/images/home/festive-celebration.jpg",
   },
   {
     slug: "tent-houses",
@@ -30,6 +33,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Tent Houses",
     description: "Tents, seating, shamianas, lighting and outdoor event infrastructure.",
     icon: "tent",
+    image: "/images/home/large-catering-setup.jpg",
   },
   {
     slug: "djs-music",
@@ -38,6 +42,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "DJs",
     description: "DJs, sound systems and music experiences for every celebration.",
     icon: "music",
+    image: "/images/home/birthday-catering.jpg",
   },
   {
     slug: "photography-videography",
@@ -46,6 +51,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Photo & Video",
     description: "Photography and filmmaking teams to preserve every important moment.",
     icon: "camera",
+    image: "/images/home/guests-enjoying-food.jpg",
   },
   {
     slug: "makeup-artists",
@@ -54,6 +60,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Makeup",
     description: "Bridal and occasion makeup artists with professional styling services.",
     icon: "brush",
+    image: "/images/home/hero-luxury.jpg",
   },
   {
     slug: "mehendi-artists",
@@ -62,6 +69,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Mehendi",
     description: "Traditional and contemporary mehendi artists for families and guests.",
     icon: "flower",
+    image: "/images/home/festive-celebration.jpg",
   },
   {
     slug: "pandits",
@@ -70,6 +78,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Pandits",
     description: "Experienced pandits for wedding rituals, puja and religious ceremonies.",
     icon: "flame",
+    image: "/images/home/live-counters.jpg",
   },
   {
     slug: "choreographers",
@@ -78,6 +87,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Choreography",
     description: "Wedding and family performance choreography for memorable celebrations.",
     icon: "party",
+    image: "/images/home/birthday-catering.jpg",
   },
   {
     slug: "return-gifts",
@@ -86,6 +96,7 @@ export const MARKETPLACE_SERVICES = [
     shortLabel: "Gifts",
     description: "Thoughtful, customisable gifts and favours for every guest list.",
     icon: "gift",
+    image: "/images/home/halwai-sweets.jpg",
   },
 ] as const;
 

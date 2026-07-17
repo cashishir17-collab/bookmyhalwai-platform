@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock3 } from "lucide-react";
 import { ServiceIcon } from "@/components/marketplace/ServiceIcon";
@@ -21,11 +22,17 @@ export default function ServicesPage() {
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {MARKETPLACE_SERVICES.map((service) => (
-            <Link key={service.slug} href={`/vendors/${service.slug}`} className="premium-card group rounded-3xl p-6">
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EAF3F0] text-[#0F6456]"><ServiceIcon name={service.icon} /></span>
-              <h2 className="mt-5 text-xl font-semibold text-[#0B1830]">{service.label}</h2>
-              <p className="mt-2 text-sm leading-7 text-[#51657D]">{service.description}</p>
-              <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#0F6456]">Explore vendors <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+            <Link key={service.slug} href={`/vendors/${service.slug}`} className="premium-card group overflow-hidden rounded-3xl">
+              <div className="relative h-48 overflow-hidden">
+                <Image src={service.image} alt={`${service.label} service`} fill className="object-cover transition duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07162B]/70 via-transparent to-transparent" />
+                <span className="absolute bottom-4 left-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/95 text-[#0F6456] shadow-lg"><ServiceIcon name={service.icon} /></span>
+              </div>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-[#0B1830]">{service.label}</h2>
+                <p className="mt-2 text-sm leading-7 text-[#51657D]">{service.description}</p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#0F6456]">Explore vendors <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+              </div>
             </Link>
           ))}
         </div>
