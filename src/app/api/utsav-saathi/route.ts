@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { generateText } from "ai";
 import {
   buildUtsavSystemInstruction,
   getUtsavFallbackAnswer,
@@ -103,16 +104,6 @@ function extractGeminiAnswer(payload: unknown) {
   return collectText(candidates).join("\n").trim();
 }
 
-function extractGatewayAnswer(payload: unknown) {
-  if (!payload || typeof payload !== "object") return "";
-
-  const choices = (payload as { choices?: unknown }).choices;
-  if (!Array.isArray(choices) || !choices.length) return "";
-
-  const message = (choices[0] as { message?: { content?: unknown } })?.message;
-  return collectText(message?.content).join("\n").trim();
-}
-
 export async function POST(request: NextRequest) {
   if (rateLimited(request)) {
     return NextResponse.json(
@@ -142,35 +133,16 @@ export async function POST(request: NextRequest) {
 
   const fallback = getUtsavFallbackAnswer(message);
   const history = sanitizeHistory(body.history);
-  const gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
-
-  if (gatewayToken) {
+  if (process.env.VERCEL || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN) {
     try {
-      const response = await fetch("https://ai-gateway.vercel.sh/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${gatewayToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: process.env.AI_GATEWAY_MODEL || "google/gemini-3.1-flash-lite",
-          messages: [
-            { role: "system", content: buildUtsavSystemInstruction(body.vendor) },
-            ...history,
-            { role: "user", content: message },
-          ],
-          max_tokens: 500,
-          stream: false,
-        }),
-        signal: AbortSignal.timeout(10_000),
+      const result = await generateText({
+        model: process.env.AI_GATEWAY_MODEL || "google/gemini-3.1-flash-lite",
+        system: buildUtsavSystemInstruction(body.vendor),
+        messages: [...history, { role: "user", content: message }],
+        maxOutputTokens: 500,
+        abortSignal: AbortSignal.timeout(10_000),
       });
-
-      if (!response.ok) {
-        console.error("Utsav Saathi AI Gateway request failed", response.status);
-        return NextResponse.json({ answer: fallback, source: "knowledge_base" });
-      }
-
-      const answer = extractGatewayAnswer(await response.json());
+      const answer = result.text.trim();
       return NextResponse.json({
         answer: answer || fallback,
         source: answer ? "gemini" : "knowledge_base",
