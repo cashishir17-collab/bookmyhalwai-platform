@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
   if (process.env.VERCEL || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN) {
     try {
       const result = await generateText({
-        model: process.env.AI_GATEWAY_MODEL || "google/gemini-3.1-flash-lite",
+        model: process.env.AI_GATEWAY_MODEL || "google/gemini-2.5-flash-lite",
         system: buildUtsavSystemInstruction(body.vendor),
         messages: [...history, { role: "user", content: message }],
         maxOutputTokens: 500,
