@@ -24,7 +24,7 @@ const providerCategories = [
   { value: "decorator", label: "Decorator" },
   { value: "tent_house", label: "Tent House" },
   { value: "dj", label: "DJ" },
-  { value: "photographer", label: "Photographer" },
+  { value: "photographer", label: "Photography / Videography" },
   { value: "venue_banquet", label: "Venue / Banquet Hall" },
   { value: "makeup_artist", label: "Makeup Artist" },
   { value: "pandit", label: "Pandit" },

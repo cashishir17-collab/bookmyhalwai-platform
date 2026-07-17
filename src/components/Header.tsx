@@ -6,11 +6,12 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Find Caterers", href: "/caterers" },
-  { label: "Become a Partner", href: "/vendor/register" },
-  { label: "Contact", href: "/contact" },
+  { label: "Find Vendors", href: "/vendors" },
+  { label: "Services", href: "/services" },
+  { label: "Locations", href: "/locations" },
+  { label: "How It Works", href: "/how-it-works" },
+  { label: "Utsav Saathi", href: "/#utsav-saathi" },
+  { label: "For Partners", href: "/vendor/register" },
 ];
 
 export default function Header() {

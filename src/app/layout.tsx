@@ -23,8 +23,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BookMyHalwai",
-  description: "Verified halwai and caterer booking marketplace",
+  title: {
+    default: "BookMyHalwai | India’s Event Services Marketplace",
+    template: "%s | BookMyHalwai",
+  },
+  description: "Discover verified event vendors, venues and celebration services across India.",
 };
 
 export default function RootLayout({

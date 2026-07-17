@@ -86,14 +86,16 @@ export default function UnifiedLoginPage() {
                 <Link href={card.href} className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-[#0B1830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1E426A]">Open {card.title}</Link>
               ) : (
                 <div className="mt-6 space-y-3 rounded-2xl bg-white p-4">
-                  <p className="text-sm font-semibold text-slate-700">Authorised admin mobile</p>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold tracking-[0.08em] text-[#0B1830]">+91 7291••••35</div>
                   {!adminConfirmation ? (
-                    <button type="button" onClick={() => void sendAdminOtp()} disabled={isAdminPending} className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0B1830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1E426A] disabled:cursor-not-allowed disabled:opacity-60">
-                      {isAdminPending ? "Sending OTP..." : "Send Admin OTP"}
-                    </button>
+                    <div className="space-y-3">
+                      <p className="text-sm leading-6 text-slate-600">Send a secure OTP to the authorised administrator. The registered mobile number remains private.</p>
+                      <button type="button" onClick={() => void sendAdminOtp()} disabled={isAdminPending} className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0B1830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1E426A] disabled:cursor-not-allowed disabled:opacity-60">
+                        {isAdminPending ? "Sending OTP..." : "Send Admin OTP"}
+                      </button>
+                    </div>
                   ) : (
                     <form onSubmit={verifyAdminOtp} className="space-y-3">
+                      <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">OTP sent to the authorised admin mobile.</p>
                       <label className="block text-sm font-semibold text-slate-700">
                         Enter OTP
                         <input type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} value={adminOtp} onChange={(event) => setAdminOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} autoComplete="one-time-code" required placeholder="6-digit OTP" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#0B1830]" />

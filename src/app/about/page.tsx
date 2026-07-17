@@ -3,8 +3,8 @@ import Link from "next/link";
 import { BadgeCheck, Building2, Rocket, ShieldCheck, Sparkles, Store } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About BookMyHalwai | Trusted Halwai & Caterer Marketplace",
-  description: "Learn how BookMyHalwai is building India’s trusted digital marketplace for verified halwais and caterers.",
+  title: "About BookMyHalwai | India’s Event Services Marketplace",
+  description: "Learn how BookMyHalwai is building India’s trusted digital marketplace for verified event-service professionals.",
 };
 
 const vendorReasons = [
@@ -25,9 +25,9 @@ export default function AboutPage() {
 
         <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
           <div className="space-y-6">
-            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Building India’s trusted marketplace for halwais and caterers</h1>
+            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Building India’s trusted marketplace for every event service</h1>
             <p className="text-base leading-8 text-slate-600 sm:text-lg">
-              BookMyHalwai helps customers discover verified catering partners, while helping vendors build a digital presence and receive future booking opportunities.
+              BookMyHalwai helps customers discover verified caterers, venues, decorators, DJs, photography and videography teams, artists and other event partners—while helping local professionals build a trusted digital presence.
             </p>
 
             <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
@@ -40,7 +40,7 @@ export default function AboutPage() {
             <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
               <h2 className="text-xl font-semibold text-slate-900">Our vision</h2>
               <p className="mt-2 text-sm leading-7 text-slate-700">
-                To organize India&apos;s traditional catering ecosystem into a trusted, verified, digital marketplace.
+                To organise India&apos;s fragmented event-services ecosystem into one trusted, verified digital marketplace.
               </p>
             </article>
 

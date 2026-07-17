@@ -1,295 +1,106 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, CircleCheckBig, MapPin, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { ArrowRight, BadgeCheck, CalendarCheck2, MapPinned, MessageCircle, Search, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { MarketplaceSearch } from "@/components/marketplace/MarketplaceSearch";
+import { ServiceIcon } from "@/components/marketplace/ServiceIcon";
+import { MARKETPLACE_SERVICES } from "@/data/marketplace";
 
 export const metadata: Metadata = {
-  title: "BookMyHalwai | Premium Catering Marketplace",
-  description: "BookMyHalwai connects celebrations with verified premium halwais and professional caterers across India.",
+  title: "BookMyHalwai | Everything Your Event Needs, All in One Place",
+  description: "Find verified caterers, venues, decorators, DJs, photography and videography teams, makeup artists and event professionals across India.",
 };
 
-const trustItems = [
-  { title: "Verified Vendors", description: "Every listed partner passes profile and compliance checks.", icon: BadgeCheck },
-  { title: "Trusted Marketplace", description: "Built for wedding families, planners, and premium events.", icon: ShieldCheck },
-  { title: "Quality Assured", description: "Service standards designed for hospitality-grade consistency.", icon: Sparkles },
-  { title: "Professional Caterers", description: "Specialists in weddings, festivals, and luxury gatherings.", icon: UsersRound },
-  { title: "Growing Across India", description: "Expanding city by city with curated partner onboarding.", icon: MapPin },
-];
-
-const whyItems = [
-  {
-    title: "Curated Vendor Profiles",
-    description: "Elegant vendor pages with service highlights, menu visibility, and trust credentials.",
-    image: "/images/home/serving-staff.jpg",
-    alt: "Professional serving staff preparing a premium catering setup.",
-  },
-  {
-    title: "Verification-First Approach",
-    description: "Vendor quality checks help customers book with greater confidence.",
-    image: "/images/home/halwai-sweets.jpg",
-    alt: "A professional halwai preparing sweets in a commercial kitchen.",
-  },
-  {
-    title: "Marketplace-Ready Experience",
-    description: "Professional UI for premium discovery and efficient enquiry journeys.",
-    image: "/images/home/corporate-catering.jpg",
-    alt: "Corporate catering buffet setup with polished table presentation.",
-  },
-];
-
-const onboardingSteps = ["Register", "Verification", "Profile Live", "Receive Enquiries"];
-
-const experienceGallery = [
-  {
-    title: "Luxury Wedding Buffet",
-    subtitle: "Grand station styling and curated menus.",
-    image: "/images/home/hero-luxury.jpg",
-    alt: "Luxury wedding buffet with warm ambient lighting and curated food stations.",
-  },
-  {
-    title: "Professional Halwai",
-    subtitle: "Traditional craftsmanship with modern execution.",
-    image: "/images/home/halwai-sweets.jpg",
-    alt: "Professional halwai preparing sweets for an event.",
-  },
-  {
-    title: "Live Food Counters",
-    subtitle: "Interactive stations for memorable guest service.",
-    image: "/images/home/live-counters.jpg",
-    alt: "Live food counters serving fresh dishes at a celebration.",
-  },
-  {
-    title: "Corporate Catering",
-    subtitle: "Business events with hospitality-grade quality.",
-    image: "/images/home/corporate-catering.jpg",
-    alt: "Professional corporate catering display at a formal event.",
-  },
-  {
-    title: "Birthday Catering",
-    subtitle: "Custom experiences for intimate milestones.",
-    image: "/images/home/birthday-catering.jpg",
-    alt: "Birthday catering table with premium plated desserts and snacks.",
-  },
-  {
-    title: "Wedding Reception",
-    subtitle: "Elegant service for once-in-a-lifetime evenings.",
-    image: "/images/home/wedding-reception.jpg",
-    alt: "Wedding reception dinner arrangement with decorative lighting.",
-  },
-  {
-    title: "Guests Enjoying Food",
-    subtitle: "Moments that define trusted hospitality.",
-    image: "/images/home/guests-enjoying-food.jpg",
-    alt: "Guests enjoying food together at a catered event.",
-  },
-  {
-    title: "Festive Celebrations",
-    subtitle: "Indian celebrations with vibrant culinary spreads.",
-    image: "/images/home/festive-celebration.jpg",
-    alt: "Indian festive celebrations with decorated dining and food service.",
-  },
-  {
-    title: "Professional Serving Staff",
-    subtitle: "Disciplined teams for smooth service flow.",
-    image: "/images/home/serving-staff.jpg",
-    alt: "Professional serving staff managing guests and service flow.",
-  },
-  {
-    title: "Large Catering Setup",
-    subtitle: "Scaled operations for high-volume events.",
-    image: "/images/home/large-catering-setup.jpg",
-    alt: "Large catering setup with multiple counters and coordinated staff.",
-  },
+const eventTypes = ["Weddings", "Engagements", "Birthdays", "Corporate Events", "Festive Functions", "Religious Ceremonies"];
+const popularLocations = ["Delhi", "Mumbai", "Bengaluru", "Hyderabad", "Chennai", "Kolkata", "Jaipur", "Lucknow", "Pune", "Ahmedabad", "Chandigarh", "Indore"];
+const customerSteps = [
+  { title: "Tell us what you need", text: "Choose a service, location and event date.", icon: Search },
+  { title: "Compare verified partners", text: "Explore approved profiles suited to your event.", icon: BadgeCheck },
+  { title: "Send your requirements", text: "Request a quotation with your event details.", icon: MessageCircle },
+  { title: "Plan with confidence", text: "Discuss, compare and choose the right partner.", icon: CalendarCheck2 },
 ];
 
 export default function Home() {
   return (
     <main className="page-shell min-h-screen text-[#11233D]">
-      <section className="px-4 pb-16 pt-12 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-          <div className="section-shell luxury-ring rounded-[2rem] p-8 sm:p-10 lg:p-12">
-            <p className="type-label text-[#0F6456]">Premium Wedding & Hospitality Marketplace</p>
-            <h1 className="type-display mt-4 max-w-2xl text-[#0B1830]">Find the Perfect Halwai for Every Celebration</h1>
-            <p className="type-body-lg mt-6 max-w-xl text-[#3A4D64]">
-              Discover verified catering partners trusted for weddings, festive gatherings, and milestone events. Designed to bring premium hospitality standards to every booking.
-            </p>
-
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/caterers" className="btn btn-primary btn-lg type-button w-full sm:w-auto">
-                Find Caterers
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link href="/vendor/register" className="btn btn-outline btn-lg type-button w-full sm:w-auto">
-                Become a Partner
-              </Link>
+      <section className="px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-20 lg:pt-12">
+        <div className="relative mx-auto min-h-[680px] max-w-7xl overflow-hidden rounded-[2.25rem] border border-[#DCCDB2] shadow-[0_32px_72px_rgba(11,24,48,0.28)]">
+          <Image src="/images/home/wedding-reception.jpg" alt="A beautifully prepared Indian celebration venue" fill className="object-cover" priority sizes="100vw" />
+          <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(5,15,31,0.94)_0%,rgba(7,22,43,0.78)_48%,rgba(7,22,43,0.32)_100%)]" />
+          <div className="relative flex min-h-[680px] flex-col justify-center px-6 py-14 sm:px-10 lg:px-14">
+            <div className="max-w-3xl">
+              <p className="type-label text-[#E0C488]">India&apos;s Complete Event Marketplace</p>
+              <h1 className="mt-4 font-serif text-4xl font-semibold leading-[1.08] text-white sm:text-5xl lg:text-7xl">Everything your event needs, all in one place.</h1>
+              <p className="mt-6 max-w-2xl text-base leading-8 text-[#E8E3D9] sm:text-lg">Discover verified venues, caterers, decorators, DJs, photography and videography teams, artists and celebration professionals across India.</p>
             </div>
-
-            <div className="mt-8 grid gap-2 sm:grid-cols-3">
-              <div className="glass-strip rounded-2xl px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-[#1B3656]">Verified Vendors</div>
-              <div className="glass-strip rounded-2xl px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-[#1B3656]">Premium Marketplace</div>
-              <div className="glass-strip rounded-2xl px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-[#1B3656]">Across India</div>
-            </div>
-          </div>
-
-          <div className="relative min-h-[430px] overflow-hidden rounded-[2rem] border border-[#DCCDB2] shadow-[0_28px_58px_rgba(11,24,48,0.3)] sm:min-h-[500px] lg:min-h-full">
-            <Image
-              src="/images/home/hero-luxury.jpg"
-              alt="Luxury wedding buffet setup for a premium celebration."
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 1024px) 100vw, 48vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#030912]/76 via-[#071224]/70 to-[#08162A]/65" />
-
-            <div className="relative flex h-full flex-col justify-end p-8 sm:p-10">
-              <p className="type-label text-[rgba(255,255,255,0.96)]">Luxury Hospitality Banner</p>
-              <h2
-                className="hero-heading mt-4 max-w-lg font-serif text-3xl font-bold leading-tight sm:text-4xl"
-                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}
-              >
-                Crafted for Wedding Catering Excellence
-              </h2>
-              <p className="mt-4 max-w-md text-sm leading-7 text-[rgba(255,255,255,0.92)] sm:text-base">
-                Showcase your culinary signature with a refined digital presence inspired by premium buffets, professional chefs, and celebration-first service.
-              </p>
-
-              <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-[rgba(255,255,255,0.15)] bg-[rgba(10,20,35,0.88)] p-4 backdrop-blur-sm">
-                  <p className="text-xs uppercase tracking-[0.14em] text-[#FFFFFF]">Wedding Catering</p>
-                  <p className="mt-2 text-sm font-semibold text-[rgba(255,255,255,0.92)]">Signature menus and live counters for destination-style celebrations.</p>
-                </div>
-                <div className="rounded-2xl border border-[rgba(255,255,255,0.15)] bg-[rgba(10,20,35,0.88)] p-4 backdrop-blur-sm">
-                  <p className="text-xs uppercase tracking-[0.14em] text-[#FFFFFF]">Professional Chefs</p>
-                  <p className="mt-2 text-sm font-semibold text-[rgba(255,255,255,0.92)]">Trusted halwais and hospitality teams for flawless execution.</p>
-                </div>
-              </div>
+            <div className="mt-10 max-w-6xl"><MarketplaceSearch /></div>
+            <div className="mt-7 flex flex-wrap gap-4 text-sm font-semibold text-white/90">
+              <span className="inline-flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-[#E0C488]" /> Admin-approved partners</span>
+              <span className="inline-flex items-center gap-2"><MapPinned className="h-5 w-5 text-[#E0C488]" /> All Indian states & union territories</span>
+              <span className="inline-flex items-center gap-2"><UsersRound className="h-5 w-5 text-[#E0C488]" /> Assisted vendor onboarding</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
+      <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-            {trustItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <article key={item.title} className="premium-card rounded-3xl p-5">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[#EEF5F3] text-[#0F6456]">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="mt-4 font-serif text-lg text-[#0B1830]">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#51657D]">{item.description}</p>
-                </article>
-              );
-            })}
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div><p className="type-label text-[#0F6456]">Explore Services</p><h2 className="type-h1 mt-3 text-[#0B1830]">Build your event, your way</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-[#51657D]">One trusted directory for the people and places that bring celebrations to life.</p></div>
+            <Link href="/services" className="btn btn-outline btn-lg shrink-0">View all services <ArrowRight className="h-4 w-4" /></Link>
           </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-8 text-center">
-            <p className="type-label text-[#0F6456]">Celebration Photography</p>
-            <h2 className="type-h2 mt-3 text-[#0B1830]">Premium Catering Moments Across Event Types</h2>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            {experienceGallery.map((item) => (
-              <article key={item.title} className="premium-card overflow-hidden rounded-3xl">
-                <div className="relative h-52">
-                  <Image src={item.image} alt={item.alt} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 20vw" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#060E1D]/90 via-[#060E1D]/48 to-transparent" />
-                  <div className="absolute bottom-0 p-4">
-                    <h3 className="font-serif text-lg leading-tight text-[#FFFFFF]">{item.title}</h3>
-                    <p className="mt-1 text-xs leading-5 text-[rgba(255,255,255,0.92)]">{item.subtitle}</p>
-                  </div>
-                </div>
-              </article>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {MARKETPLACE_SERVICES.map((service) => (
+              <Link key={service.slug} href={`/vendors/${service.slug}`} className="premium-card group rounded-3xl p-5">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#EEF5F3] text-[#0F6456]"><ServiceIcon name={service.icon} /></span>
+                <h3 className="mt-4 text-lg font-semibold text-[#0B1830]">{service.label}</h3>
+                <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#5A6E84]">{service.description}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.12em] text-[#0F6456]">Find vendors <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></span>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-14">
+      <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="relative min-h-[460px] overflow-hidden rounded-[2rem] border border-[#DCCDB2] shadow-[0_24px_56px_rgba(11,24,48,0.2)]">
+            <Image src="/images/home/festive-celebration.jpg" alt="Guests enjoying a vibrant Indian celebration" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 48vw" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#061326]/85 via-transparent to-transparent" />
+            <div className="absolute bottom-0 p-8"><p className="type-label text-[#E0C488]">For every occasion</p><h2 className="mt-3 font-serif text-3xl font-semibold text-white">One marketplace, countless celebrations</h2></div>
+          </div>
+          <div className="section-shell rounded-[2rem] p-8 sm:p-10">
+            <p className="type-label text-[#0F6456]">Event Types</p>
+            <h2 className="type-h2 mt-3 text-[#0B1830]">Start with the moment you are planning</h2>
+            <p className="mt-4 text-sm leading-7 text-[#51657D]">BookMyHalwai is built for intimate functions, grand weddings and professional gatherings alike.</p>
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">{eventTypes.map((event) => <div key={event} className="flex items-center gap-3 rounded-2xl border border-[#DED1BA] bg-white px-4 py-4 text-sm font-semibold text-[#243955]"><Sparkles className="h-5 w-5 text-[#B58D43]" /> {event}</div>)}</div>
+            <Link href="/vendors" className="btn btn-primary btn-lg mt-7">Explore all vendors <ArrowRight className="h-4 w-4" /></Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mx-auto max-w-7xl rounded-[2.25rem] bg-[#0B1830] p-8 sm:p-10 lg:p-12">
+          <div className="text-center"><p className="type-label text-[#D8BE89]">How It Works</p><h2 className="type-h1 mt-3 text-white">A clearer way to find event partners</h2></div>
+          <div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {customerSteps.map((step, index) => { const Icon = step.icon; return <article key={step.title} className="rounded-3xl border border-white/10 bg-white/6 p-6"><span className="text-xs font-bold tracking-[0.18em] text-[#D8BE89]">0{index + 1}</span><Icon className="mt-4 h-7 w-7 text-[#D8BE89]" /><h3 className="mt-4 text-xl font-semibold text-white">{step.title}</h3><p className="mt-2 text-sm leading-7 text-[#D5CCBC]">{step.text}</p></article>; })}
+          </div>
+          <div className="mt-8 text-center"><Link href="/how-it-works" className="inline-flex items-center gap-2 text-sm font-semibold text-[#E0C488] hover:text-white">See the complete journey <ArrowRight className="h-4 w-4" /></Link></div>
+        </div>
+      </section>
+
+      <section className="px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-8 text-center">
-            <p className="type-label text-[#0F6456]">Why BookMyHalwai</p>
-            <h2 className="type-h1 mt-3 text-[#0B1830]">A Premium Marketplace Experience Built for Trust</h2>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-3">
-            {whyItems.map((item, index) => (
-              <article key={item.title} className="section-shell overflow-hidden rounded-3xl p-7">
-                <div className="relative -mt-2 mb-6 h-44 overflow-hidden rounded-2xl">
-                  <Image src={item.image} alt={item.alt} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1830]/58 to-transparent" />
-                </div>
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#0B1830] text-sm font-semibold text-[#F7F1E4]">
-                  0{index + 1}
-                </span>
-                <h3 className="mt-5 font-serif text-2xl text-[#0B1830]">{item.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[#4E6178]">{item.description}</p>
-              </article>
-            ))}
-          </div>
+          <div className="text-center"><p className="type-label text-[#0F6456]">Popular Locations</p><h2 className="type-h1 mt-3 text-[#0B1830]">Discover event partners across India</h2><p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#51657D]">Our location system covers 4,000+ cities, towns and localities across every state and union territory.</p></div>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">{popularLocations.map((location) => <Link key={location} href={`/vendors?city=${encodeURIComponent(location)}`} className="rounded-full border border-[#D8C8AA] bg-white px-5 py-3 text-sm font-semibold text-[#304A65] shadow-sm transition hover:border-[#B58D43] hover:text-[#0B1830]">{location}</Link>)}</div>
+          <div className="mt-7 text-center"><Link href="/locations" className="btn btn-outline btn-lg">Browse all states & locations <ArrowRight className="h-4 w-4" /></Link></div>
         </div>
       </section>
 
-      <section className="px-4 py-8 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mx-auto max-w-7xl rounded-[2rem] border border-[#DCCDB2] bg-[#FFFCF5] p-8 shadow-[0_18px_44px_rgba(11,24,48,0.12)] sm:p-10">
-          <div className="mb-8 text-center">
-            <p className="type-label text-[#0F6456]">How It Works</p>
-            <h2 className="type-h2 mt-3 text-[#0B1830]">Simple Timeline to Go Live</h2>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-4">
-            {onboardingSteps.map((step, index) => (
-              <article key={step} className="premium-card rounded-3xl p-5 text-center">
-                <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#0B1830] text-sm font-semibold text-[#F7F1E4]">
-                  {index + 1}
-                </div>
-                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.12em] text-[#304A65]">{step}</p>
-                <CircleCheckBig className="mx-auto mt-4 h-5 w-5 text-[#0F6456]" />
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 pb-14 pt-8 sm:px-6 lg:px-8 lg:pb-20 lg:pt-14">
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.2rem] border border-[#D7BA7D]/55 p-10 shadow-[0_28px_58px_rgba(11,24,48,0.32)] sm:p-14">
-          <Image
-            src="/images/home/festive-celebration.jpg"
-            alt="Indian festive celebration with guests and premium catering atmosphere."
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 1200px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#040B17]/84 via-[#0A172A]/80 to-[#0B2434]/80" />
-
-          <div className="relative">
-            <p className="type-label text-[#EDD9B6]">Final Call to Action</p>
-            <h2
-              className="hero-heading mt-4 max-w-3xl font-serif text-4xl font-semibold leading-tight sm:text-5xl"
-              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}
-            >
-              Ready to Grow Your Catering Business?
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-[rgba(255,255,255,0.92)] sm:text-base">
-              Join a premium marketplace crafted for trusted hospitality brands and celebration-focused customer discovery.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/vendor/register" className="btn btn-outline btn-lg type-button w-full border-[#D7BA7D] bg-[#D7BA7D] text-[#0B1830] hover:bg-[#E3CCA0] sm:w-auto">
-                Become a Partner
-              </Link>
-              <Link href="/contact" className="btn btn-lg type-button w-full border border-[#D7BA7D]/70 bg-transparent px-7 text-[#FFF8EA] hover:bg-[#D7BA7D]/20 sm:w-auto">
-                Contact Us
-              </Link>
-            </div>
-          </div>
+      <section id="utsav-saathi" className="px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-2">
+          <div className="section-shell rounded-[2rem] p-8 sm:p-10"><p className="type-label text-[#0F6456]">Utsav Saathi with Gemini</p><h2 className="type-h2 mt-3 text-[#0B1830]">Help for every registered vendor</h2><p className="mt-4 text-sm leading-7 text-[#51657D]">Our AI assistant answers onboarding, approval, login and support questions after verifying a vendor&apos;s registered details. Open Utsav Saathi from the chat button on this page.</p><div className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#EAF3F0] px-4 py-2 text-sm font-semibold text-[#0F6456]"><MessageCircle className="h-4 w-4" /> Vendor support, whenever needed</div></div>
+          <div className="rounded-[2rem] border border-[#DCCDB2] bg-gradient-to-br from-[#F5E9D0] to-[#FFFDF7] p-8 sm:p-10"><p className="type-label text-[#9A6F24]">Grow with BookMyHalwai</p><h2 className="type-h2 mt-3 text-[#0B1830]">Turn your event business into a trusted digital brand</h2><p className="mt-4 text-sm leading-7 text-[#51657D]">Register yourself or get assisted onboarding from an authorised sales executive. Your profile goes live only after admin approval.</p><div className="mt-7 flex flex-col gap-3 sm:flex-row"><Link href="/vendor/register" className="btn btn-primary btn-lg">Become a partner</Link><Link href="/login" className="btn btn-outline btn-lg">Partner login</Link></div></div>
         </div>
       </section>
     </main>

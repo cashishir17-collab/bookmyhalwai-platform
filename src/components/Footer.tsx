@@ -1,12 +1,15 @@
 import Link from "next/link";
+import { INDIA_STATES } from "@/data/indiaLocations";
 
 const linkGroups = [
   {
     title: "Marketplace",
     links: [
-      { label: "Find Caterers", href: "/caterers" },
+      { label: "Find Vendors", href: "/vendors" },
+      { label: "All Services", href: "/services" },
+      { label: "Browse Locations", href: "/locations" },
       { label: "Become a Partner", href: "/vendor/register" },
-      { label: "Contact", href: "/contact" },
+      { label: "How It Works", href: "/how-it-works" },
     ],
   },
   {
@@ -36,6 +39,12 @@ const linkGroups = [
 ];
 
 export default function Footer() {
+  const stateGroups = [
+    INDIA_STATES.slice(0, 9),
+    INDIA_STATES.slice(9, 18),
+    INDIA_STATES.slice(18, 27),
+    INDIA_STATES.slice(27),
+  ];
   return (
     <footer className="mt-20 border-t border-[#CDBA95] bg-gradient-to-b from-[#0B1830] to-[#081221] text-[#F4EEE2]">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
@@ -63,6 +72,13 @@ export default function Footer() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        <div className="mt-12 border-t border-[#D4BF95]/20 pt-10">
+          <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="type-label text-[#D8BE89]">Explore India</p><h2 className="mt-2 text-2xl text-white">Event vendors by state & union territory</h2></div><Link href="/locations" className="text-sm font-semibold text-[#E8DAC0] hover:text-white">View complete location directory</Link></div>
+          <div className="mt-7 grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+            {stateGroups.map((group, index) => <div key={`state-group-${index}`} className="space-y-2">{group.map((state) => <Link key={state.code} href={`/vendors?state=${encodeURIComponent(state.name)}`} className="block text-sm text-[#BFB39F] transition hover:text-white">{state.name}</Link>)}</div>)}
           </div>
         </div>
 
