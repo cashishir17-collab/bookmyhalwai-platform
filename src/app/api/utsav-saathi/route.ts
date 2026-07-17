@@ -103,6 +103,16 @@ function extractGeminiAnswer(payload: unknown) {
   return collectText(candidates).join("\n").trim();
 }
 
+function extractGatewayAnswer(payload: unknown) {
+  if (!payload || typeof payload !== "object") return "";
+
+  const choices = (payload as { choices?: unknown }).choices;
+  if (!Array.isArray(choices) || !choices.length) return "";
+
+  const message = (choices[0] as { message?: { content?: unknown } })?.message;
+  return collectText(message?.content).join("\n").trim();
+}
+
 export async function POST(request: NextRequest) {
   if (rateLimited(request)) {
     return NextResponse.json(
@@ -131,12 +141,54 @@ export async function POST(request: NextRequest) {
   }
 
   const fallback = getUtsavFallbackAnswer(message);
+  const history = sanitizeHistory(body.history);
+  const gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
+
+  if (gatewayToken) {
+    try {
+      const response = await fetch("https://ai-gateway.vercel.sh/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${gatewayToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: process.env.AI_GATEWAY_MODEL || "google/gemini-3.1-flash-lite",
+          messages: [
+            { role: "system", content: buildUtsavSystemInstruction(body.vendor) },
+            ...history,
+            { role: "user", content: message },
+          ],
+          max_tokens: 500,
+          stream: false,
+        }),
+        signal: AbortSignal.timeout(10_000),
+      });
+
+      if (!response.ok) {
+        console.error("Utsav Saathi AI Gateway request failed", response.status);
+        return NextResponse.json({ answer: fallback, source: "knowledge_base" });
+      }
+
+      const answer = extractGatewayAnswer(await response.json());
+      return NextResponse.json({
+        answer: answer || fallback,
+        source: answer ? "gemini" : "knowledge_base",
+      });
+    } catch (error) {
+      console.error(
+        "Utsav Saathi AI Gateway request error",
+        error instanceof Error ? error.message : "unknown",
+      );
+      return NextResponse.json({ answer: fallback, source: "knowledge_base" });
+    }
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ answer: fallback, source: "knowledge_base" });
   }
 
-  const history = sanitizeHistory(body.history);
   const model = (process.env.GEMINI_MODEL || "gemini-3.5-flash").replace(/^models\//, "");
   const contents = [
     ...history.map((item) => ({
