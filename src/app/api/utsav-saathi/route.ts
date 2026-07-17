@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
   }
 
   const history = sanitizeHistory(body.history);
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
+  const model = (process.env.GEMINI_MODEL || "gemini-3.5-flash").replace(/^models\//, "");
   const contents = [
     ...history.map((item) => ({
       role: item.role === "assistant" ? "model" : "user",
