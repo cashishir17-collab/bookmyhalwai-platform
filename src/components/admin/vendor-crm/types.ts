@@ -13,11 +13,19 @@ export interface VendorRecord {
   qualityScore?: number;
   createdAt?: unknown;
   assignedTo?: string;
+  assignedSalesExecutiveId?: string | null;
+  assignedSalesExecutiveName?: string | null;
+  salesExecutiveId?: string | null;
+  salesExecutiveName?: string | null;
   nextFollowUpDate?: string;
   internalNotes?: string;
   fssai?: string;
   gst?: string;
   yearsExperience?: string | number;
+  providerCategory?: string;
+  providerCategoryLabel?: string;
+  registrationSource?: string;
+  ownershipStatus?: string;
   documents?: {
     logo?: string | null;
     kitchenPhotos?: string[] | null;
@@ -27,6 +35,7 @@ export interface VendorRecord {
     fssai?: string | null;
     gst?: string | null;
   };
+  uploadedFiles?: VendorRecord["documents"];
   social?: {
     instagram?: string;
     facebook?: string;
@@ -34,15 +43,14 @@ export interface VendorRecord {
     googleBusinessProfile?: string;
     googleReviewLink?: string;
   };
-  bank?: {
-    accountHolder?: string;
-    bank?: string;
-    accountNumber?: string;
-    ifsc?: string;
-    upi?: string;
-  };
+  socialLinks?: VendorRecord["social"];
   services?: Record<string, unknown>;
   pricing?: Record<string, unknown>;
+}
+
+export interface SalesExecutiveOption {
+  id: string;
+  label: string;
 }
 
 export interface VendorTimelineEntry {
