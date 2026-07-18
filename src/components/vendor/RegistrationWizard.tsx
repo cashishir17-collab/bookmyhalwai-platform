@@ -197,7 +197,8 @@ async function getNextVendorRegistrationNumber(providerCategory: ProviderCategor
 }
 
 function calculateProfileCompletion(form: RegistrationForm) {
-  const checks = [
+  const commonChecks = [
+    form.providerCategory,
     form.businessName.trim(),
     form.ownerName.trim(),
     form.mobile.trim(),
@@ -209,23 +210,27 @@ function calculateProfileCompletion(form: RegistrationForm) {
     form.address.trim(),
     form.googleMapsLink.trim(),
     form.yearsExperience.trim(),
-    form.minGuests.trim(),
-    form.maxGuests.trim(),
     form.pricing.startingPrice.trim(),
-    form.pricing.silverPackage.trim(),
-    form.pricing.goldPackage.trim(),
-    form.pricing.royalPackage.trim(),
     form.pricing.travelCharges.trim(),
     form.pricing.advancePercentage.trim(),
     form.social.instagram.trim() || form.social.facebook.trim() || form.social.website.trim(),
-    form.social.googleBusinessProfile.trim(),
-    form.social.googleReviewLink.trim(),
     form.uploads.logo,
-    form.uploads.kitchenPhotos.length > 0,
-    form.uploads.foodPhotos.length > 0,
-    form.uploads.staffPhotos.length > 0,
-    form.uploads.menuPdf,
+    form.uploads.kitchenPhotos.length + form.uploads.foodPhotos.length + form.uploads.staffPhotos.length > 0,
   ];
+  const cateringChecks = form.providerCategory === "halwai_caterer" ? [
+    Object.values(form.services).some(Boolean),
+    form.minGuests.trim(),
+    form.maxGuests.trim(),
+    form.pricing.silverPackage.trim(),
+    form.pricing.goldPackage.trim(),
+    form.pricing.royalPackage.trim(),
+    form.uploads.menuPdf,
+  ] : [form.servicesDescription.trim()];
+  const venueChecks = form.providerCategory === "venue_banquet" ? [
+    form.venueType.trim(),
+    form.venueSetting,
+  ] : [];
+  const checks = [...commonChecks, ...cateringChecks, ...venueChecks];
 
   const filledFields = checks.filter(Boolean).length;
   return Math.round((filledFields / checks.length) * 100);
@@ -654,6 +659,9 @@ export default function RegistrationWizard() {
         ownerUid: assistedBySales ? vendorConsent!.vendorUid : user.uid,
         salesExecutiveId: assistedBySales ? user.uid : null,
         salesExecutiveName: assistedBySales ? (user.displayName || user.phoneNumber || "Sales executive") : null,
+        assignedSalesExecutiveId: assistedBySales ? user.uid : null,
+        assignedSalesExecutiveName: assistedBySales ? (user.displayName || user.phoneNumber || "Sales executive") : null,
+        assignedTo: assistedBySales ? (user.displayName || user.phoneNumber || "Sales executive") : null,
         registrationSource: assistedBySales ? "sales_executive" : "vendor_self",
         ownershipStatus: assistedBySales ? "ownership_verified" : "self_registered",
         vendorConsentId: assistedBySales ? vendorConsent!.consentId : null,
