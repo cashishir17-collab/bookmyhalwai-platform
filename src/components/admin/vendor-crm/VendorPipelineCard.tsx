@@ -30,12 +30,10 @@ const verificationStyles: Record<string, string> = {
 export default function VendorPipelineCard({ vendor, isSelected, onSelect }: VendorPipelineCardProps) {
   const profileCompletion = calculateProfileCompletion(vendor);
   const qualityScore = calculateVendorQualityScore(vendor);
-  const vendorRegistrationNumber = vendor.registrationNumber || (vendor.id.startsWith("BMH-V-") ? vendor.id : "—");
+  const vendorRegistrationNumber = vendor.registrationNumber || (vendor.id.startsWith("BMH-") ? vendor.id : "—");
 
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(vendor.id)}
+    <article
       className={`w-full rounded-[1.75rem] border p-5 text-left shadow-sm transition ${
         isSelected ? "border-orange-400 bg-orange-50" : "border-slate-200 bg-white hover:border-orange-300"
       }`}
@@ -70,17 +68,20 @@ export default function VendorPipelineCard({ vendor, isSelected, onSelect }: Ven
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500">
         <span>Profile: {profileCompletion}%</span>
         <span>Quality: {qualityScore}/100</span>
-        <span>Assigned To: {vendor.assignedTo || "Unassigned"}</span>
+        <span>Assigned To: {vendor.assignedSalesExecutiveName || vendor.assignedTo || "Unassigned"}</span>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-3">
-        <Link href="#crm-detail" className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
+        <button type="button" onClick={() => onSelect(vendor.id)} className="rounded-full border border-orange-200 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-700">
+          {isSelected ? "Selected" : "Select vendor"}
+        </button>
+        <Link href="#crm-detail" onClick={() => onSelect(vendor.id)} className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">
           Open CRM
         </Link>
         <span className="rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-600">
           Follow-up: {vendor.nextFollowUpDate || "Not set"}
         </span>
       </div>
-    </button>
+    </article>
   );
 }
