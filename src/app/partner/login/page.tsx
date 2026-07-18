@@ -12,6 +12,6 @@ export default function PartnerLoginPage() {
     <h1 className="mt-2 text-3xl font-semibold">Sales executive login</h1>
     <p className="mt-3 text-sm text-slate-600">Use the mobile number assigned by the BookMyHalwai administrator.</p>
     {error && <p className="mt-4 rounded-2xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-    <div className="mt-6"><PhoneLogin onSuccess={() => router.replace("/partner")} onError={setError} /></div>
+    <div className="mt-6"><PhoneLogin onSuccess={() => router.replace("/partner/dashboard")} onError={setError} /></div>
   </section></main>;
 }

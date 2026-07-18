@@ -21,6 +21,9 @@ interface ProfileFormProps {
     address?: string | null;
     city?: string | null;
     cuisine?: string | null;
+    birthDate?: string | null;
+    anniversaryApplicable?: boolean | null;
+    anniversaryDate?: string | null;
   };
 }
 
@@ -32,6 +35,9 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
     address: initialData?.address || "",
     city: initialData?.city || "",
     cuisine: initialData?.cuisine || "",
+    birthDate: initialData?.birthDate || "",
+    anniversaryApplicable: initialData?.anniversaryApplicable === true ? "yes" : initialData?.anniversaryApplicable === false ? "no" : "",
+    anniversaryDate: initialData?.anniversaryDate || "",
   });
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -47,6 +53,10 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
       setMessage("Please enter a valid 10-digit mobile number.");
       return;
     }
+    if (!form.birthDate || !form.anniversaryApplicable || (form.anniversaryApplicable === "yes" && !form.anniversaryDate)) {
+      setMessage("Complete the birth date and anniversary selection.");
+      return;
+    }
 
     setIsSaving(true);
     try {
@@ -57,6 +67,9 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
         address: form.address,
         preferredCity: form.city,
         preferredCuisine: form.cuisine,
+        birthDate: form.birthDate,
+        anniversaryApplicable: form.anniversaryApplicable === "yes",
+        anniversaryDate: form.anniversaryApplicable === "yes" ? form.anniversaryDate : null,
         updatedAt: new Date(),
       });
       setMessage("Profile updated successfully.");
@@ -108,6 +121,15 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
             className="form-control"
           />
         </label>
+        <label className="block text-sm font-medium text-slate-700">
+          Date of Birth
+          <input type="date" required max={new Date().toISOString().slice(0, 10)} value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: event.target.value }))} className="form-control" />
+        </label>
+        <label className="block text-sm font-medium text-slate-700">
+          Anniversary
+          <select required value={form.anniversaryApplicable} onChange={(event) => setForm((current) => ({ ...current, anniversaryApplicable: event.target.value, anniversaryDate: event.target.value === "no" ? "" : current.anniversaryDate }))} className="form-control"><option value="">Select</option><option value="yes">Applicable (Married)</option><option value="no">N/A (Not married)</option></select>
+        </label>
+        {form.anniversaryApplicable === "yes" ? <label className="block text-sm font-medium text-slate-700"><span>Anniversary Date</span><input type="date" required max={new Date().toISOString().slice(0, 10)} value={form.anniversaryDate} onChange={(event) => setForm((current) => ({ ...current, anniversaryDate: event.target.value }))} className="form-control" /></label> : null}
         <label className="block text-sm font-medium text-slate-700 md:col-span-2">
           Preferred Cuisine
           <input

@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { doc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { app, db, storage } from "@/lib/firebase";
+import { sendVendorConsentOtp, verifyVendorConsent, type VendorConsent } from "@/lib/vendorConsentAuth";
+import type { ConfirmationResult } from "firebase/auth";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
 import { INDIA_STATES } from "@/data/indiaLocations";
 import IndiaPhoneInput, { isValidIndianMobile, toIndianPhoneE164 } from "@/components/forms/IndiaPhoneInput";
@@ -48,6 +50,9 @@ const initialState = {
   address: "",
   googleMapsLink: "",
   yearsExperience: "",
+  birthDate: "",
+  anniversaryApplicable: "" as "" | "yes" | "no",
+  anniversaryDate: "",
   servicesDescription: "",
   venueType: "",
   venueSetting: "",
@@ -249,8 +254,12 @@ export default function RegistrationWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
-  const [ownershipLink, setOwnershipLink] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
+  const [otpConfirmation, setOtpConfirmation] = useState<ConfirmationResult | null>(null);
+  const [vendorOtp, setVendorOtp] = useState("");
+  const [vendorConsent, setVendorConsent] = useState<VendorConsent | null>(null);
+  const [otpBusy, setOtpBusy] = useState(false);
+  const [otpMessage, setOtpMessage] = useState("");
   const assistedBySales = user?.role === "sales_executive";
   const availableCities = useMemo(
     () => INDIA_STATES.find((item) => item.name === form.state)?.cities ?? [],
@@ -307,6 +316,59 @@ export default function RegistrationWizard() {
 
   const updateField = <T extends keyof RegistrationForm>(field: T, value: RegistrationForm[T]) => {
     setForm((current) => ({ ...current, [field]: value }));
+    if (field === "mobile") {
+      setOtpConfirmation(null);
+      setVendorConsent(null);
+      setVendorOtp("");
+      setOtpMessage("");
+    }
+  };
+
+  const handleSendVendorOtp = async () => {
+    if (!isValidIndianMobile(form.mobile)) {
+      setOtpMessage("Enter the vendor's valid 10-digit mobile number first.");
+      return;
+    }
+    setOtpBusy(true);
+    setOtpMessage("");
+    try {
+      const confirmation = await sendVendorConsentOtp(toIndianPhoneE164(form.mobile));
+      setOtpConfirmation(confirmation);
+      setOtpMessage("OTP sent to the vendor. Enter the 6-digit OTP below.");
+    } catch (error) {
+      setOtpMessage(error instanceof Error ? error.message : "Unable to send OTP. Please try again.");
+    } finally {
+      setOtpBusy(false);
+    }
+  };
+
+  const handleVerifyVendorOtp = async () => {
+    if (!user?.uid || !otpConfirmation || vendorOtp.trim().length !== 6) {
+      setOtpMessage("Enter the complete 6-digit OTP sent to the vendor.");
+      return;
+    }
+    if (!form.birthDate || !form.anniversaryApplicable || (form.anniversaryApplicable === "yes" && !form.anniversaryDate)) {
+      setOtpMessage("Complete the vendor's birth date and anniversary details before OTP verification.");
+      return;
+    }
+    setOtpBusy(true);
+    setOtpMessage("");
+    try {
+      const consent = await verifyVendorConsent({
+        confirmation: otpConfirmation,
+        otp: vendorOtp.trim(),
+        salesExecutiveId: user.uid,
+        birthDate: form.birthDate,
+        anniversaryApplicable: form.anniversaryApplicable,
+        anniversaryDate: form.anniversaryDate,
+      });
+      setVendorConsent(consent);
+      setOtpMessage("Vendor mobile verified. Registration can now be submitted.");
+    } catch (error) {
+      setOtpMessage(error instanceof Error ? error.message : "Invalid OTP. Please try again.");
+    } finally {
+      setOtpBusy(false);
+    }
   };
 
   const updatePricingField = <T extends keyof RegistrationForm["pricing"]>(field: T, value: RegistrationForm["pricing"][T]) => {
@@ -389,6 +451,9 @@ export default function RegistrationWizard() {
       if (!form.address.trim()) newErrors.address = "Address is required.";
       if (!form.googleMapsLink.trim()) newErrors.googleMapsLink = "Google Maps link is required.";
       if (!form.yearsExperience.trim()) newErrors.yearsExperience = "Years of experience is required.";
+      if (!form.birthDate) newErrors.birthDate = "Birth date is required.";
+      if (!form.anniversaryApplicable) newErrors.anniversaryApplicable = "Select whether an anniversary date applies.";
+      if (form.anniversaryApplicable === "yes" && !form.anniversaryDate) newErrors.anniversaryDate = "Anniversary date is required when applicable.";
     }
 
     if (step === 2) {
@@ -433,6 +498,7 @@ export default function RegistrationWizard() {
         if (form.uploads.staffPhotos.length === 0) newErrors.staffPhotos = "Upload at least one staff photo.";
         if (!form.uploads.menuPdf) newErrors.menuPdf = "Menu PDF is required.";
       }
+      if (assistedBySales && !vendorConsent) newErrors.vendorConsent = "Verify the vendor's mobile number with OTP before submitting.";
     }
 
     setErrors(newErrors);
@@ -535,6 +601,11 @@ export default function RegistrationWizard() {
       return;
     }
 
+    if (assistedBySales && (!vendorConsent || vendorConsent.phoneE164 !== toIndianPhoneE164(form.mobile))) {
+      setSubmitMessage("Please verify the vendor's current mobile number with OTP before submitting.");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitMessage("");
 
@@ -579,12 +650,13 @@ export default function RegistrationWizard() {
       const vendorDoc = {
         vendorId: generatedRegistrationNumber,
         registrationNumber: generatedRegistrationNumber,
-        userId: assistedBySales ? null : user.uid,
-        ownerUid: assistedBySales ? null : user.uid,
+        userId: assistedBySales ? vendorConsent!.vendorUid : user.uid,
+        ownerUid: assistedBySales ? vendorConsent!.vendorUid : user.uid,
         salesExecutiveId: assistedBySales ? user.uid : null,
         salesExecutiveName: assistedBySales ? (user.displayName || user.phoneNumber || "Sales executive") : null,
         registrationSource: assistedBySales ? "sales_executive" : "vendor_self",
-        ownershipStatus: assistedBySales ? "otp_pending" : "self_registered",
+        ownershipStatus: assistedBySales ? "ownership_verified" : "self_registered",
+        vendorConsentId: assistedBySales ? vendorConsent!.consentId : null,
         phoneE164: toIndianPhoneE164(form.mobile),
         providerCategory: form.providerCategory,
         providerCategoryLabel: providerCategories.find((category) => category.value === form.providerCategory)?.label ?? "Service Provider",
@@ -675,15 +747,21 @@ export default function RegistrationWizard() {
           address: vendorDoc.address,
           salesExecutiveId: user.uid,
           salesExecutiveName: vendorDoc.salesExecutiveName,
-          ownerUid: null,
-          status: "otp_pending",
+          ownerUid: vendorConsent!.vendorUid,
+          vendorConsentId: vendorConsent!.consentId,
+          status: "ownership_verified",
           registrationSource: "sales_executive",
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
-        setOwnershipLink(`${window.location.origin}/partner/claim/${generatedRegistrationNumber}`);
       } else {
-        await setDoc(doc(db, "users", user.uid), { role: "vendor", updatedAt: serverTimestamp() }, { merge: true });
+        await setDoc(doc(db, "users", user.uid), {
+          role: "vendor",
+          birthDate: form.birthDate,
+          anniversaryApplicable: form.anniversaryApplicable === "yes",
+          anniversaryDate: form.anniversaryApplicable === "yes" ? form.anniversaryDate : null,
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
       }
 
       await sendVendorRegistrationAlert({
@@ -703,7 +781,7 @@ export default function RegistrationWizard() {
       if (uploadWarning) {
         setSubmitMessage("Registration submitted, but some document uploads failed. You can update uploads later from your dashboard.");
       } else {
-        setSubmitMessage(assistedBySales ? "Registration saved. Ask the vendor to verify ownership using the OTP link below." : "Registration submitted successfully. Our team will verify your profile shortly.");
+        setSubmitMessage(assistedBySales ? "Registration submitted with vendor OTP consent. It is now awaiting admin approval." : "Registration submitted successfully. Our team will verify your profile shortly.");
       }
       setRegistrationNumber(generatedRegistrationNumber);
       setCopyMessage("");
@@ -827,6 +905,30 @@ export default function RegistrationWizard() {
               <input value={form.yearsExperience} onChange={(event) => updateField("yearsExperience", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="12" />
               {errors.yearsExperience ? <p className="mt-1 text-sm text-red-600">{errors.yearsExperience}</p> : null}
             </label>
+            <label className="block text-sm font-medium text-slate-700">
+              Date of Birth
+              <input type="date" max={new Date().toISOString().slice(0, 10)} value={form.birthDate} onChange={(event) => updateField("birthDate", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" />
+              {errors.birthDate ? <p className="mt-1 text-sm text-red-600">{errors.birthDate}</p> : null}
+            </label>
+            <label className="block text-sm font-medium text-slate-700">
+              Anniversary
+              <select value={form.anniversaryApplicable} onChange={(event) => {
+                updateField("anniversaryApplicable", event.target.value as "" | "yes" | "no");
+                if (event.target.value === "no") updateField("anniversaryDate", "");
+              }} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]">
+                <option value="">Select</option>
+                <option value="yes">Applicable (Married)</option>
+                <option value="no">N/A (Not married)</option>
+              </select>
+              {errors.anniversaryApplicable ? <p className="mt-1 text-sm text-red-600">{errors.anniversaryApplicable}</p> : null}
+            </label>
+            {form.anniversaryApplicable === "yes" ? (
+              <label className="block text-sm font-medium text-slate-700">
+                Anniversary Date
+                <input type="date" max={new Date().toISOString().slice(0, 10)} value={form.anniversaryDate} onChange={(event) => updateField("anniversaryDate", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" />
+                {errors.anniversaryDate ? <p className="mt-1 text-sm text-red-600">{errors.anniversaryDate}</p> : null}
+              </label>
+            ) : null}
           </div>
         );
       case 2:
@@ -997,6 +1099,24 @@ export default function RegistrationWizard() {
               <input type="file" accept="application/pdf,image/*" onChange={(event) => handleFileChange(event, "gst")} className="mt-2 block w-full text-sm text-slate-500" />
               {errors.gst ? <p className="mt-1 text-sm text-red-600">{errors.gst}</p> : null}
             </label>
+            {assistedBySales ? (
+              <section className="rounded-3xl border border-amber-200 bg-amber-50 p-5 md:col-span-2">
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-amber-800">Vendor consent verification</p>
+                <p className="mt-2 text-sm leading-6 text-amber-900">Send an OTP to <strong>{toIndianPhoneE164(form.mobile)}</strong>. Ask the vendor to read the OTP to you, then verify it here.</p>
+                <div id="vendor-consent-recaptcha" />
+                {!vendorConsent ? (
+                  <div className="mt-4 grid gap-3 sm:grid-cols-[auto_1fr_auto]">
+                    <button type="button" onClick={() => void handleSendVendorOtp()} disabled={otpBusy} className="rounded-full border border-amber-400 bg-white px-5 py-3 text-sm font-semibold text-amber-900 disabled:opacity-60">{otpBusy ? "Please wait..." : otpConfirmation ? "Resend OTP" : "Send OTP"}</button>
+                    <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={vendorOtp} onChange={(event) => setVendorOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="Enter 6-digit OTP" className="rounded-2xl border border-amber-300 bg-white px-4 py-3 text-sm outline-none focus:border-amber-600" />
+                    <button type="button" onClick={() => void handleVerifyVendorOtp()} disabled={otpBusy || !otpConfirmation || vendorOtp.length !== 6} className="rounded-full bg-amber-800 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">Verify OTP</button>
+                  </div>
+                ) : (
+                  <p className="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">✓ Vendor mobile verified</p>
+                )}
+                {otpMessage ? <p className="mt-3 text-sm font-medium text-amber-900">{otpMessage}</p> : null}
+                {errors.vendorConsent ? <p className="mt-2 text-sm text-red-600">{errors.vendorConsent}</p> : null}
+              </section>
+            ) : null}
           </div>
         );
       default:
@@ -1044,14 +1164,6 @@ export default function RegistrationWizard() {
             <h2 className="mt-3 text-3xl font-semibold text-emerald-950">Your BookMyHalwai Vendor Registration Number is:</h2>
             <p className="mt-5 rounded-2xl border border-emerald-300 bg-white px-4 py-4 text-2xl font-bold tracking-wide text-emerald-800">{registrationNumber}</p>
             <p className="mt-4 text-sm text-emerald-900">Please save this number for future communication and verification.</p>
-            {ownershipLink ? (
-              <div className="mt-5 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-left">
-                <p className="text-sm font-semibold text-amber-900">Vendor OTP ownership link</p>
-                <p className="mt-2 break-all text-sm text-amber-800">{ownershipLink}</p>
-                <p className="mt-2 text-xs text-amber-700">Share this link only with the vendor whose mobile number was registered.</p>
-              </div>
-            ) : null}
-
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <button
                 type="button"
@@ -1084,7 +1196,7 @@ export default function RegistrationWizard() {
               {step < steps.length ? (
                 <button type="button" onClick={nextStep} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] sm:w-auto">Continue</button>
               ) : (
-                <button type="submit" disabled={isSubmitting} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
+                <button type="submit" disabled={isSubmitting || (assistedBySales && !vendorConsent)} className="w-full rounded-full bg-[#0F172A] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1E293B] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto">{isSubmitting ? "Submitting..." : "Submit Registration"}</button>
               )}
             </div>
           </form>

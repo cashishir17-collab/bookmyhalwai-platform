@@ -13,6 +13,9 @@ interface ProfileRecord {
   address?: string | null;
   preferredCity?: string | null;
   preferredCuisine?: string | null;
+  birthDate?: string | null;
+  anniversaryApplicable?: boolean | null;
+  anniversaryDate?: string | null;
 }
 
 export default function CustomerProfilePage() {

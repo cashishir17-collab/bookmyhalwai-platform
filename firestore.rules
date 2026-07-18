@@ -6,6 +6,14 @@ service cloud.firestore {
     function admin() { return signedIn() && request.auth.token.phone_number == '+917291852535'; }
     function salesExecutive() { return signedIn() && role() == 'sales_executive'; }
     function ownsVendor(vendorId) { return signedIn() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid; }
+    function verifiedVendorConsent(consentId, phoneE164, salesExecutiveId, vendorUid) {
+      return exists(/databases/$(database)/documents/vendorConsents/$(consentId))
+        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.status == 'verified'
+        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.phoneE164 == phoneE164
+        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.salesExecutiveId == salesExecutiveId
+        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.vendorUid == vendorUid
+        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.expiresAt > request.time;
+    }
     match /vendors/{vendorId} {
       allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified']
         || admin()
@@ -15,10 +23,15 @@ service cloud.firestore {
         || (signedIn() && request.resource.data.userId == request.auth.uid)
         || (salesExecutive()
           && request.resource.data.salesExecutiveId == request.auth.uid
-          && request.resource.data.userId == null
-          && request.resource.data.ownerUid == null
-          && request.resource.data.ownershipStatus == 'otp_pending'
-          && request.resource.data.verificationStatus == 'Pending');
+          && request.resource.data.userId == request.resource.data.ownerUid
+          && request.resource.data.ownershipStatus == 'ownership_verified'
+          && request.resource.data.verificationStatus == 'Pending'
+          && verifiedVendorConsent(
+            request.resource.data.vendorConsentId,
+            request.resource.data.phoneE164,
+            request.auth.uid,
+            request.resource.data.ownerUid
+          ));
       allow update: if admin()
         || (signedIn() && resource.data.userId == request.auth.uid)
         || (signedIn()
@@ -46,14 +59,28 @@ service cloud.firestore {
       allow update: if admin()
         || (signedIn()
           && request.auth.uid == userId
+          && resource.data.role in ['customer', 'vendor', 'sales_executive']
           && request.resource.data.role == resource.data.role)
         || (signedIn()
           && request.auth.uid == userId
           && resource.data.role == 'customer'
           && request.resource.data.role == 'vendor'
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'role', 'phoneNumber', 'updatedAt'
+            'role', 'phoneNumber', 'birthDate', 'anniversaryApplicable',
+            'anniversaryDate', 'updatedAt'
           ]));
+    }
+
+    match /vendorConsents/{consentId} {
+      allow create: if signedIn()
+        && request.resource.data.vendorUid == request.auth.uid
+        && request.resource.data.phoneE164 == request.auth.token.phone_number
+        && request.resource.data.status == 'verified'
+        && request.resource.data.expiresAt > request.time;
+      allow read: if admin()
+        || (signedIn() && resource.data.vendorUid == request.auth.uid)
+        || (salesExecutive() && resource.data.salesExecutiveId == request.auth.uid);
+      allow update, delete: if admin();
     }
     match /systemCounters/vendorRegistration {
       allow read: if signedIn();
@@ -99,7 +126,14 @@ service cloud.firestore {
     match /partnerOnboarding/{registrationId} {
       allow create: if salesExecutive()
         && request.resource.data.salesExecutiveId == request.auth.uid
-        && request.resource.data.status == 'otp_pending';
+        && request.resource.data.status == 'ownership_verified'
+        && request.resource.data.ownerUid != null
+        && verifiedVendorConsent(
+          request.resource.data.vendorConsentId,
+          request.resource.data.phoneE164,
+          request.auth.uid,
+          request.resource.data.ownerUid
+        );
       allow read: if admin()
         || (salesExecutive() && resource.data.salesExecutiveId == request.auth.uid)
         || (signedIn() && resource.data.ownerUid == request.auth.uid)
