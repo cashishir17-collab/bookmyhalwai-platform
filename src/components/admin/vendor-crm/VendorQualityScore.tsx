@@ -1,25 +1,22 @@
 import type { VendorRecord } from "./types";
 
 export function calculateProfileCompletion(vendor: Partial<VendorRecord>) {
-  const checks = [
+  const documents = vendor.documents ?? vendor.uploadedFiles;
+  const social = vendor.social ?? vendor.socialLinks;
+  const commonChecks = [
     vendor.businessName,
     vendor.ownerName,
     vendor.city,
     vendor.mobile,
     vendor.whatsapp,
     vendor.email,
-    vendor.fssai,
-    vendor.gst,
     vendor.yearsExperience,
-    vendor.documents?.logo,
-    vendor.documents?.kitchenPhotos?.length,
-    vendor.documents?.foodPhotos?.length,
-    vendor.documents?.staffPhotos?.length,
-    vendor.documents?.menuPdf,
-    vendor.social?.instagram || vendor.social?.facebook || vendor.social?.website,
-    vendor.social?.googleBusinessProfile,
-    vendor.social?.googleReviewLink,
+    documents?.logo,
+    (documents?.kitchenPhotos?.length ?? 0) + (documents?.foodPhotos?.length ?? 0) + (documents?.staffPhotos?.length ?? 0),
+    social?.instagram || social?.facebook || social?.website,
   ];
+  const categoryChecks = vendor.providerCategory === "halwai_caterer" ? [documents?.menuPdf] : [];
+  const checks = [...commonChecks, ...categoryChecks];
 
   const filled = checks.filter(Boolean).length;
   return Math.round((filled / checks.length) * 100);
@@ -27,25 +24,19 @@ export function calculateProfileCompletion(vendor: Partial<VendorRecord>) {
 
 export function calculateVendorQualityScore(vendor: Partial<VendorRecord>) {
   const profileCompletion = calculateProfileCompletion(vendor);
-  const fssaiPresent = Boolean(vendor.fssai);
-  const gstPresent = Boolean(vendor.gst);
+  const documents = vendor.documents ?? vendor.uploadedFiles;
+  const social = vendor.social ?? vendor.socialLinks;
   const photosUploaded = Boolean(
-    (vendor.documents?.kitchenPhotos?.length ?? 0) > 0 ||
-      (vendor.documents?.foodPhotos?.length ?? 0) > 0 ||
-      (vendor.documents?.staffPhotos?.length ?? 0) > 0,
+    (documents?.kitchenPhotos?.length ?? 0) > 0 ||
+      (documents?.foodPhotos?.length ?? 0) > 0 ||
+      (documents?.staffPhotos?.length ?? 0) > 0,
   );
-  const menuUploaded = Boolean(vendor.documents?.menuPdf);
-  const socialLinksPresent = Boolean(
-    vendor.social?.instagram || vendor.social?.facebook || vendor.social?.website,
-  );
+  const socialLinksPresent = Boolean(social?.instagram || social?.facebook || social?.website);
   const years = Number(vendor.yearsExperience || 0);
   const experiencePresent = years >= 1;
   const score =
-    (profileCompletion / 100) * 35 +
-    (fssaiPresent ? 10 : 0) +
-    (gstPresent ? 10 : 0) +
+    (profileCompletion / 100) * 65 +
     (photosUploaded ? 15 : 0) +
-    (menuUploaded ? 10 : 0) +
     (socialLinksPresent ? 10 : 0) +
     (experiencePresent ? 10 : 0);
 
