@@ -8,16 +8,33 @@ import { useAuth } from "@/hooks/useAuth";
 import VendorAcquisitionStats from "@/components/admin/vendor-acquisition/VendorAcquisitionStats";
 import CityPipelineCard from "@/components/admin/vendor-acquisition/CityPipelineCard";
 import VendorOperationsTable from "@/components/admin/vendor-acquisition/VendorOperationsTable";
-import SeedDemoVendorsButton from "@/components/admin/vendor-acquisition/SeedDemoVendorsButton";
-import type { VendorAcquisitionRecord } from "@/components/admin/vendor-acquisition/types";
+import type { SalesExecutiveOption, VendorAcquisitionRecord } from "@/components/admin/vendor-acquisition/types";
 
-const cityList = ["Delhi", "Noida", "Gurugram", "Ghaziabad", "Faridabad", "Lucknow", "Jaipur", "Chandigarh"];
+type UserAccount = {
+  displayName?: string;
+  phoneNumber?: string;
+  email?: string;
+  role?: string;
+};
+
+function requiredUploadsPending(vendor: VendorAcquisitionRecord) {
+  const uploads = vendor.uploadedFiles ?? vendor.documents;
+  const hasLogo = Boolean(uploads?.logo);
+  const hasPortfolio = Boolean(
+    uploads?.kitchenPhotos?.length || uploads?.foodPhotos?.length || uploads?.staffPhotos?.length,
+  );
+  const catererMenuPending = vendor.providerCategory === "halwai_caterer" && !uploads?.menuPdf;
+
+  return !hasLogo || !hasPortfolio || catererMenuPending;
+}
 
 export default function VendorAcquisitionPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [vendors, setVendors] = useState<VendorAcquisitionRecord[]>([]);
+  const [salesExecutives, setSalesExecutives] = useState<SalesExecutiveOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const fetchVendors = useCallback(async () => {
     if (!db) {
@@ -27,33 +44,45 @@ export default function VendorAcquisitionPage() {
     }
 
     setIsLoading(true);
-    const snapshot = await getDocs(collection(db, "vendors"));
-    const vendorRows = snapshot.docs.map((docSnapshot) => ({
-      id: docSnapshot.id,
-      ...(docSnapshot.data() as Omit<VendorAcquisitionRecord, "id">),
-    })) as VendorAcquisitionRecord[];
-    setVendors(vendorRows);
-    setIsLoading(false);
+    setLoadError("");
+    try {
+      const [vendorSnapshot, userSnapshot] = await Promise.all([
+        getDocs(collection(db, "vendors")),
+        getDocs(collection(db, "users")),
+      ]);
+      const vendorRows = vendorSnapshot.docs.map((docSnapshot) => ({
+        id: docSnapshot.id,
+        ...(docSnapshot.data() as Omit<VendorAcquisitionRecord, "id">),
+      })) as VendorAcquisitionRecord[];
+      const executiveRows = userSnapshot.docs
+        .map((item) => ({ id: item.id, ...(item.data() as UserAccount) }))
+        .filter((account) => account.role === "sales_executive" || account.role === "sales")
+        .map((account) => ({
+          id: account.id,
+          label: account.displayName || account.phoneNumber || account.email || account.id,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+      setVendors(vendorRows);
+      setSalesExecutives(executiveRows);
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : "Unable to load vendor operations.");
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    if (!loading && user?.role !== "admin") {
+    if (loading) {
+      return;
+    }
+
+    if (user?.role !== "admin") {
       router.replace("/admin");
       return;
     }
 
-    let isMounted = true;
-    const loadVendors = async () => {
-      if (!isMounted) {
-        return;
-      }
-      await fetchVendors();
-    };
-
-    void loadVendors();
-    return () => {
-      isMounted = false;
-    };
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- authorized dashboard data is loaded after the role check.
+    void fetchVendors();
   }, [fetchVendors, loading, router, user?.role]);
 
   const stats = useMemo(() => {
@@ -69,7 +98,7 @@ export default function VendorAcquisitionPage() {
     }).length;
 
     const pendingKyc = vendors.filter((vendor) => (vendor.verificationStatus || "Pending") === "Pending").length;
-    const documentsPending = vendors.filter((vendor) => !vendor.documents?.menuPdf || !vendor.documents?.fssai || !vendor.documents?.gst).length;
+    const documentsPending = vendors.filter(requiredUploadsPending).length;
     const verificationCallsDue = vendors.filter((vendor) => vendor.nextFollowUpDate).length;
     const approvedVendors = vendors.filter((vendor) => vendor.verificationStatus === "Approved" || vendor.verificationStatus === "Verified").length;
     const publishedVendors = vendors.filter((vendor) => vendor.leadStage === "Published" || vendor.verificationStatus === "Published").length;
@@ -91,7 +120,7 @@ export default function VendorAcquisitionPage() {
     ];
   }, [vendors]);
 
-  const cityStats = useMemo(() => cityList.map((city) => {
+  const cityStats = useMemo(() => Array.from(new Set(vendors.map((vendor) => vendor.city?.trim()).filter(Boolean) as string[])).sort().map((city) => {
     const cityVendors = vendors.filter((vendor) => vendor.city === city);
     const pendingVerification = cityVendors.filter((vendor) => (vendor.verificationStatus || "Pending") === "Pending").length;
     const approved = cityVendors.filter((vendor) => vendor.verificationStatus === "Approved" || vendor.verificationStatus === "Verified").length;
@@ -128,8 +157,8 @@ export default function VendorAcquisitionPage() {
               <h1 className="mt-2 text-3xl font-semibold text-slate-900">Ops-ready vendor onboarding overview</h1>
               <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">Monitor vendor leads across cities, track KYC readiness, and keep the acquisition team aligned with follow-up actions.</p>
             </div>
-            <SeedDemoVendorsButton onCompleted={fetchVendors} />
           </div>
+          {loadError ? <p className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{loadError}</p> : null}
         </div>
 
         <VendorAcquisitionStats stats={stats} />
@@ -140,6 +169,7 @@ export default function VendorAcquisitionPage() {
             {cityStats.map((city) => (
               <CityPipelineCard key={city.city} {...city} />
             ))}
+            {!cityStats.length ? <p className="text-sm text-slate-500">City pipeline will appear after the first registration.</p> : null}
           </div>
         </div>
 
@@ -151,7 +181,7 @@ export default function VendorAcquisitionPage() {
             </div>
           </div>
           <div className="mt-6">
-            <VendorOperationsTable vendors={vendors} onUpdated={fetchVendors} />
+            <VendorOperationsTable vendors={vendors} salesExecutives={salesExecutives} onUpdated={fetchVendors} />
           </div>
         </div>
       </div>
