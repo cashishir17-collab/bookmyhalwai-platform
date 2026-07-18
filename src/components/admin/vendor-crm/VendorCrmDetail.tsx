@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { doc, serverTimestamp, updateDoc, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { VendorRecord, VendorTimelineEntry } from "./types";
+import type { SalesExecutiveOption, VendorRecord, VendorTimelineEntry } from "./types";
 import VendorQualityScore, { calculateVendorQualityScore } from "./VendorQualityScore";
 import VendorTimeline from "./VendorTimeline";
 
 interface VendorCrmDetailProps {
   vendor: VendorRecord;
+  salesExecutives: SalesExecutiveOption[];
   onUpdated: () => void;
   currentUser: string;
 }
@@ -24,12 +25,13 @@ const timelineTypes = [
   "Published",
 ];
 
-export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: VendorCrmDetailProps) {
+export default function VendorCrmDetail({ vendor, salesExecutives, onUpdated, currentUser }: VendorCrmDetailProps) {
   const [localVendor, setLocalVendor] = useState(vendor);
   const [timelineEntries, setTimelineEntries] = useState<VendorTimelineEntry[]>([]);
   const [note, setNote] = useState("");
   const [selectedType, setSelectedType] = useState("Call Completed");
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -61,6 +63,7 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
   const saveField = async (updates: Partial<VendorRecord>) => {
     if (!db) return;
     setIsSaving(true);
+    setSaveError("");
     try {
       const mergedVendor = { ...localVendor, ...updates };
       const qualityScore = calculateVendorQualityScore(mergedVendor);
@@ -71,6 +74,8 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
       });
       setLocalVendor((current) => ({ ...current, ...updates, qualityScore }));
       onUpdated();
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Unable to save this vendor update.");
     } finally {
       setIsSaving(false);
     }
@@ -79,6 +84,7 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
   const handleAddTimeline = async () => {
     if (!db || !note.trim()) return;
     setIsSaving(true);
+    setSaveError("");
     try {
       await addDoc(collection(db, "vendorTimeline"), {
         vendorId: vendor.id,
@@ -102,13 +108,24 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
           createdBy: docSnapshot.data().createdBy,
         })) as VendorTimelineEntry[];
       setTimelineEntries(entries);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Unable to add this timeline entry.");
     } finally {
       setIsSaving(false);
     }
   };
 
   const qualityScore = calculateVendorQualityScore(localVendor);
-  const vendorRegistrationNumber = localVendor.registrationNumber || (localVendor.id.startsWith("BMH-V-") ? localVendor.id : "—");
+  const vendorRegistrationNumber = localVendor.registrationNumber || (localVendor.id.startsWith("BMH-") ? localVendor.id : "—");
+
+  const assignExecutive = (executiveId: string) => {
+    const executive = salesExecutives.find((option) => option.id === executiveId);
+    void saveField({
+      assignedSalesExecutiveId: executive?.id ?? null,
+      assignedSalesExecutiveName: executive?.label ?? null,
+      assignedTo: executive?.label ?? "Unassigned",
+    });
+  };
 
   return (
     <div id="crm-detail" className="space-y-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
@@ -125,6 +142,7 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
       </div>
 
       <VendorQualityScore vendor={localVendor} />
+      {saveError ? <p className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{saveError}</p> : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
@@ -135,6 +153,7 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
             <p><span className="font-semibold text-slate-700">Mobile:</span> {localVendor.mobile || "—"}</p>
             <p><span className="font-semibold text-slate-700">WhatsApp:</span> {localVendor.whatsapp || "—"}</p>
             <p><span className="font-semibold text-slate-700">Email:</span> {localVendor.email || "—"}</p>
+            <p><span className="font-semibold text-slate-700">Category:</span> {localVendor.providerCategoryLabel || localVendor.providerCategory || "—"}</p>
           </div>
         </div>
 
@@ -169,7 +188,10 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
             </label>
             <label className="block font-medium text-slate-700">
               Assigned To
-              <input value={localVendor.assignedTo || ""} onChange={(event) => saveField({ assignedTo: event.target.value })} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm" placeholder="Ops lead" />
+              <select value={localVendor.assignedSalesExecutiveId || ""} onChange={(event) => assignExecutive(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                <option value="">Unassigned</option>
+                {salesExecutives.map((executive) => <option key={executive.id} value={executive.id}>{executive.label}</option>)}
+              </select>
             </label>
             <label className="block font-medium text-slate-700">
               Next Follow-up Date
@@ -192,20 +214,19 @@ export default function VendorCrmDetail({ vendor, onUpdated, currentUser }: Vend
           <h3 className="text-lg font-semibold text-slate-900">Social & Documents</h3>
           <div className="mt-4 space-y-2 text-sm text-slate-600">
             <p><span className="font-semibold text-slate-700">Social:</span> {localVendor.social ? Object.values(localVendor.social).filter(Boolean).join(", ") : "—"}</p>
-            <p><span className="font-semibold text-slate-700">Documents:</span> {localVendor.documents ? Object.entries(localVendor.documents).filter(([, value]) => Boolean(value)).map(([key]) => key).join(", ") : "—"}</p>
+            <p><span className="font-semibold text-slate-700">Uploads:</span> {localVendor.documents ? Object.entries(localVendor.documents).filter(([, value]) => Boolean(value) && (!Array.isArray(value) || value.length > 0)).map(([key]) => key).join(", ") || "—" : "—"}</p>
           </div>
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
-          <h3 className="text-lg font-semibold text-slate-900">Bank Details</h3>
+          <h3 className="text-lg font-semibold text-slate-900">Registration & Ownership</h3>
           <div className="mt-4 space-y-2 text-sm text-slate-600">
-            <p><span className="font-semibold text-slate-700">Account Holder:</span> {localVendor.bank?.accountHolder || "—"}</p>
-            <p><span className="font-semibold text-slate-700">Bank:</span> {localVendor.bank?.bank || "—"}</p>
-            <p><span className="font-semibold text-slate-700">Account Number:</span> {localVendor.bank?.accountNumber || "—"}</p>
-            <p><span className="font-semibold text-slate-700">IFSC:</span> {localVendor.bank?.ifsc || "—"}</p>
-            <p><span className="font-semibold text-slate-700">UPI:</span> {localVendor.bank?.upi || "—"}</p>
+            <p><span className="font-semibold text-slate-700">Registration No:</span> {vendorRegistrationNumber}</p>
+            <p><span className="font-semibold text-slate-700">Registration Source:</span> {localVendor.registrationSource === "sales_executive" ? "Sales executive assisted" : "Vendor self-registration"}</p>
+            <p><span className="font-semibold text-slate-700">Ownership:</span> {localVendor.ownershipStatus || "Self registered"}</p>
+            <p><span className="font-semibold text-slate-700">Compliance Documents:</span> GST and FSSAI are optional during onboarding.</p>
           </div>
         </div>
 
