@@ -1,42 +1,51 @@
 import Link from "next/link";
 import { useState } from "react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { VendorAcquisitionRecord } from "./types";
+import type { SalesExecutiveOption, VendorAcquisitionRecord } from "./types";
 
 interface VendorOperationsTableProps {
   vendors: VendorAcquisitionRecord[];
+  salesExecutives: SalesExecutiveOption[];
   onUpdated: () => void;
 }
 
-const executiveOptions = ["Unassigned", "Asha", "Rohan", "Neha", "Kunal"];
-
-export default function VendorOperationsTable({ vendors, onUpdated }: VendorOperationsTableProps) {
+export default function VendorOperationsTable({ vendors, salesExecutives, onUpdated }: VendorOperationsTableProps) {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   const markFollowUpDone = async (vendor: VendorAcquisitionRecord) => {
     if (!db) return;
     setUpdatingId(vendor.id);
+    setError("");
     try {
       await updateDoc(doc(db, "vendors", vendor.id), {
         nextFollowUpDate: "",
-        updatedAt: new Date(),
+        updatedAt: serverTimestamp(),
       });
       onUpdated();
+    } catch (updateError) {
+      setError(updateError instanceof Error ? updateError.message : "Unable to update follow-up.");
     } finally {
       setUpdatingId(null);
     }
   };
 
-  const assignExecutive = async (vendor: VendorAcquisitionRecord, executive: string) => {
+  const assignExecutive = async (vendor: VendorAcquisitionRecord, executiveId: string) => {
     if (!db) return;
+    const executive = salesExecutives.find((option) => option.id === executiveId);
     setUpdatingId(vendor.id);
+    setError("");
     try {
       await updateDoc(doc(db, "vendors", vendor.id), {
-        assignedTo: executive,
-        updatedAt: new Date(),
+        assignedSalesExecutiveId: executive?.id ?? null,
+        assignedSalesExecutiveName: executive?.label ?? null,
+        assignedTo: executive?.label ?? "Unassigned",
+        updatedAt: serverTimestamp(),
       });
       onUpdated();
+    } catch (updateError) {
+      setError(updateError instanceof Error ? updateError.message : "Unable to assign this vendor.");
     } finally {
       setUpdatingId(null);
     }
@@ -47,7 +56,9 @@ export default function VendorOperationsTable({ vendors, onUpdated }: VendorOper
   }
 
   return (
-    <div className="overflow-x-auto rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
+    <div className="space-y-3">
+      {error ? <p className="rounded-2xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p> : null}
+      <div className="overflow-x-auto rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
       <table className="min-w-full text-left text-sm">
         <thead className="bg-slate-50 text-slate-700">
           <tr>
@@ -77,13 +88,14 @@ export default function VendorOperationsTable({ vendors, onUpdated }: VendorOper
               <td className="px-4 py-3 text-slate-600">{vendor.qualityScore || 0}</td>
               <td className="px-4 py-3 text-slate-600">
                 <select
-                  value={vendor.assignedTo || "Unassigned"}
+                  value={vendor.assignedSalesExecutiveId || vendor.salesExecutiveId || ""}
                   onChange={(event) => assignExecutive(vendor, event.target.value)}
                   className="rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-sm"
                   disabled={updatingId === vendor.id}
                 >
-                  {executiveOptions.map((option) => (
-                    <option key={option} value={option}>{option}</option>
+                  <option value="">Unassigned</option>
+                  {salesExecutives.map((option) => (
+                    <option key={option.id} value={option.id}>{option.label}</option>
                   ))}
                 </select>
               </td>
@@ -101,6 +113,7 @@ export default function VendorOperationsTable({ vendors, onUpdated }: VendorOper
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
