@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ConfirmationResult } from "firebase/auth";
 import { useAuth } from "@/hooks/useAuth";
+import { ADMIN_PHONE } from "@/context/AuthContext";
+
+const ADMIN_OTP_RESEND_COOLDOWN_SECONDS = 45;
 
 const roleCards = [
   {
@@ -37,13 +40,27 @@ export default function UnifiedLoginPage() {
   const [adminOtp, setAdminOtp] = useState("");
   const [isAdminPending, setIsAdminPending] = useState(false);
   const [error, setError] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = window.setInterval(() => {
+      setResendCooldown((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resendCooldown]);
 
   const sendAdminOtp = async () => {
+    if (resendCooldown > 0) {
+      setError(`Please wait ${resendCooldown}s before requesting another OTP.`);
+      return;
+    }
     setError("");
     setIsAdminPending(true);
     try {
-      const confirmation = await loginWithPhone("+917291852535");
+      const confirmation = await loginWithPhone(ADMIN_PHONE);
       setAdminConfirmation(confirmation);
+      setResendCooldown(ADMIN_OTP_RESEND_COOLDOWN_SECONDS);
     } catch {
       setError("Could not send the admin OTP. Please try again.");
     } finally {
@@ -89,8 +106,8 @@ export default function UnifiedLoginPage() {
                   {!adminConfirmation ? (
                     <div className="space-y-3">
                       <p className="text-sm leading-6 text-slate-600">Send a secure OTP to the authorised administrator. The registered mobile number remains private.</p>
-                      <button type="button" onClick={() => void sendAdminOtp()} disabled={isAdminPending} className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0B1830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1E426A] disabled:cursor-not-allowed disabled:opacity-60">
-                        {isAdminPending ? "Sending OTP..." : "Send Admin OTP"}
+                      <button type="button" onClick={() => void sendAdminOtp()} disabled={isAdminPending || resendCooldown > 0} className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0B1830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1E426A] disabled:cursor-not-allowed disabled:opacity-60">
+                        {isAdminPending ? "Sending OTP..." : resendCooldown > 0 ? `Try again in ${resendCooldown}s` : "Send Admin OTP"}
                       </button>
                     </div>
                   ) : (
@@ -103,7 +120,7 @@ export default function UnifiedLoginPage() {
                       <button type="submit" disabled={isAdminPending || adminOtp.length !== 6} className="inline-flex w-full items-center justify-center rounded-2xl bg-[#0B1830] px-5 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white transition hover:bg-[#1E426A] disabled:cursor-not-allowed disabled:opacity-60">
                         {isAdminPending ? "Verifying..." : "Verify OTP & Open Dashboard"}
                       </button>
-                      <button type="button" onClick={() => void sendAdminOtp()} disabled={isAdminPending} className="w-full text-sm font-semibold text-slate-600 underline">Resend OTP</button>
+                      <button type="button" onClick={() => void sendAdminOtp()} disabled={isAdminPending || resendCooldown > 0} className="w-full text-sm font-semibold text-slate-600 underline disabled:cursor-not-allowed disabled:opacity-60">{resendCooldown > 0 ? `Resend OTP in ${resendCooldown}s` : "Resend OTP"}</button>
                     </form>
                   )}
                   <div id="phone-recaptcha" />

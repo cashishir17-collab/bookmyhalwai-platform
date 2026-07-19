@@ -24,6 +24,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { getFriendlyAuthErrorMessage } from "@/lib/firebaseAuthError";
 import type { AppUser, UserRole } from "@/types/user";
 
 interface AuthContextValue {
@@ -37,7 +38,11 @@ interface AuthContextValue {
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const ADMIN_PHONE = "+917291852535";
+// Single source of truth for the admin identity. Deliberately not exported
+// as a NEXT_PUBLIC_ env var: that would still ship it to the client bundle
+// exactly like this literal does today. Do not duplicate this value
+// elsewhere — import ADMIN_PHONE from this module instead.
+export const ADMIN_PHONE = "+917291852535";
 
 function mapFirebaseUser(firebaseUser: FirebaseUser | null): AppUser | null {
   if (!firebaseUser) {
@@ -207,10 +212,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await verifier.render();
 
     console.log("LOGIN STEP 2 - OTP requested");
-    const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
-    console.log("LOGIN STEP 3 - OTP sent");
-
-    return result;
+    try {
+      const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+      console.log("LOGIN STEP 3 - OTP sent");
+      return result;
+    } catch (error) {
+      console.error("LOGIN STEP 2 FAILED - OTP send error", error);
+      throw new Error(getFriendlyAuthErrorMessage(error, "Unable to send OTP. Please try again."));
+    }
   };
 
   const verifyOtp = async (confirmationResult: ConfirmationResult, otp: string) => {
@@ -222,12 +231,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("LOGIN STEP 6 - Login success");
     } catch (error) {
       setLoading(false);
-
-      // Provide better error message for OTP verification
-      if (error instanceof Error && error.message.includes("invalid-code")) {
-        throw new Error("Invalid OTP. Please try again.");
-      }
-      throw error;
+      console.error("LOGIN STEP 5 FAILED - OTP verify error", error);
+      throw new Error(getFriendlyAuthErrorMessage(error, "Invalid OTP. Please try again."));
     }
   };
 

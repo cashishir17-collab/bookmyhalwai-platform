@@ -7,6 +7,7 @@ import { doc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { app, db, storage } from "@/lib/firebase";
 import { sendVendorConsentOtp, verifyVendorConsent, type VendorConsent } from "@/lib/vendorConsentAuth";
+import { getFirebaseAuthErrorCode } from "@/lib/firebaseAuthError";
 import type { ConfirmationResult } from "firebase/auth";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
 import { INDIA_STATES } from "@/data/indiaLocations";
@@ -372,10 +373,13 @@ export default function RegistrationWizard() {
       setOtpMessage("New OTP sent. Enter only the latest 6-digit OTP within 4 minutes.");
     } catch (error) {
       if (otpRequestId.current !== requestId) return;
-      const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+      console.error("VENDOR_OTP_SEND_FAILED", error);
+      const code = getFirebaseAuthErrorCode(error);
       setOtpMessage(code === "auth/too-many-requests"
         ? "Too many OTP requests. Please wait before trying again."
-        : error instanceof Error ? error.message : "Unable to send OTP. Please try again.");
+        : code === "auth/invalid-phone-number"
+          ? "Enter a valid 10-digit mobile number for the vendor."
+          : "Unable to send OTP right now. Please try again.");
     } finally {
       if (otpRequestId.current === requestId) setOtpBusy(false);
     }
@@ -414,7 +418,8 @@ export default function RegistrationWizard() {
       setVendorOtp("");
       setOtpMessage("Vendor mobile verified. Registration can now be submitted.");
     } catch (error) {
-      const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+      console.error("VENDOR_OTP_VERIFY_FAILED", error);
+      const code = getFirebaseAuthErrorCode(error);
       if (code === "auth/code-expired" || code === "auth/session-expired") {
         setOtpConfirmation(null);
         setOtpSentAt(null);
@@ -426,7 +431,10 @@ export default function RegistrationWizard() {
       } else if (code === "auth/too-many-requests") {
         setOtpMessage("Too many verification attempts. Please wait before requesting another OTP.");
       } else {
-        setOtpMessage(error instanceof Error ? error.message : "Unable to verify OTP. Please request a new code.");
+        setOtpConfirmation(null);
+        setOtpSentAt(null);
+        setVendorOtp("");
+        setOtpMessage("Unable to verify this OTP. Tap Send new OTP and try again.");
       }
     } finally {
       setOtpBusy(false);
