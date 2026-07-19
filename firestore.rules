@@ -123,6 +123,26 @@ service cloud.firestore {
       allow delete: if admin();
     }
 
+    match /systemCounters/bookingReference {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.lastSequence == 1;
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'currentYear', 'lastSequence', 'updatedAt'
+        ])
+        && (
+          (
+            request.resource.data.currentYear == resource.data.currentYear
+            && request.resource.data.lastSequence == resource.data.lastSequence + 1
+          )
+          || (
+            request.resource.data.currentYear > resource.data.currentYear
+            && request.resource.data.lastSequence == 1
+          )
+        );
+      allow delete: if admin();
+    }
+
     match /partnerOnboarding/{registrationId} {
       allow create: if salesExecutive()
         && request.resource.data.salesExecutiveId == request.auth.uid

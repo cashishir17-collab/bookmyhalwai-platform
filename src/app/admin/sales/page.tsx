@@ -2,11 +2,34 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, runTransaction, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 
-type Account = { id: string; displayName?: string; phoneNumber?: string; email?: string; role?: string };
+type Account = { id: string; displayName?: string; phoneNumber?: string; email?: string; role?: string; staffCode?: string };
+
+const SALES_CODE_COLLECTION = "systemCounters";
+const SALES_CODE_DOCUMENT = "salesExecutive";
+const SALES_CODE_PREFIX = "SALES";
+
+async function getNextSalesExecutiveCode() {
+  if (!db) {
+    throw new Error("Firestore is not configured yet.");
+  }
+
+  const counterRef = doc(db, SALES_CODE_COLLECTION, SALES_CODE_DOCUMENT);
+
+  return runTransaction(db, async (transaction) => {
+    const counterSnapshot = await transaction.get(counterRef);
+    const counterData = counterSnapshot.data() as { lastSequence?: unknown } | undefined;
+    const storedSequence = typeof counterData?.lastSequence === "number" ? counterData.lastSequence : 0;
+    const nextSequence = storedSequence + 1;
+
+    transaction.set(counterRef, { lastSequence: nextSequence, updatedAt: serverTimestamp() }, { merge: true });
+
+    return `${SALES_CODE_PREFIX}-${String(nextSequence).padStart(3, "0")}`;
+  });
+}
 
 export default function SalesExecutivesPage() {
   const router = useRouter();
@@ -30,8 +53,13 @@ export default function SalesExecutivesPage() {
     if (!db) return;
     setMessage("");
     try {
-      await updateDoc(doc(db, "users", account.id), { role });
-      setMessage(`${account.displayName || account.phoneNumber || account.id} is now ${role === "sales_executive" ? "a sales executive" : "a standard user"}.`);
+      const updates: { role: "sales_executive" | "customer"; staffCode?: string } = { role };
+      if (role === "sales_executive" && !account.staffCode) {
+        updates.staffCode = await getNextSalesExecutiveCode();
+      }
+      await updateDoc(doc(db, "users", account.id), updates);
+      const codeNote = updates.staffCode ? ` (${updates.staffCode})` : account.staffCode ? ` (${account.staffCode})` : "";
+      setMessage(`${account.displayName || account.phoneNumber || account.id} is now ${role === "sales_executive" ? `a sales executive${codeNote}` : "a standard user"}.`);
       await loadAccounts();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not update this account.");
@@ -49,7 +77,7 @@ export default function SalesExecutivesPage() {
     </section>
     <section className="section-shell rounded-[2rem] p-8">
       <div className="space-y-3">{accounts.map((account) => <article key={account.id} className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><p className="font-semibold text-slate-900">{account.displayName || account.phoneNumber || account.email || "Unnamed account"}</p><p className="text-sm text-slate-500">{account.phoneNumber || account.email || account.id} · {account.role || "customer"}</p></div>
+        <div><p className="font-semibold text-slate-900">{account.displayName || account.phoneNumber || account.email || "Unnamed account"}</p><p className="text-sm text-slate-500">{account.phoneNumber || account.email || account.id} · {account.role || "customer"}{account.staffCode ? ` · ${account.staffCode}` : ""}</p></div>
         {(account.role === "sales_executive" || account.role === "sales") ? <button onClick={() => void setRole(account, "customer")} className="btn btn-outline btn-sm">Remove sales access</button> : account.role !== "admin" ? <button onClick={() => void setRole(account, "sales_executive")} className="btn btn-primary btn-sm">Make sales executive</button> : null}
       </article>)}</div>
     </section>

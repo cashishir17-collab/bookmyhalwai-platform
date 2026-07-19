@@ -14,14 +14,19 @@ function parseNumberParam(value: string | null, fallback: number) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export default function NewBookingPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
-  const catererId = typeof searchParams.catererId === "string" ? searchParams.catererId : "";
-  const packageName = typeof searchParams.packageName === "string" ? searchParams.packageName : "Gold Package";
-  const pricePerPlate = parseNumberParam(typeof searchParams.pricePerPlate === "string" ? searchParams.pricePerPlate : null, 650);
-  const guestsFromUrl = parseNumberParam(typeof searchParams.guests === "string" ? searchParams.guests : null, 100);
-  const eventDate = typeof searchParams.eventDate === "string" ? searchParams.eventDate : "";
+interface NewBookingPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function NewBookingPage({ searchParams }: NewBookingPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const catererId = typeof resolvedSearchParams.catererId === "string" ? resolvedSearchParams.catererId : "";
+  const packageName = typeof resolvedSearchParams.packageName === "string" ? resolvedSearchParams.packageName : "Gold Package";
+  const pricePerPlate = parseNumberParam(typeof resolvedSearchParams.pricePerPlate === "string" ? resolvedSearchParams.pricePerPlate : null, 650);
+  const guestsFromUrl = parseNumberParam(typeof resolvedSearchParams.guests === "string" ? resolvedSearchParams.guests : null, 100);
+  const eventDate = typeof resolvedSearchParams.eventDate === "string" ? resolvedSearchParams.eventDate : "";
   const estimatedTotalFromUrl = parseNumberParam(
-    typeof searchParams.estimatedTotal === "string" ? searchParams.estimatedTotal : null,
+    typeof resolvedSearchParams.estimatedTotal === "string" ? resolvedSearchParams.estimatedTotal : null,
     pricePerPlate * guestsFromUrl,
   );
 

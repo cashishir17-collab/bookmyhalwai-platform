@@ -2,12 +2,41 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import BookingSummary from "@/components/BookingSummary";
 import { useAuth } from "@/hooks/useAuth";
 import { db } from "@/lib/firebase";
 import { addNotification } from "@/lib/notifications";
 import IndiaPhoneInput, { isValidIndianMobile, toIndianPhoneE164 } from "@/components/forms/IndiaPhoneInput";
+
+const BOOKING_COUNTER_COLLECTION = "systemCounters";
+const BOOKING_COUNTER_DOCUMENT = "bookingReference";
+const BOOKING_REFERENCE_PREFIX = "BK";
+
+async function getNextBookingReference() {
+  if (!db) {
+    throw new Error("Firestore is not configured yet.");
+  }
+
+  const currentYear = new Date().getFullYear();
+  const counterRef = doc(db, BOOKING_COUNTER_COLLECTION, BOOKING_COUNTER_DOCUMENT);
+
+  return runTransaction(db, async (transaction) => {
+    const counterSnapshot = await transaction.get(counterRef);
+    const counterData = counterSnapshot.data() as { currentYear?: unknown; lastSequence?: unknown } | undefined;
+    const storedYear = typeof counterData?.currentYear === "number" ? counterData.currentYear : null;
+    const storedSequence = typeof counterData?.lastSequence === "number" ? counterData.lastSequence : 0;
+    const nextSequence = storedYear === currentYear ? storedSequence + 1 : 1;
+
+    transaction.set(
+      counterRef,
+      { currentYear, lastSequence: nextSequence, updatedAt: serverTimestamp() },
+      { merge: true },
+    );
+
+    return `${BOOKING_REFERENCE_PREFIX}-${currentYear}-${String(nextSequence).padStart(6, "0")}`;
+  });
+}
 
 interface BookingCheckoutProps {
   catererId: string;
@@ -63,7 +92,7 @@ export default function BookingCheckout({
     setSubmitError("");
 
     try {
-      const bookingId = `BK-${Date.now().toString(36).toUpperCase()}`;
+      const bookingId = await getNextBookingReference();
       const bookingPayload = {
         bookingId,
         customerId: user?.uid || "guest",
