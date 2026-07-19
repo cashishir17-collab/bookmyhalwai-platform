@@ -13,6 +13,7 @@ import { firebaseConfig } from "@/lib/firebase";
 
 const SECONDARY_APP_NAME = "vendor-consent";
 const DATABASE_ID = "default";
+let activeRecaptchaVerifier: RecaptchaVerifier | null = null;
 
 function secondaryServices() {
   const secondaryApp = getApps().some((candidate) => candidate.name === SECONDARY_APP_NAME)
@@ -31,18 +32,23 @@ export async function sendVendorConsentOtp(phoneE164: string) {
 
   const container = document.getElementById("vendor-consent-recaptcha");
   if (!container) throw new Error("OTP verification could not start. Refresh the page and try again.");
-  container.innerHTML = "";
+
+  activeRecaptchaVerifier?.clear();
+  activeRecaptchaVerifier = null;
+  container.replaceChildren();
 
   const verifier = new RecaptchaVerifier(auth, "vendor-consent-recaptcha", {
     size: "invisible",
     callback: () => undefined,
   });
+  activeRecaptchaVerifier = verifier;
   await verifier.render();
 
   try {
     return await signInWithPhoneNumber(auth, phoneE164, verifier);
   } catch (error) {
     verifier.clear();
+    if (activeRecaptchaVerifier === verifier) activeRecaptchaVerifier = null;
     throw error;
   }
 }

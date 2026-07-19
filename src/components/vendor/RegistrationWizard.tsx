@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { doc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
@@ -13,6 +13,8 @@ import { INDIA_STATES } from "@/data/indiaLocations";
 import IndiaPhoneInput, { isValidIndianMobile, toIndianPhoneE164 } from "@/components/forms/IndiaPhoneInput";
 
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads"];
+const VENDOR_OTP_SESSION_MAX_AGE_MS = 4 * 60 * 1000;
+const VENDOR_OTP_RESEND_COOLDOWN_SECONDS = 30;
 
 const trustPoints = [
   "Free onboarding during launch phase",
@@ -265,6 +267,9 @@ export default function RegistrationWizard() {
   const [vendorConsent, setVendorConsent] = useState<VendorConsent | null>(null);
   const [otpBusy, setOtpBusy] = useState(false);
   const [otpMessage, setOtpMessage] = useState("");
+  const [otpSentAt, setOtpSentAt] = useState<number | null>(null);
+  const [otpResendSeconds, setOtpResendSeconds] = useState(0);
+  const otpRequestId = useRef(0);
   const assistedBySales = user?.role === "sales_executive";
   const availableCities = useMemo(
     () => INDIA_STATES.find((item) => item.name === form.state)?.cities ?? [],
@@ -319,13 +324,24 @@ export default function RegistrationWizard() {
 
   const progressLabel = useMemo(() => `${step} of ${steps.length}`, [step]);
 
+  useEffect(() => {
+    if (otpResendSeconds <= 0) return;
+    const timer = window.setInterval(() => {
+      setOtpResendSeconds((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [otpResendSeconds]);
+
   const updateField = <T extends keyof RegistrationForm>(field: T, value: RegistrationForm[T]) => {
     setForm((current) => ({ ...current, [field]: value }));
     if (field === "mobile") {
+      otpRequestId.current += 1;
       setOtpConfirmation(null);
       setVendorConsent(null);
       setVendorOtp("");
       setOtpMessage("");
+      setOtpSentAt(null);
+      setOtpResendSeconds(0);
     }
   };
 
@@ -334,22 +350,47 @@ export default function RegistrationWizard() {
       setOtpMessage("Enter the vendor's valid 10-digit mobile number first.");
       return;
     }
+    if (otpResendSeconds > 0) {
+      setOtpMessage(`Please wait ${otpResendSeconds} seconds before requesting another OTP.`);
+      return;
+    }
+
+    const requestId = otpRequestId.current + 1;
+    otpRequestId.current = requestId;
     setOtpBusy(true);
-    setOtpMessage("");
+    setOtpConfirmation(null);
+    setVendorConsent(null);
+    setVendorOtp("");
+    setOtpSentAt(null);
+    setOtpMessage("Requesting a new OTP. Any earlier OTP is no longer valid.");
     try {
       const confirmation = await sendVendorConsentOtp(toIndianPhoneE164(form.mobile));
+      if (otpRequestId.current !== requestId) return;
       setOtpConfirmation(confirmation);
-      setOtpMessage("OTP sent to the vendor. Enter the 6-digit OTP below.");
+      setOtpSentAt(Date.now());
+      setOtpResendSeconds(VENDOR_OTP_RESEND_COOLDOWN_SECONDS);
+      setOtpMessage("New OTP sent. Enter only the latest 6-digit OTP within 4 minutes.");
     } catch (error) {
-      setOtpMessage(error instanceof Error ? error.message : "Unable to send OTP. Please try again.");
+      if (otpRequestId.current !== requestId) return;
+      const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+      setOtpMessage(code === "auth/too-many-requests"
+        ? "Too many OTP requests. Please wait before trying again."
+        : error instanceof Error ? error.message : "Unable to send OTP. Please try again.");
     } finally {
-      setOtpBusy(false);
+      if (otpRequestId.current === requestId) setOtpBusy(false);
     }
   };
 
   const handleVerifyVendorOtp = async () => {
     if (!user?.uid || !otpConfirmation || vendorOtp.trim().length !== 6) {
       setOtpMessage("Enter the complete 6-digit OTP sent to the vendor.");
+      return;
+    }
+    if (!otpSentAt || Date.now() - otpSentAt > VENDOR_OTP_SESSION_MAX_AGE_MS) {
+      setOtpConfirmation(null);
+      setVendorOtp("");
+      setOtpSentAt(null);
+      setOtpMessage("This OTP session expired. Tap Send new OTP and use only the newest code.");
       return;
     }
     if (!form.birthDate || !form.anniversaryApplicable || (form.anniversaryApplicable === "yes" && !form.anniversaryDate)) {
@@ -368,9 +409,25 @@ export default function RegistrationWizard() {
         anniversaryDate: form.anniversaryDate,
       });
       setVendorConsent(consent);
+      setOtpConfirmation(null);
+      setOtpSentAt(null);
+      setVendorOtp("");
       setOtpMessage("Vendor mobile verified. Registration can now be submitted.");
     } catch (error) {
-      setOtpMessage(error instanceof Error ? error.message : "Invalid OTP. Please try again.");
+      const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
+      if (code === "auth/code-expired" || code === "auth/session-expired") {
+        setOtpConfirmation(null);
+        setOtpSentAt(null);
+        setVendorOtp("");
+        setOtpMessage("The OTP expired. Tap Send new OTP and enter only the newest code within 4 minutes.");
+      } else if (code === "auth/invalid-verification-code") {
+        setVendorOtp("");
+        setOtpMessage("That OTP is incorrect. Re-enter the latest OTP from the vendor's newest SMS.");
+      } else if (code === "auth/too-many-requests") {
+        setOtpMessage("Too many verification attempts. Please wait before requesting another OTP.");
+      } else {
+        setOtpMessage(error instanceof Error ? error.message : "Unable to verify OTP. Please request a new code.");
+      }
     } finally {
       setOtpBusy(false);
     }
@@ -1114,8 +1171,8 @@ export default function RegistrationWizard() {
                 <div id="vendor-consent-recaptcha" />
                 {!vendorConsent ? (
                   <div className="mt-4 grid gap-3 sm:grid-cols-[auto_1fr_auto]">
-                    <button type="button" onClick={() => void handleSendVendorOtp()} disabled={otpBusy} className="rounded-full border border-amber-400 bg-white px-5 py-3 text-sm font-semibold text-amber-900 disabled:opacity-60">{otpBusy ? "Please wait..." : otpConfirmation ? "Resend OTP" : "Send OTP"}</button>
-                    <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={vendorOtp} onChange={(event) => setVendorOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="Enter 6-digit OTP" className="rounded-2xl border border-amber-300 bg-white px-4 py-3 text-sm outline-none focus:border-amber-600" />
+                    <button type="button" onClick={() => void handleSendVendorOtp()} disabled={otpBusy || otpResendSeconds > 0} className="rounded-full border border-amber-400 bg-white px-5 py-3 text-sm font-semibold text-amber-900 disabled:opacity-60">{otpBusy ? "Please wait..." : otpResendSeconds > 0 ? `New OTP in ${otpResendSeconds}s` : otpConfirmation ? "Send new OTP" : "Send OTP"}</button>
+                    <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} disabled={!otpConfirmation || otpBusy} value={vendorOtp} onChange={(event) => setVendorOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="Enter latest 6-digit OTP" className="rounded-2xl border border-amber-300 bg-white px-4 py-3 text-sm outline-none focus:border-amber-600 disabled:bg-amber-100 disabled:opacity-70" />
                     <button type="button" onClick={() => void handleVerifyVendorOtp()} disabled={otpBusy || !otpConfirmation || vendorOtp.length !== 6} className="rounded-full bg-amber-800 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">Verify OTP</button>
                   </div>
                 ) : (
