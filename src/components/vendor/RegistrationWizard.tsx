@@ -694,6 +694,7 @@ export default function RegistrationWizard() {
     setSubmitMessage("");
 
     let uploadWarning = false;
+    let currentOperation = "uploading documents";
 
     try {
       console.log("STEP 6 - Starting uploads");
@@ -730,6 +731,7 @@ export default function RegistrationWizard() {
       }
 
       const profileCompletion = calculateProfileCompletion(form);
+      currentOperation = "generating a registration number";
       const generatedRegistrationNumber = await getNextVendorRegistrationNumber(form.providerCategory);
       const vendorDoc = {
         vendorId: generatedRegistrationNumber,
@@ -814,6 +816,7 @@ export default function RegistrationWizard() {
       console.log("STEP 9 - Writing Firestore", { collection: "vendors", db: Boolean(db), registrationNumber: generatedRegistrationNumber });
 
       console.log("NETWORK STEP 3 - Before setDoc", { operation: "Firestore setDoc", registrationNumber: generatedRegistrationNumber });
+      currentOperation = "saving the vendor profile";
       await withTimeout(
         setDoc(doc(db, "vendors", generatedRegistrationNumber), vendorDoc),
         25000,
@@ -824,6 +827,7 @@ export default function RegistrationWizard() {
       console.log("STEP 10 - Firestore write success", { docId: generatedRegistrationNumber, vendorId: vendorDoc.vendorId });
 
       if (assistedBySales) {
+        currentOperation = "saving the partner onboarding record";
         await setDoc(doc(db, "partnerOnboarding", generatedRegistrationNumber), {
           vendorId: generatedRegistrationNumber,
           businessName: vendorDoc.businessName,
@@ -842,6 +846,7 @@ export default function RegistrationWizard() {
           updatedAt: serverTimestamp(),
         });
       } else {
+        currentOperation = "updating your account role";
         await setDoc(doc(db, "users", user.uid), {
           role: "vendor",
           birthDate: form.birthDate,
@@ -851,6 +856,7 @@ export default function RegistrationWizard() {
         }, { merge: true });
       }
 
+      currentOperation = "sending the registration alert";
       await sendVendorRegistrationAlert({
         businessName: vendorDoc.businessName,
         ownerName: vendorDoc.ownerName,
@@ -875,7 +881,7 @@ export default function RegistrationWizard() {
 
       console.log("STEP 11 - Registration complete and confirmation panel shown");
     } catch (error) {
-      console.error("FIRESTORE_WRITE_FAILED - Error details:");
+      console.error("FIRESTORE_WRITE_FAILED - Error details:", { failedDuring: currentOperation });
       if (error instanceof Error) {
         console.error("error.name:", error.name);
         console.error("error.message:", error.message);
@@ -890,11 +896,11 @@ export default function RegistrationWizard() {
       } else {
         console.error("error (non-Error):", error);
       }
-      
+
       setSubmitMessage(
         error instanceof Error
-          ? `Unable to submit registration. ${error.message}`
-          : "Unable to submit registration. Please try again later.",
+          ? `Unable to submit registration while ${currentOperation}. ${error.message}`
+          : `Unable to submit registration while ${currentOperation}. Please try again later.`,
       );
     } finally {
       console.log("FINALLY_BLOCK - Setting isSubmitting to false");
