@@ -6,14 +6,6 @@ service cloud.firestore {
     function admin() { return signedIn() && request.auth.token.phone_number == '+917291852535'; }
     function salesExecutive() { return signedIn() && role() == 'sales_executive'; }
     function ownsVendor(vendorId) { return signedIn() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid; }
-    function verifiedVendorConsent(consentId, phoneE164, salesExecutiveId, vendorUid) {
-      return exists(/databases/$(database)/documents/vendorConsents/$(consentId))
-        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.status == 'verified'
-        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.phoneE164 == phoneE164
-        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.salesExecutiveId == salesExecutiveId
-        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.vendorUid == vendorUid
-        && get(/databases/$(database)/documents/vendorConsents/$(consentId)).data.expiresAt > request.time;
-    }
     match /vendors/{vendorId} {
       allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified']
         || admin()
@@ -24,14 +16,9 @@ service cloud.firestore {
         || (salesExecutive()
           && request.resource.data.salesExecutiveId == request.auth.uid
           && request.resource.data.userId == request.resource.data.ownerUid
+          && request.resource.data.ownerUid != null
           && request.resource.data.ownershipStatus == 'ownership_verified'
-          && request.resource.data.verificationStatus == 'Pending'
-          && verifiedVendorConsent(
-            request.resource.data.vendorConsentId,
-            request.resource.data.phoneE164,
-            request.auth.uid,
-            request.resource.data.ownerUid
-          ));
+          && request.resource.data.verificationStatus == 'Pending');
       allow update: if admin()
         || (signedIn() && resource.data.userId == request.auth.uid)
         || (signedIn()
@@ -147,13 +134,7 @@ service cloud.firestore {
       allow create: if salesExecutive()
         && request.resource.data.salesExecutiveId == request.auth.uid
         && request.resource.data.status == 'ownership_verified'
-        && request.resource.data.ownerUid != null
-        && verifiedVendorConsent(
-          request.resource.data.vendorConsentId,
-          request.resource.data.phoneE164,
-          request.auth.uid,
-          request.resource.data.ownerUid
-        );
+        && request.resource.data.ownerUid != null;
       allow read: if admin()
         || (salesExecutive() && resource.data.salesExecutiveId == request.auth.uid)
         || (signedIn() && resource.data.ownerUid == request.auth.uid)
