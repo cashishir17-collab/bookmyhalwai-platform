@@ -16,6 +16,10 @@ import IndiaPhoneInput, { isValidIndianMobile, toIndianPhoneE164 } from "@/compo
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads"];
 const VENDOR_OTP_SESSION_MAX_AGE_MS = 4 * 60 * 1000;
 const VENDOR_OTP_RESEND_COOLDOWN_SECONDS = 30;
+// Must stay under the 30-minute expiresAt window vendorConsentAuth.ts writes to
+// the vendorConsents doc, and what firestore.rules checks at submit time.
+// Kept slightly shorter so the client catches this before Firestore does.
+const VENDOR_CONSENT_MAX_AGE_MS = 29 * 60 * 1000;
 
 const trustPoints = [
   "Free onboarding during launch phase",
@@ -266,6 +270,7 @@ export default function RegistrationWizard() {
   const [otpConfirmation, setOtpConfirmation] = useState<ConfirmationResult | null>(null);
   const [vendorOtp, setVendorOtp] = useState("");
   const [vendorConsent, setVendorConsent] = useState<VendorConsent | null>(null);
+  const [vendorConsentSetAt, setVendorConsentSetAt] = useState<number | null>(null);
   const [otpBusy, setOtpBusy] = useState(false);
   const [otpMessage, setOtpMessage] = useState("");
   const [otpSentAt, setOtpSentAt] = useState<number | null>(null);
@@ -339,6 +344,7 @@ export default function RegistrationWizard() {
       otpRequestId.current += 1;
       setOtpConfirmation(null);
       setVendorConsent(null);
+      setVendorConsentSetAt(null);
       setVendorOtp("");
       setOtpMessage("");
       setOtpSentAt(null);
@@ -413,6 +419,7 @@ export default function RegistrationWizard() {
         anniversaryDate: form.anniversaryDate,
       });
       setVendorConsent(consent);
+      setVendorConsentSetAt(Date.now());
       setOtpConfirmation(null);
       setOtpSentAt(null);
       setVendorOtp("");
@@ -668,6 +675,13 @@ export default function RegistrationWizard() {
     if (!user?.uid) {
       console.log("ERROR - User or user.uid is null or undefined");
       setSubmitMessage("Please sign in to continue before submitting registration.");
+      return;
+    }
+
+    if (assistedBySales && vendorConsent && vendorConsentSetAt && Date.now() - vendorConsentSetAt > VENDOR_CONSENT_MAX_AGE_MS) {
+      setVendorConsent(null);
+      setVendorConsentSetAt(null);
+      setSubmitMessage("The vendor's mobile verification has expired (valid for 30 minutes). Please verify the OTP again, then submit right away.");
       return;
     }
 
@@ -1184,7 +1198,10 @@ export default function RegistrationWizard() {
                     <button type="button" onClick={() => void handleVerifyVendorOtp()} disabled={otpBusy || !otpConfirmation || vendorOtp.length !== 6} className="rounded-full bg-amber-800 px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">Verify OTP</button>
                   </div>
                 ) : (
-                  <p className="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">✓ Vendor mobile verified</p>
+                  <div className="mt-4 space-y-2">
+                    <p className="rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">✓ Vendor mobile verified</p>
+                    <p className="text-xs font-medium text-amber-700">This verification is valid for 30 minutes. Please finish and submit the registration now — if it expires, you&apos;ll need to verify the vendor&apos;s OTP again.</p>
+                  </div>
                 )}
                 {otpMessage ? <p className="mt-3 text-sm font-medium text-amber-900">{otpMessage}</p> : null}
                 {errors.vendorConsent ? <p className="mt-2 text-sm text-red-600">{errors.vendorConsent}</p> : null}
