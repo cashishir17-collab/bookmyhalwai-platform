@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, doc, getDocs, runTransaction, serverTimestamp, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -39,8 +39,32 @@ export default function SalesExecutivesPage() {
 
   const loadAccounts = useCallback(async () => {
     if (!db) return;
-    const snapshot = await getDocs(collection(db, "users"));
-    setAccounts(snapshot.docs.map((item) => ({ id: item.id, ...(item.data() as Omit<Account, "id">) })));
+    const [usersSnap, customersSnap, salesSnap, vendorSnap] = await Promise.all([
+      getDocs(collection(db, "users")),
+      getDocs(collection(db, "customers")),
+      getDocs(collection(db, "salesExecutives")),
+      getDocs(collection(db, "vendorAccounts")),
+    ]);
+
+    const merged = new Map<string, Account>();
+    usersSnap.docs.forEach((item) => {
+      merged.set(item.id, { id: item.id, ...(item.data() as Omit<Account, "id">) });
+    });
+    customersSnap.docs.forEach((item) => {
+      if (!merged.has(item.id)) {
+        merged.set(item.id, { id: item.id, role: "customer", ...(item.data() as Omit<Account, "id">) });
+      }
+    });
+    vendorSnap.docs.forEach((item) => {
+      const existing = merged.get(item.id) ?? { id: item.id };
+      merged.set(item.id, { ...existing, ...(item.data() as Omit<Account, "id">), id: item.id, role: "vendor" });
+    });
+    salesSnap.docs.forEach((item) => {
+      const existing = merged.get(item.id) ?? { id: item.id };
+      merged.set(item.id, { ...existing, ...(item.data() as Omit<Account, "id">), id: item.id, role: "sales_executive" });
+    });
+
+    setAccounts(Array.from(merged.values()));
   }, []);
 
   useEffect(() => {
@@ -53,13 +77,21 @@ export default function SalesExecutivesPage() {
     if (!db) return;
     setMessage("");
     try {
-      const updates: { role: "sales_executive" | "customer"; staffCode?: string } = { role };
-      if (role === "sales_executive" && !account.staffCode) {
-        updates.staffCode = await getNextSalesExecutiveCode();
+      if (role === "sales_executive") {
+        const staffCode = account.staffCode || (await getNextSalesExecutiveCode());
+        await setDoc(doc(db, "salesExecutives", account.id), {
+          displayName: account.displayName ?? null,
+          phoneNumber: account.phoneNumber ?? null,
+          email: account.email ?? null,
+          staffCode,
+          promotedAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+        setMessage(`${account.displayName || account.phoneNumber || account.id} is now a sales executive (${staffCode}).`);
+      } else {
+        await deleteDoc(doc(db, "salesExecutives", account.id));
+        setMessage(`${account.displayName || account.phoneNumber || account.id} is now a standard user.`);
       }
-      await updateDoc(doc(db, "users", account.id), updates);
-      const codeNote = updates.staffCode ? ` (${updates.staffCode})` : account.staffCode ? ` (${account.staffCode})` : "";
-      setMessage(`${account.displayName || account.phoneNumber || account.id} is now ${role === "sales_executive" ? `a sales executive${codeNote}` : "a standard user"}.`);
       await loadAccounts();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not update this account.");

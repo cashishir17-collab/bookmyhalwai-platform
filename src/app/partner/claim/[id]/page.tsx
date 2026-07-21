@@ -43,8 +43,8 @@ export default function ClaimPartnerPage() {
           ownershipVerifiedAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
-        batch.set(doc(db, "users", user.uid), {
-          role: "vendor",
+        batch.set(doc(db, "vendorAccounts", user.uid), {
+          vendorId,
           phoneNumber: user.phoneNumber,
           updatedAt: serverTimestamp(),
         }, { merge: true });

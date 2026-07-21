@@ -47,22 +47,34 @@ export default function VendorAcquisitionPage() {
     setIsLoading(true);
     setLoadError("");
     try {
-      const [vendorSnapshot, userSnapshot] = await Promise.all([
+      const [vendorSnapshot, userSnapshot, salesExecSnapshot] = await Promise.all([
         getDocs(collection(db, "vendors")),
         getDocs(collection(db, "users")),
+        getDocs(collection(db, "salesExecutives")),
       ]);
       const vendorRows = vendorSnapshot.docs.map((docSnapshot) => ({
         id: docSnapshot.id,
         ...(docSnapshot.data() as Omit<VendorAcquisitionRecord, "id">),
       })) as VendorAcquisitionRecord[];
-      const executiveRows = userSnapshot.docs
+      const executiveMap = new Map<string, { id: string; label: string }>();
+      userSnapshot.docs
         .map((item) => ({ id: item.id, ...(item.data() as UserAccount) }))
         .filter((account) => account.role === "sales_executive" || account.role === "sales")
-        .map((account) => ({
-          id: account.id,
-          label: account.displayName || account.phoneNumber || account.email || account.id,
-        }))
-        .sort((a, b) => a.label.localeCompare(b.label));
+        .forEach((account) => {
+          executiveMap.set(account.id, {
+            id: account.id,
+            label: account.displayName || account.phoneNumber || account.email || account.id,
+          });
+        });
+      salesExecSnapshot.docs
+        .map((item) => ({ id: item.id, ...(item.data() as UserAccount) }))
+        .forEach((account) => {
+          executiveMap.set(account.id, {
+            id: account.id,
+            label: account.displayName || account.phoneNumber || account.email || account.id,
+          });
+        });
+      const executiveRows = Array.from(executiveMap.values()).sort((a, b) => a.label.localeCompare(b.label));
       setVendors(vendorRows);
       setSalesExecutives(executiveRows);
     } catch (error) {

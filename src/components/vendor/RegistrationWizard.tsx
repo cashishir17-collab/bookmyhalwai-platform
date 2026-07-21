@@ -846,12 +846,13 @@ export default function RegistrationWizard() {
           updatedAt: serverTimestamp(),
         });
       } else {
-        currentOperation = "updating your account role";
-        await setDoc(doc(db, "users", user.uid), {
-          role: "vendor",
+        currentOperation = "creating your vendor account";
+        await setDoc(doc(db, "vendorAccounts", user.uid), {
+          vendorId: generatedRegistrationNumber,
           birthDate: form.birthDate,
           anniversaryApplicable: form.anniversaryApplicable === "yes",
           anniversaryDate: form.anniversaryApplicable === "yes" ? form.anniversaryDate : null,
+          createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         }, { merge: true });
       }

@@ -72,10 +72,8 @@ export async function verifyVendorConsent(params: {
   const phoneE164 = credential.user.phoneNumber;
   if (!phoneE164) throw new Error("Firebase did not return the verified vendor phone number.");
 
-  await setDoc(doc(db, "users", credential.user.uid), {
-    uid: credential.user.uid,
+  await setDoc(doc(db, "vendorAccounts", credential.user.uid), {
     phoneNumber: phoneE164,
-    role: "vendor",
     birthDate: params.birthDate,
     anniversaryApplicable: params.anniversaryApplicable === "yes",
     anniversaryDate: params.anniversaryApplicable === "yes" ? params.anniversaryDate : null,

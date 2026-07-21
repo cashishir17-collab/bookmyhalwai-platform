@@ -25,9 +25,15 @@ export default function CustomerProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!db || !user?.uid) return;
-      const snapshot = await getDoc(doc(db, "users", user.uid));
+      const snapshot = await getDoc(doc(db, "customers", user.uid));
       if (snapshot.exists()) {
         setProfile(snapshot.data() as ProfileRecord);
+        return;
+      }
+      // Legacy account created before the customers collection existed.
+      const legacySnapshot = await getDoc(doc(db, "users", user.uid));
+      if (legacySnapshot.exists()) {
+        setProfile(legacySnapshot.data() as ProfileRecord);
       }
     };
 

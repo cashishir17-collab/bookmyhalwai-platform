@@ -2,7 +2,20 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function role() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role; }
+    // Legacy accounts created before the customers/salesExecutives/vendorAccounts
+    // split still keep their role on their `users` doc. New accounts are looked
+    // up via the dedicated collections below; this is only the fallback.
+    function legacyUserRole() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+    function role() {
+      return exists(/databases/$(database)/documents/salesExecutives/$(request.auth.uid)) ? 'sales_executive'
+        : (exists(/databases/$(database)/documents/vendorAccounts/$(request.auth.uid)) ? 'vendor'
+          : (exists(/databases/$(database)/documents/customers/$(request.auth.uid)) ? 'customer'
+            : legacyUserRole()));
+    }
     function admin() { return signedIn() && request.auth.token.phone_number == '+917291852535'; }
     function salesExecutive() { return signedIn() && role() == 'sales_executive'; }
     function ownsVendor(vendorId) { return signedIn() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid; }
@@ -56,6 +69,33 @@ service cloud.firestore {
             'role', 'phoneNumber', 'birthDate', 'anniversaryApplicable',
             'anniversaryDate', 'updatedAt'
           ]));
+    }
+
+    // Dedicated per-role collections. New sign-ins/promotions/registrations
+    // write here; `role()` above checks these first before falling back to
+    // the legacy `users` doc, so existing accounts keep working untouched.
+    match /customers/{uid} {
+      allow read: if admin() || (signedIn() && request.auth.uid == uid);
+      allow create: if signedIn() && request.auth.uid == uid;
+      allow update: if admin() || (signedIn() && request.auth.uid == uid);
+      allow delete: if admin();
+    }
+    match /salesExecutives/{uid} {
+      allow read: if admin() || (signedIn() && request.auth.uid == uid);
+      // Admin can always promote. A signed-in user can also self-heal their
+      // own doc into existence, but only if their legacy `users` doc already
+      // says sales_executive - this isn't a way to self-promote, just lets
+      // pre-migration accounts start writing to the new collection.
+      allow create: if admin()
+        || (signedIn() && request.auth.uid == uid && legacyUserRole() == 'sales_executive');
+      allow update: if admin() || (signedIn() && request.auth.uid == uid);
+      allow delete: if admin();
+    }
+    match /vendorAccounts/{uid} {
+      allow read: if admin() || (signedIn() && request.auth.uid == uid) || salesExecutive();
+      allow create: if signedIn() && request.auth.uid == uid;
+      allow update: if admin() || (signedIn() && request.auth.uid == uid);
+      allow delete: if admin();
     }
 
     match /vendorConsents/{consentId} {

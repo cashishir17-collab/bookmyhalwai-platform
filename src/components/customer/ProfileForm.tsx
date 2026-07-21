@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import IndiaPhoneInput, { isValidIndianMobile, toIndianMobileDigits, toIndianPhoneE164 } from "@/components/forms/IndiaPhoneInput";
 
@@ -60,7 +60,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
 
     setIsSaving(true);
     try {
-      await updateDoc(doc(db, "users", user.uid), {
+      await setDoc(doc(db, "customers", user.uid), {
         displayName: form.name,
         email: form.email,
         phone: toIndianPhoneE164(form.phone),
@@ -71,7 +71,7 @@ export default function ProfileForm({ user, initialData }: ProfileFormProps) {
         anniversaryApplicable: form.anniversaryApplicable === "yes",
         anniversaryDate: form.anniversaryApplicable === "yes" ? form.anniversaryDate : null,
         updatedAt: new Date(),
-      });
+      }, { merge: true });
       setMessage("Profile updated successfully.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to update profile.");

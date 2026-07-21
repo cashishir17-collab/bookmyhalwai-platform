@@ -13,7 +13,7 @@ export default function PersonalDatesForm({ userId, title = "My personal dates" 
 
   useEffect(() => {
     if (!db) return;
-    void getDoc(doc(db, "users", userId)).then((snapshot) => {
+    void getDoc(doc(db, "salesExecutives", userId)).then((snapshot) => {
       const data = snapshot.data();
       setBirthDate(typeof data?.birthDate === "string" ? data.birthDate : "");
       setAnniversaryApplicable(data?.anniversaryApplicable === true ? "yes" : data?.anniversaryApplicable === false ? "no" : "");
@@ -30,7 +30,7 @@ export default function PersonalDatesForm({ userId, title = "My personal dates" 
     setSaving(true);
     setMessage("");
     try {
-      await setDoc(doc(db, "users", userId), {
+      await setDoc(doc(db, "salesExecutives", userId), {
         birthDate,
         anniversaryApplicable: anniversaryApplicable === "yes",
         anniversaryDate: anniversaryApplicable === "yes" ? anniversaryDate : null,

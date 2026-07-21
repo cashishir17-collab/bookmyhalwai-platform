@@ -60,48 +60,58 @@ function mapFirebaseUser(firebaseUser: FirebaseUser | null): AppUser | null {
 }
 
 async function ensureUserDocument(firebaseUser: FirebaseUser): Promise<AppUser> {
-  if (!db) {
-    return {
-      uid: firebaseUser.uid,
-      email: firebaseUser.email,
-      displayName: firebaseUser.displayName,
-      photoURL: firebaseUser.photoURL,
-      phoneNumber: firebaseUser.phoneNumber,
-      role: firebaseUser.phoneNumber === ADMIN_PHONE ? "admin" : "customer",
-    };
-  }
-
-  const userRef = doc(db, "users", firebaseUser.uid);
-  const snapshot = await getDoc(userRef);
-
-  if (!snapshot.exists()) {
-    const profile: AppUser & { createdAt: unknown; updatedAt: unknown } = {
-      uid: firebaseUser.uid,
-      email: firebaseUser.email,
-      displayName: firebaseUser.displayName,
-      photoURL: firebaseUser.photoURL,
-      phoneNumber: firebaseUser.phoneNumber,
-      role: "customer",
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    };
-
-    await setDoc(userRef, profile, { merge: true });
-    return { ...profile, role: firebaseUser.phoneNumber === ADMIN_PHONE ? "admin" : "customer" };
-  }
-
-  const data = snapshot.data() as Partial<AppUser> & {
-    role?: UserRole;
-  };
-
-  return {
+  const base = {
     uid: firebaseUser.uid,
     email: firebaseUser.email,
     displayName: firebaseUser.displayName,
     photoURL: firebaseUser.photoURL,
     phoneNumber: firebaseUser.phoneNumber,
-    role: firebaseUser.phoneNumber === ADMIN_PHONE ? "admin" : data.role === "admin" ? "customer" : data.role ?? "customer",
   };
+
+  if (!db) {
+    return { ...base, role: firebaseUser.phoneNumber === ADMIN_PHONE ? "admin" : "customer" };
+  }
+
+  if (firebaseUser.phoneNumber === ADMIN_PHONE) {
+    return { ...base, role: "admin" };
+  }
+
+  // Dedicated collections are the source of truth going forward. Check them
+  // first (in priority order - a person should only ever be in one).
+  const [salesSnapshot, vendorSnapshot, customerSnapshot] = await Promise.all([
+    getDoc(doc(db, "salesExecutives", firebaseUser.uid)),
+    getDoc(doc(db, "vendorAccounts", firebaseUser.uid)),
+    getDoc(doc(db, "customers", firebaseUser.uid)),
+  ]);
+
+  if (salesSnapshot.exists()) {
+    return { ...base, role: "sales_executive" };
+  }
+  if (vendorSnapshot.exists()) {
+    return { ...base, role: "vendor" };
+  }
+  if (customerSnapshot.exists()) {
+    return { ...base, role: "customer" };
+  }
+
+  // Legacy account created before this split - fall back to their old `users`
+  // doc rather than treating them as brand new.
+  const legacySnapshot = await getDoc(doc(db, "users", firebaseUser.uid));
+  if (legacySnapshot.exists()) {
+    const data = legacySnapshot.data() as Partial<AppUser> & { role?: UserRole };
+    return { ...base, role: data.role === "admin" ? "customer" : data.role ?? "customer" };
+  }
+
+  // Brand new sign-in: create their customer record.
+  const customerRef = doc(db, "customers", firebaseUser.uid);
+  const profile: AppUser & { createdAt: unknown; updatedAt: unknown } = {
+    ...base,
+    role: "customer",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+  await setDoc(customerRef, profile, { merge: true });
+  return { ...base, role: "customer" };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
