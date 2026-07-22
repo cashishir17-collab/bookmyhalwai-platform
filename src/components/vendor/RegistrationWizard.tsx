@@ -11,6 +11,7 @@ import { getFirebaseAuthErrorCode } from "@/lib/firebaseAuthError";
 import type { ConfirmationResult } from "firebase/auth";
 import ProgressStepper from "@/components/vendor/ProgressStepper";
 import { INDIA_STATES } from "@/data/indiaLocations";
+import { MARKETPLACE_SERVICES, type MarketplaceService } from "@/data/marketplace";
 import IndiaPhoneInput, { isValidIndianMobile, toIndianPhoneE164 } from "@/components/forms/IndiaPhoneInput";
 
 const steps = ["Business", "Services", "Pricing", "Social", "Uploads"];
@@ -28,21 +29,62 @@ const trustPoints = [
   "Direct support from BookMyHalwai team",
 ];
 
-const providerCategories = [
-  { value: "halwai_caterer", label: "Halwai / Caterer" },
-  { value: "decorator", label: "Decorator" },
-  { value: "tent_house", label: "Tent House" },
-  { value: "dj", label: "DJ" },
-  { value: "photographer", label: "Photography / Videography" },
-  { value: "venue_banquet", label: "Venue / Banquet Hall" },
-  { value: "makeup_artist", label: "Makeup Artist" },
-  { value: "pandit", label: "Pandit" },
-  { value: "mehendi_artist", label: "Mehendi Artist" },
-  { value: "return_gifts", label: "Return Gifts" },
-  { value: "choreographer", label: "Choreographer" },
-] as const;
+const providerCategories = MARKETPLACE_SERVICES.map((service) => ({
+  value: service.providerCategory,
+  label: service.label,
+}));
 
-type ProviderCategory = (typeof providerCategories)[number]["value"];
+type ProviderCategory = MarketplaceService["providerCategory"];
+
+const CATEGORY_SERVICE_OPTIONS: Partial<Record<ProviderCategory, readonly string[]>> = {
+  decorator: ["Stage Decor", "Floral Decor", "Lighting", "Theme Decor", "Entry Decor", "Mandap Decor", "Other / Custom Service"],
+  tent_house: ["Tents & Shamiana", "Seating", "Lighting", "Cooling", "Flooring", "Crockery", "Other / Custom Service"],
+  dj: ["DJ Performance", "Sound System", "Lighting", "LED Wall", "Karaoke", "Other / Custom Service"],
+  photographer: ["Candid Photography", "Traditional Photography", "Videography", "Cinematic Film", "Drone Coverage", "Photo Booth", "Other / Custom Service"],
+  venue_banquet: ["Banquet Hall", "Lawn", "Farmhouse", "Resort", "Rooftop", "Conference Space", "Other / Custom Service"],
+  makeup_artist: ["Bridal Makeup", "Groom Makeup", "Party Makeup", "Hair Styling", "Draping", "Other / Custom Service"],
+  pandit: ["Wedding Ceremony", "Griha Pravesh", "Puja & Havan", "Astrology Consultation", "Online Puja", "Other / Custom Service"],
+  mehendi_artist: ["Bridal Mehendi", "Guest Mehendi", "Arabic Mehendi", "Portrait Mehendi", "Tattoo Mehendi", "Other / Custom Service"],
+  return_gifts: ["Gift Hampers", "Personalised Gifts", "Corporate Gifts", "Wedding Favours", "Kids' Return Gifts", "Other / Custom Service"],
+  choreographer: ["Sangeet Choreography", "Couple Performance", "Family Performance", "Bridal Entry", "Online Rehearsals", "Other / Custom Service"],
+  wedding_planner: ["Full Wedding Planning", "Partial Planning", "Day-of Coordination", "Budget Management", "Guest Management", "Destination Wedding", "Other / Custom Service"],
+  florist: ["Wedding Floral Decor", "Varmala", "Bouquets", "Car Decoration", "Table Arrangements", "Flower Jewellery", "Other / Custom Service"],
+  cakes_desserts: ["Wedding Cakes", "Celebration Cakes", "Dessert Table", "Cupcakes", "Indian Sweets", "Live Dessert Counter", "Other / Custom Service"],
+  bands_live_artists: ["Wedding Band", "Dhol Players", "Live Singer", "Instrumentalists", "Folk Artists", "Anchor / Emcee", "Other / Custom Service"],
+  invitations: ["Printed Invitations", "Digital Invitations", "Video Invitations", "Wedding Stationery", "Gift Boxes", "Printing & Delivery", "Other / Custom Service"],
+  event_rentals: ["Furniture", "Crockery", "Lighting", "Cooling", "Generator", "LED Wall", "Other / Custom Service"],
+  transport: ["Guest Cars", "Luxury / Bridal Car", "Bus / Coach", "Airport Transfer", "Valet Parking", "Logistics Vehicle", "Other / Custom Service"],
+  attire_jewellery: ["Bridal Wear", "Groom Wear", "Family Attire", "Jewellery", "Accessories", "Rental Collection", "Other / Custom Service"],
+  guest_accommodation: ["Hotel Rooms", "Guest House", "Serviced Apartments", "Room Blocks", "Guest Check-in Desk", "Other / Custom Service"],
+  beverage_services: ["Mocktail Bar", "Tea & Coffee Counter", "Juice Bar", "Bartending", "Water Service", "Speciality Beverages", "Other / Custom Service"],
+};
+
+type CapacityCopy = {
+  minimumLabel: string;
+  maximumLabel: string;
+  unit: string;
+};
+
+const DEFAULT_CAPACITY_COPY: CapacityCopy = {
+  minimumLabel: "Minimum Event Capacity",
+  maximumLabel: "Maximum Event Capacity",
+  unit: "guests",
+};
+
+const CATEGORY_CAPACITY_COPY: Partial<Record<ProviderCategory, CapacityCopy>> = {
+  florist: { minimumLabel: "Minimum Order Quantity", maximumLabel: "Maximum Order Capacity", unit: "arrangements" },
+  cakes_desserts: { minimumLabel: "Minimum Order Quantity", maximumLabel: "Maximum Order Capacity", unit: "servings" },
+  bands_live_artists: { minimumLabel: "Minimum Performance Duration", maximumLabel: "Maximum Performance Duration", unit: "hours" },
+  invitations: { minimumLabel: "Minimum Order Quantity", maximumLabel: "Maximum Order Capacity", unit: "invitations" },
+  event_rentals: { minimumLabel: "Minimum Order Quantity", maximumLabel: "Maximum Order Capacity", unit: "items" },
+  transport: { minimumLabel: "Minimum Vehicles per Booking", maximumLabel: "Maximum Vehicles Available", unit: "vehicles" },
+  attire_jewellery: { minimumLabel: "Minimum Order Quantity", maximumLabel: "Maximum Order Capacity", unit: "items" },
+  guest_accommodation: { minimumLabel: "Minimum Rooms per Booking", maximumLabel: "Maximum Rooms Available", unit: "rooms" },
+};
+
+function getCapacityCopy(providerCategory: ProviderCategory | "") {
+  return providerCategory ? CATEGORY_CAPACITY_COPY[providerCategory] ?? DEFAULT_CAPACITY_COPY : DEFAULT_CAPACITY_COPY;
+}
 
 const initialState = {
   providerCategory: "" as ProviderCategory | "",
@@ -61,6 +103,7 @@ const initialState = {
   anniversaryApplicable: "" as "" | "yes" | "no",
   anniversaryDate: "",
   servicesDescription: "",
+  categoryServices: [] as string[],
   venueType: "",
   venueSetting: "",
   parkingAvailable: "",
@@ -123,6 +166,16 @@ const VENDOR_CATEGORY_CODES: Record<ProviderCategory, string> = {
   mehendi_artist: "MEH",
   return_gifts: "GFT",
   choreographer: "CHO",
+  wedding_planner: "WPL",
+  florist: "FLR",
+  cakes_desserts: "CKS",
+  bands_live_artists: "BND",
+  invitations: "INV",
+  event_rentals: "RNT",
+  transport: "TRN",
+  attire_jewellery: "ATJ",
+  guest_accommodation: "ACC",
+  beverage_services: "BEV",
 };
 
 type VendorCategoryCounter = {
@@ -232,7 +285,7 @@ function calculateProfileCompletion(form: RegistrationForm) {
     form.pricing.goldPackage.trim(),
     form.pricing.royalPackage.trim(),
     form.uploads.menuPdf,
-  ] : [form.servicesDescription.trim()];
+  ] : [form.categoryServices.length > 0, form.servicesDescription.trim()];
   const venueChecks = form.providerCategory === "venue_banquet" ? [
     form.venueType.trim(),
     form.venueSetting,
@@ -350,6 +403,35 @@ export default function RegistrationWizard() {
       setOtpSentAt(null);
       setOtpResendSeconds(0);
     }
+  };
+
+  const handleProviderCategoryChange = (providerCategory: ProviderCategory | "") => {
+    setForm((current) => ({
+      ...current,
+      providerCategory,
+      categoryServices: [],
+      servicesDescription: "",
+      venueType: "",
+      venueSetting: "",
+      parkingAvailable: "",
+      roomsAvailable: "",
+    }));
+    setErrors((current) => ({
+      ...current,
+      providerCategory: "",
+      categoryServices: "",
+      servicesDescription: "",
+    }));
+  };
+
+  const updateCategoryService = (service: string, selected: boolean) => {
+    setForm((current) => ({
+      ...current,
+      categoryServices: selected
+        ? [...current.categoryServices, service]
+        : current.categoryServices.filter((item) => item !== service),
+    }));
+    setErrors((current) => ({ ...current, categoryServices: "" }));
   };
 
   const handleSendVendorOtp = async () => {
@@ -538,15 +620,16 @@ export default function RegistrationWizard() {
         if (!form.services.veg && !form.services.nonVeg && !form.services.jain && !form.services.liveCounter && !form.services.outdoorCatering && !form.services.birthday && !form.services.wedding && !form.services.corporate && !form.services.houseParty) {
           newErrors.services = "Select at least one service or event type.";
         }
-      } else if (!form.servicesDescription.trim()) {
-        newErrors.servicesDescription = "Describe the services or packages you offer.";
+      } else {
+        if (form.categoryServices.length === 0) newErrors.categoryServices = "Select at least one service you offer.";
+        if (!form.servicesDescription.trim()) newErrors.servicesDescription = "Describe the services or packages you offer.";
       }
       if (form.providerCategory === "venue_banquet") {
         if (!form.venueType.trim()) newErrors.venueType = "Venue type is required.";
         if (!form.venueSetting) newErrors.venueSetting = "Venue setting is required.";
       }
-      if (!form.minGuests.trim()) newErrors.minGuests = "Minimum event capacity is required.";
-      if (!form.maxGuests.trim()) newErrors.maxGuests = "Maximum event capacity is required.";
+      if (!form.minGuests.trim()) newErrors.minGuests = "The minimum service capacity is required.";
+      if (!form.maxGuests.trim()) newErrors.maxGuests = "The maximum service capacity is required.";
       if (toNumber(form.maxGuests) < toNumber(form.minGuests)) {
         newErrors.maxGuests = "Maximum capacity cannot be less than minimum capacity.";
       }
@@ -761,7 +844,10 @@ export default function RegistrationWizard() {
         googleMapsLink: form.googleMapsLink.trim(),
         yearsExperience: form.yearsExperience.trim(),
         servicesDescription: form.servicesDescription.trim(),
+        categoryServices: form.categoryServices,
         categoryDetails: {
+          selectedServices: form.categoryServices,
+          capacityUnit: getCapacityCopy(form.providerCategory).unit,
           venueType: form.providerCategory === "venue_banquet" ? form.venueType.trim() : "",
           venueSetting: form.providerCategory === "venue_banquet" ? form.venueSetting : "",
           parkingAvailable: form.providerCategory === "venue_banquet" ? form.parkingAvailable : "",
@@ -780,11 +866,19 @@ export default function RegistrationWizard() {
         },
         minGuests: Number(form.minGuests),
         maxGuests: Number(form.maxGuests),
+        serviceCapacity: {
+          minimum: Number(form.minGuests),
+          maximum: Number(form.maxGuests),
+          unit: getCapacityCopy(form.providerCategory).unit,
+        },
         pricing: {
           startingPrice: Number(form.pricing.startingPrice),
           silverPackage: Number(form.pricing.silverPackage),
           goldPackage: Number(form.pricing.goldPackage),
           royalPackage: Number(form.pricing.royalPackage),
+          basicPackage: Number(form.pricing.silverPackage),
+          premiumPackage: Number(form.pricing.goldPackage),
+          luxuryPackage: Number(form.pricing.royalPackage),
           travelCharges: Number(form.pricing.travelCharges),
           advancePercentage: Number(form.pricing.advancePercentage),
         },
@@ -797,6 +891,11 @@ export default function RegistrationWizard() {
         },
         uploadedFiles: {
           logo: uploadedDocuments.logo,
+          portfolioPhotos: form.providerCategory === "halwai_caterer" ? [] : uploadedDocuments.kitchenPhotos,
+          additionalPortfolioPhotos: form.providerCategory === "halwai_caterer" ? [] : uploadedDocuments.foodPhotos,
+          teamPhotos: form.providerCategory === "halwai_caterer" ? [] : uploadedDocuments.staffPhotos,
+          serviceBrochure: form.providerCategory === "halwai_caterer" ? null : uploadedDocuments.menuPdf,
+          businessLicence: form.providerCategory === "halwai_caterer" ? null : uploadedDocuments.fssai,
           kitchenPhotos: uploadedDocuments.kitchenPhotos,
           foodPhotos: uploadedDocuments.foodPhotos,
           staffPhotos: uploadedDocuments.staffPhotos,
@@ -910,13 +1009,17 @@ export default function RegistrationWizard() {
   };
 
   const renderStep = () => {
+    const categoryServiceOptions = form.providerCategory ? CATEGORY_SERVICE_OPTIONS[form.providerCategory] ?? [] : [];
+    const capacityCopy = getCapacityCopy(form.providerCategory);
+    const isCatering = form.providerCategory === "halwai_caterer";
+
     switch (step) {
       case 1:
         return (
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm font-medium text-slate-700 md:col-span-2">
               Provider Category
-              <select value={form.providerCategory} onChange={(event) => updateField("providerCategory", event.target.value as ProviderCategory)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]">
+              <select value={form.providerCategory} onChange={(event) => handleProviderCategoryChange(event.target.value as ProviderCategory | "")} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]">
                 <option value="">Select your category</option>
                 {providerCategories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}
               </select>
@@ -1048,11 +1151,25 @@ export default function RegistrationWizard() {
                 {errors.services ? <p className="mt-2 text-sm text-red-600">{errors.services}</p> : null}
               </div>
             ) : (
-              <label className="block text-sm font-medium text-slate-700">
-                Services / Packages Offered
-                <textarea value={form.servicesDescription} onChange={(event) => updateField("servicesDescription", event.target.value)} className="mt-2 min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Describe your services, packages, equipment, style and event types." />
-                {errors.servicesDescription ? <p className="mt-1 text-sm text-red-600">{errors.servicesDescription}</p> : null}
-              </label>
+              <div className="space-y-5">
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-slate-700">Services Offered</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {categoryServiceOptions.map((service) => (
+                      <label key={service} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                        <span>{service}</span>
+                        <input type="checkbox" checked={form.categoryServices.includes(service)} onChange={(event) => updateCategoryService(service, event.target.checked)} className="h-4 w-4 rounded border-slate-300 text-[#6D28D9] focus:ring-[#0F172A]" />
+                      </label>
+                    ))}
+                  </div>
+                  {errors.categoryServices ? <p className="mt-2 text-sm text-red-600">{errors.categoryServices}</p> : null}
+                </div>
+                <label className="block text-sm font-medium text-slate-700">
+                  Services / Packages Offered
+                  <textarea value={form.servicesDescription} onChange={(event) => updateField("servicesDescription", event.target.value)} className="mt-2 min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="Describe your services, packages, equipment, style and event types." />
+                  {errors.servicesDescription ? <p className="mt-1 text-sm text-red-600">{errors.servicesDescription}</p> : null}
+                </label>
+              </div>
             )}
 
             {form.providerCategory === "venue_banquet" ? (
@@ -1082,13 +1199,13 @@ export default function RegistrationWizard() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block text-sm font-medium text-slate-700">
-                Minimum Event Capacity
-                <input type="number" value={form.minGuests} onChange={(event) => updateField("minGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" />
+                {capacityCopy.minimumLabel}
+                <input type="number" min="0" value={form.minGuests} onChange={(event) => updateField("minGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder={`Number of ${capacityCopy.unit}`} />
                 {errors.minGuests ? <p className="mt-1 text-sm text-red-600">{errors.minGuests}</p> : null}
               </label>
               <label className="block text-sm font-medium text-slate-700">
-                Maximum Event Capacity
-                <input type="number" value={form.maxGuests} onChange={(event) => updateField("maxGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" />
+                {capacityCopy.maximumLabel}
+                <input type="number" min="0" value={form.maxGuests} onChange={(event) => updateField("maxGuests", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder={`Number of ${capacityCopy.unit}`} />
                 {errors.maxGuests ? <p className="mt-1 text-sm text-red-600">{errors.maxGuests}</p> : null}
               </label>
             </div>
@@ -1103,17 +1220,17 @@ export default function RegistrationWizard() {
               {errors.startingPrice ? <p className="mt-1 text-sm text-red-600">{errors.startingPrice}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              Silver Package
+              {isCatering ? "Silver Package" : "Basic Package"}
               <input type="number" value={form.pricing.silverPackage} onChange={(event) => updatePricingField("silverPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="9000" />
               {errors.silverPackage ? <p className="mt-1 text-sm text-red-600">{errors.silverPackage}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              Gold Package
+              {isCatering ? "Gold Package" : "Premium Package"}
               <input type="number" value={form.pricing.goldPackage} onChange={(event) => updatePricingField("goldPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="18000" />
               {errors.goldPackage ? <p className="mt-1 text-sm text-red-600">{errors.goldPackage}</p> : null}
             </label>
             <label className="block text-sm font-medium text-slate-700">
-              Royal Package
+              {isCatering ? "Royal Package" : "Luxury Package"}
               <input type="number" value={form.pricing.royalPackage} onChange={(event) => updatePricingField("royalPackage", event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#0F172A]" placeholder="30000" />
               {errors.royalPackage ? <p className="mt-1 text-sm text-red-600">{errors.royalPackage}</p> : null}
             </label>

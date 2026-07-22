@@ -115,14 +115,20 @@ service cloud.firestore {
         && request.resource.data.lastCategory in [
           'halwai_caterer', 'decorator', 'tent_house', 'dj', 'photographer',
           'venue_banquet', 'makeup_artist', 'pandit', 'mehendi_artist',
-          'return_gifts', 'choreographer'
+          'return_gifts', 'choreographer', 'wedding_planner', 'florist',
+          'cakes_desserts', 'bands_live_artists', 'invitations',
+          'event_rentals', 'transport', 'attire_jewellery',
+          'guest_accommodation', 'beverage_services'
         ]
         && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence == 1;
       allow update: if signedIn()
         && request.resource.data.lastCategory in [
           'halwai_caterer', 'decorator', 'tent_house', 'dj', 'photographer',
           'venue_banquet', 'makeup_artist', 'pandit', 'mehendi_artist',
-          'return_gifts', 'choreographer'
+          'return_gifts', 'choreographer', 'wedding_planner', 'florist',
+          'cakes_desserts', 'bands_live_artists', 'invitations',
+          'event_rentals', 'transport', 'attire_jewellery',
+          'guest_accommodation', 'beverage_services'
         ]
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'categoryCounters', 'lastCategory', 'updatedAt'
