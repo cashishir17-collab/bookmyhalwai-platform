@@ -1,3 +1,5 @@
+import { MARKETPLACE_SERVICES } from "@/data/marketplace";
+
 export interface UtsavVendorContext {
   verified: true;
   businessName: string;
@@ -6,12 +8,14 @@ export interface UtsavVendorContext {
   status: string;
 }
 
+const SUPPORTED_VENDOR_CATEGORIES = MARKETPLACE_SERVICES.map((service) => service.label).join(", ");
+
 export const UTSAV_SAATHI_KNOWLEDGE = `
 BookMyHalwai is an Indian event-services marketplace currently focused on vendor onboarding before customer booking opens.
 
 VENDOR ONBOARDING
 - Vendors can register themselves at /vendor/register or receive help from an authorised sales executive.
-- Supported categories are Halwai/Caterer, Decorator, Tent House, DJ, Photographer, Venue/Banquet Hall, Makeup Artist, Pandit, Mehendi Artist, Return Gifts, and Choreographer.
+- Supported categories are ${SUPPORTED_VENDOR_CATEGORIES}.
 - State and city/town coverage is available across India.
 - New vendor registration numbers include a category code, year, and sequence, for example BMH-DEC-2026-000001.
 - Bank details are not collected during initial registration.
@@ -70,9 +74,9 @@ const fallbackAnswers: Array<{ patterns: RegExp; answer: string }> = [
       "Upload clear, genuine files in the requested sections. GST and FSSAI are optional initially. If an upload fails, use a smaller file, check your connection, and try again before raising a support ticket.",
   },
   {
-    patterns: /categor|halwai|cater|decorator|tent|dj|photo|venue|banquet|makeup|pandit|mehendi|gift|choreograph/i,
+    patterns: /categor|halwai|cater|decorator|tent|dj|photo|venue|banquet|makeup|pandit|mehendi|gift|choreograph|planner|florist|cake|dessert|band|dhol|artist|invitation|rental|transport|attire|jewellery|accommodation|beverage/i,
     answer:
-      "BookMyHalwai currently supports Halwai/Caterer, Decorator, Tent House, DJ, Photographer, Venue/Banquet Hall, Makeup Artist, Pandit, Mehendi Artist, Return Gifts, and Choreographer registrations.",
+      `BookMyHalwai currently supports registrations for ${SUPPORTED_VENDOR_CATEGORIES}.`,
   },
   {
     patterns: /city|town|state|location|india/i,

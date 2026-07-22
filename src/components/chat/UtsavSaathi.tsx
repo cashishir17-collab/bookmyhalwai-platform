@@ -145,7 +145,8 @@ export default function UtsavSaathi() {
       const snapshot = await getDocs(
         query(
           collection(db, "vendors"),
-          where("verificationStatus", "in", ["Approved", "Published", "Verified"]),
+          where("publicationStatus", "==", "Published"),
+          where("verificationStatus", "in", ["Approved", "Verified"]),
         ),
       );
       const match = snapshot.docs

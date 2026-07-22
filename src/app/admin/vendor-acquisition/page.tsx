@@ -8,7 +8,6 @@ import { useAuth } from "@/hooks/useAuth";
 import VendorAcquisitionStats from "@/components/admin/vendor-acquisition/VendorAcquisitionStats";
 import CityPipelineCard from "@/components/admin/vendor-acquisition/CityPipelineCard";
 import VendorOperationsTable from "@/components/admin/vendor-acquisition/VendorOperationsTable";
-import SeedDemoVendorsButton from "@/components/admin/vendor-acquisition/SeedDemoVendorsButton";
 import type { SalesExecutiveOption, VendorAcquisitionRecord } from "@/components/admin/vendor-acquisition/types";
 
 type UserAccount = {
@@ -170,7 +169,6 @@ export default function VendorAcquisitionPage() {
               <h1 className="mt-2 text-3xl font-semibold text-slate-900">Ops-ready vendor onboarding overview</h1>
               <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">Monitor vendor leads across cities, track KYC readiness, and keep the acquisition team aligned with follow-up actions.</p>
             </div>
-            <SeedDemoVendorsButton onCompleted={fetchVendors} />
           </div>
           {loadError ? <p className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{loadError}</p> : null}
         </div>
