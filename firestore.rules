@@ -123,50 +123,9 @@ service cloud.firestore {
       allow update, delete: if admin();
     }
     match /systemCounters/vendorRegistration {
-      allow read: if signedIn();
-      allow create: if signedIn()
-        && request.resource.data.lastCategory in [
-          'halwai_caterer', 'decorator', 'tent_house', 'dj', 'photographer',
-          'venue_banquet', 'makeup_artist', 'pandit', 'mehendi_artist',
-          'return_gifts', 'choreographer', 'wedding_planner', 'florist',
-          'cakes_desserts', 'bands_live_artists', 'invitations',
-          'event_rentals', 'transport', 'attire_jewellery',
-          'guest_accommodation', 'beverage_services'
-        ]
-        && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence == 1;
-      allow update: if signedIn()
-        && request.resource.data.lastCategory in [
-          'halwai_caterer', 'decorator', 'tent_house', 'dj', 'photographer',
-          'venue_banquet', 'makeup_artist', 'pandit', 'mehendi_artist',
-          'return_gifts', 'choreographer', 'wedding_planner', 'florist',
-          'cakes_desserts', 'bands_live_artists', 'invitations',
-          'event_rentals', 'transport', 'attire_jewellery',
-          'guest_accommodation', 'beverage_services'
-        ]
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'categoryCounters', 'lastCategory', 'updatedAt'
-        ])
-        && request.resource.data.categoryCounters.diff(resource.data.categoryCounters).affectedKeys().hasOnly([
-          request.resource.data.lastCategory
-        ])
-        && (
-          (
-            !(request.resource.data.lastCategory in resource.data.categoryCounters)
-            && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence == 1
-          )
-          || (
-            request.resource.data.categoryCounters[request.resource.data.lastCategory].currentYear
-              == resource.data.categoryCounters[request.resource.data.lastCategory].currentYear
-            && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence
-              == resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence + 1
-          )
-          || (
-            request.resource.data.categoryCounters[request.resource.data.lastCategory].currentYear
-              > resource.data.categoryCounters[request.resource.data.lastCategory].currentYear
-            && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence == 1
-          )
-        );
-      allow delete: if admin();
+      // Legacy counter retained for historical data only. Vendor registration
+      // IDs no longer use this document, so global counter access is admin-only.
+      allow read, write: if admin();
     }
 
     match /systemCounters/bookingReference {
