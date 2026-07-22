@@ -26,6 +26,7 @@ export interface VendorVerificationRecord {
   googleMapsLink?: string;
   profileCompletion?: number;
   verificationStatus?: string;
+  publicationStatus?: string;
   leadStage?: string;
   qualityScore?: number;
   createdAt?: unknown;

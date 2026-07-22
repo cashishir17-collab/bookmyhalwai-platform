@@ -20,7 +20,11 @@ service cloud.firestore {
     function salesExecutive() { return signedIn() && role() == 'sales_executive'; }
     function ownsVendor(vendorId) { return signedIn() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid; }
     match /vendors/{vendorId} {
-      allow read: if resource.data.verificationStatus in ['Approved', 'Published', 'Verified']
+      allow read: if (
+          resource.data.verificationStatus in ['Approved', 'Verified']
+          && resource.data.publicationStatus == 'Published'
+        )
+        || resource.data.verificationStatus == 'Published'
         || admin()
         || (signedIn() && resource.data.userId == request.auth.uid)
         || (salesExecutive() && resource.data.salesExecutiveId == request.auth.uid);
@@ -33,7 +37,16 @@ service cloud.firestore {
           && request.resource.data.ownershipStatus == 'ownership_verified'
           && request.resource.data.verificationStatus == 'Pending');
       allow update: if admin()
-        || (signedIn() && resource.data.userId == request.auth.uid)
+        || (signedIn()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'businessName', 'ownerName', 'mobile', 'whatsapp', 'email', 'state', 'city',
+            'areasServed', 'serviceLocations', 'address', 'googleMapsLink', 'yearsExperience',
+            'servicesDescription', 'description', 'categoryServices', 'serviceTypes',
+            'categoryDetails', 'categorySpecificDetails', 'services', 'minGuests', 'maxGuests',
+            'serviceCapacity', 'pricing', 'startingPrice', 'socialLinks', 'uploadedFiles',
+            'profileCompletion', 'updatedAt'
+          ]))
         || (signedIn()
           && resource.data.userId == null
           && resource.data.ownershipStatus == 'otp_pending'
@@ -115,14 +128,20 @@ service cloud.firestore {
         && request.resource.data.lastCategory in [
           'halwai_caterer', 'decorator', 'tent_house', 'dj', 'photographer',
           'venue_banquet', 'makeup_artist', 'pandit', 'mehendi_artist',
-          'return_gifts', 'choreographer'
+          'return_gifts', 'choreographer', 'wedding_planner', 'florist',
+          'cakes_desserts', 'bands_live_artists', 'invitations',
+          'event_rentals', 'transport', 'attire_jewellery',
+          'guest_accommodation', 'beverage_services'
         ]
         && request.resource.data.categoryCounters[request.resource.data.lastCategory].lastSequence == 1;
       allow update: if signedIn()
         && request.resource.data.lastCategory in [
           'halwai_caterer', 'decorator', 'tent_house', 'dj', 'photographer',
           'venue_banquet', 'makeup_artist', 'pandit', 'mehendi_artist',
-          'return_gifts', 'choreographer'
+          'return_gifts', 'choreographer', 'wedding_planner', 'florist',
+          'cakes_desserts', 'bands_live_artists', 'invitations',
+          'event_rentals', 'transport', 'attire_jewellery',
+          'guest_accommodation', 'beverage_services'
         ]
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'categoryCounters', 'lastCategory', 'updatedAt'

@@ -4,7 +4,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
-import DemoSeedLoader from "@/components/DemoSeedLoader";
 import UtsavSaathi from "@/components/chat/UtsavSaathi";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -42,7 +41,6 @@ export default function RootLayout({
     >
       <body className="page-shell min-h-full flex flex-col text-slate-900">
         <AuthProvider>
-          <DemoSeedLoader />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />

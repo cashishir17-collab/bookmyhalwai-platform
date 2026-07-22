@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clock3 } from "lucide-react";
+import { ArrowRight, BadgeCheck } from "lucide-react";
 import { ServiceIcon } from "@/components/marketplace/ServiceIcon";
-import { COMING_SOON_SERVICES, MARKETPLACE_SERVICES } from "@/data/marketplace";
+import { MARKETPLACE_SERVICES } from "@/data/marketplace";
 
 export const metadata: Metadata = {
   title: "Event Services Directory | BookMyHalwai",
@@ -38,8 +38,9 @@ export default function ServicesPage() {
         </div>
 
         <section className="mt-12 rounded-[2rem] border border-[#DCCDB2] bg-[#0B1830] p-8 text-white sm:p-10">
-          <div className="flex items-center gap-3"><Clock3 className="h-6 w-6 text-[#C7A667]" /><h2 className="text-2xl font-semibold text-white">More services coming soon</h2></div>
-          <div className="mt-6 flex flex-wrap gap-3">{COMING_SOON_SERVICES.map((service) => <span key={service} className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm text-[#E8DDC7]">{service}</span>)}</div>
+          <div className="flex items-center gap-3"><BadgeCheck className="h-6 w-6 text-[#C7A667]" /><h2 className="text-2xl font-semibold text-white">Onboarding is open for every listed service</h2></div>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[#E8DDC7]">Register your event business, complete category-specific details and submit your profile for BookMyHalwai verification.</p>
+          <Link href="/vendor/register" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#C7A667] px-5 py-3 text-sm font-bold text-[#0B1830] transition hover:bg-[#E0C488]">Register as a vendor <ArrowRight className="h-4 w-4" /></Link>
         </section>
       </section>
     </main>

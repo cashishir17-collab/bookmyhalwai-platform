@@ -7,6 +7,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { BadgeCheck, MapPin, Search, Star } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { MARKETPLACE_SERVICES, getMarketplaceService, serviceForProviderCategory } from "@/data/marketplace";
+import { isPublicVendor, mapVendorDocumentToMarketplaceVendor } from "@/lib/vendorRecords";
 
 interface VendorListing {
   id: string;
@@ -28,32 +29,22 @@ interface VendorMarketplaceProps {
   initialCity?: string;
 }
 
-function firstImage(row: Record<string, unknown>) {
-  const uploads = (row.uploadedFiles || row.documents || {}) as Record<string, unknown>;
-  const imageGroups = [uploads.portfolioPhotos, uploads.foodPhotos, uploads.kitchenPhotos, uploads.staffPhotos];
-  for (const group of imageGroups) {
-    if (Array.isArray(group) && typeof group[0] === "string") return group[0];
-  }
-  if (typeof uploads.logo === "string") return uploads.logo;
-  return "/images/home/wedding-reception.jpg";
-}
-
 function toListing(id: string, row: Record<string, unknown>): VendorListing {
-  const providerCategory = String(row.providerCategory || "halwai_caterer");
+  const vendor = mapVendorDocumentToMarketplaceVendor(id, row);
+  const providerCategory = vendor.primaryCategory;
   const service = serviceForProviderCategory(providerCategory);
-  const pricing = (row.pricing || {}) as Record<string, unknown>;
   return {
     id,
-    name: String(row.businessName || row.ownerName || "Verified event partner"),
+    name: vendor.businessName,
     category: providerCategory,
     categoryLabel: service?.label || String(row.providerCategoryLabel || row.category || "Event Service"),
-    state: String(row.state || ""),
-    city: String(row.city || "India"),
-    description: String(row.servicesDescription || row.aboutBusiness || service?.description || "Verified event-service professional."),
-    image: firstImage(row),
-    rating: Number(row.rating || 0),
-    completedEvents: Number(row.completedEvents || 0),
-    startingPrice: Number(pricing.startingPrice || row.startingPrice || 0),
+    state: vendor.state,
+    city: vendor.city,
+    description: vendor.description,
+    image: vendor.image,
+    rating: vendor.rating,
+    completedEvents: vendor.completedEvents,
+    startingPrice: vendor.startingPrice,
   };
 }
 
@@ -75,8 +66,20 @@ export function VendorMarketplace({ initialCategory = "", initialState = "", ini
         return;
       }
       try {
-        const snapshot = await getDocs(query(collection(db, "vendors"), where("verificationStatus", "in", ["Approved", "Published", "Verified"])));
-        if (active) setVendors(snapshot.docs.map((item) => toListing(item.id, item.data())));
+        const [publishedSnapshot, legacySnapshot] = await Promise.all([
+          getDocs(query(
+            collection(db, "vendors"),
+            where("publicationStatus", "==", "Published"),
+            where("verificationStatus", "in", ["Approved", "Verified"]),
+          )),
+          getDocs(query(collection(db, "vendors"), where("verificationStatus", "==", "Published"))),
+        ]);
+        if (active) {
+          const uniqueDocuments = new Map([...publishedSnapshot.docs, ...legacySnapshot.docs].map((item) => [item.id, item]));
+          setVendors(Array.from(uniqueDocuments.values())
+            .filter((item) => isPublicVendor(mapVendorDocumentToMarketplaceVendor(item.id, item.data())))
+            .map((item) => toListing(item.id, item.data())));
+        }
       } catch (error) {
         console.error("Unable to load approved vendors", error);
         if (active) setLoadError("Approved vendors could not be loaded. Please try again shortly.");

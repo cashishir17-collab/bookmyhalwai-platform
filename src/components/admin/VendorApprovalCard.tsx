@@ -31,6 +31,7 @@ export default function VendorApprovalCard({ vendor, adminUid, onUpdated }: Vend
     try {
       await updateDoc(doc(db, "vendors", vendor.id), {
         verificationStatus: "Approved",
+        publicationStatus: "Unpublished",
         approvedAt: new Date(),
         approvedBy: adminUid,
         updatedAt: new Date(),
@@ -48,6 +49,7 @@ export default function VendorApprovalCard({ vendor, adminUid, onUpdated }: Vend
     try {
       await updateDoc(doc(db, "vendors", vendor.id), {
         verificationStatus: "Rejected",
+        publicationStatus: "Unpublished",
         rejectionReason: reason || "No reason provided",
         rejectedAt: new Date(),
         updatedAt: new Date(),

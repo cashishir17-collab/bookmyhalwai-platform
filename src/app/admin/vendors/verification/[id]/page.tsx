@@ -124,11 +124,13 @@ export default function VendorVerificationDetailPage() {
 
       if (action === "Approve") {
         actionUpdates.verificationStatus = "Approved";
+        actionUpdates.publicationStatus = "Unpublished";
         actionUpdates.leadStage = "Approved";
         actionUpdates.reason = "";
         actionUpdates.profileCompletion = Math.max(vendor.profileCompletion || 0, 90);
       } else if (action === "Reject") {
         actionUpdates.verificationStatus = "Rejected";
+        actionUpdates.publicationStatus = "Unpublished";
         actionUpdates.leadStage = "Rejected";
         actionUpdates.reason = normalizedReason;
       } else if (action === "Request Documents") {
@@ -137,6 +139,7 @@ export default function VendorVerificationDetailPage() {
         actionUpdates.reason = normalizedReason;
       } else if (action === "Publish") {
         actionUpdates.verificationStatus = "Approved";
+        actionUpdates.publicationStatus = "Published";
         actionUpdates.leadStage = "Published";
         actionUpdates.reason = "";
       }

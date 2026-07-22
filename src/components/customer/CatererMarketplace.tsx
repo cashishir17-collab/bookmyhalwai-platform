@@ -29,7 +29,11 @@ export default function CatererMarketplace() {
   useEffect(() => {
     const load = async () => {
       if (!db) { setLoading(false); return; }
-      const snapshot = await getDocs(query(collection(db, "vendors"), where("verificationStatus", "in", ["Approved", "Published", "Verified"])));
+      const snapshot = await getDocs(query(
+        collection(db, "vendors"),
+        where("publicationStatus", "==", "Published"),
+        where("verificationStatus", "in", ["Approved", "Verified"]),
+      ));
       setMarketplaceCaterers(snapshot.docs.map((item) => { const row = item.data(); const services = row.services || {}; const uploads = row.uploadedFiles || row.documents || {}; const tags = Object.entries(services).filter(([, enabled]) => enabled).map(([name]) => name.replace(/([A-Z])/g, " $1")); return { id:item.id, name:row.businessName||"Verified Caterer", location:row.serviceAreas?.join?.(", ")||row.city||"India", city:row.city||"India", image:uploads.foodPhotos?.[0]||uploads.kitchenPhotos?.[0]||uploads.logo||"/images/home/hero-luxury.jpg", price:Number(row.pricing?.startingPrice||0), rating:Number(row.rating||0), events:Number(row.completedEvents||0), cuisines:tags.length?tags:["Catering"], foodType:services.veg&&!services.nonVeg?"Veg":services.nonVeg?"Non-Veg":"Veg", liveCounter:Boolean(services.liveCounter), outdoorCatering:Boolean(services.outdoorCatering) } as Caterer; }));
       setLoading(false);
     }; void load();
