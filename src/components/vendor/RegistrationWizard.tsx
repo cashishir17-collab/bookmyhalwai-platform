@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { doc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { app, db, storage } from "@/lib/firebase";
 import { sendVendorConsentOtp, verifyVendorConsent, type VendorConsent } from "@/lib/vendorConsentAuth";
@@ -150,8 +150,6 @@ const initialState = {
 type RegistrationForm = typeof initialState;
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const VENDOR_COUNTER_COLLECTION = "systemCounters";
-const VENDOR_COUNTER_DOCUMENT = "vendorRegistration";
 const VENDOR_REGISTRATION_PREFIX = "BMH";
 
 const VENDOR_CATEGORY_CODES: Record<ProviderCategory, string> = {
@@ -176,15 +174,6 @@ const VENDOR_CATEGORY_CODES: Record<ProviderCategory, string> = {
   attire_jewellery: "ATJ",
   guest_accommodation: "ACC",
   beverage_services: "BEV",
-};
-
-type VendorCategoryCounter = {
-  currentYear?: unknown;
-  lastSequence?: unknown;
-};
-
-type VendorRegistrationCounterData = {
-  categoryCounters?: Partial<Record<ProviderCategory, VendorCategoryCounter>>;
 };
 
 async function withTimeout<T>(
@@ -214,46 +203,18 @@ function toNumber(value: string) {
 }
 
 async function getNextVendorRegistrationNumber(providerCategory: ProviderCategory | "") {
-  if (!db) {
-    throw new Error("Firestore is not configured yet.");
-  }
-
   if (!providerCategory) {
     throw new Error("Provider category is required to create a registration number.");
   }
 
   const categoryCode = VENDOR_CATEGORY_CODES[providerCategory];
   const currentYear = new Date().getFullYear();
-  const counterRef = doc(db, VENDOR_COUNTER_COLLECTION, VENDOR_COUNTER_DOCUMENT);
+  // Registration must not depend on a client-writable global counter. A
+  // cryptographically random 64-bit suffix is collision-resistant and can be
+  // generated without a privileged Firestore transaction.
+  const randomSuffix = crypto.randomUUID().replaceAll("-", "").slice(0, 16).toUpperCase();
 
-  return runTransaction(db, async (transaction) => {
-    const counterSnapshot = await transaction.get(counterRef);
-    const counterData = counterSnapshot.data() as VendorRegistrationCounterData | undefined;
-    const categoryCounters = counterData?.categoryCounters ?? {};
-    const storedCounter = categoryCounters[providerCategory];
-
-    const storedYear = typeof storedCounter?.currentYear === "number" ? storedCounter.currentYear : null;
-    const storedSequence = typeof storedCounter?.lastSequence === "number" ? storedCounter.lastSequence : 0;
-    const nextSequence = storedYear === currentYear ? storedSequence + 1 : 1;
-
-    transaction.set(
-      counterRef,
-      {
-        categoryCounters: {
-          ...categoryCounters,
-          [providerCategory]: {
-            currentYear,
-            lastSequence: nextSequence,
-          },
-        },
-        lastCategory: providerCategory,
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true },
-    );
-
-    return `${VENDOR_REGISTRATION_PREFIX}-${categoryCode}-${currentYear}-${String(nextSequence).padStart(6, "0")}`;
-  });
+  return `${VENDOR_REGISTRATION_PREFIX}-${categoryCode}-${currentYear}-${randomSuffix}`;
 }
 
 function calculateProfileCompletion(form: RegistrationForm) {
